@@ -47,3 +47,21 @@ P(S = s_i | \tilde{y}) &= P(y \in \{\theta_{i - 1}, \theta_i\}) \\
 
 \end{align}
 $$
+
+Let $F(t)$ be the CDF of $P(S | \tilde{y})$, then
+
+$$\int_{\theta_{i-1}}^{\theta_i} P(y | \tilde{y}) dy = F(\theta_i) - F(\theta_{i-1})$$
+
+We can subsequently define expected state conditional on noise-free inputs as
+
+$$\mathbf{E}[(S | \tilde{y})] = \sum_{i = 1}^k s_i (F(\theta_i) - F(\theta_{i-1})$$
+
+For gradient-based optimization, we can take the derivative of the expected with changes in the input as
+
+$$\frac{d}{d\tilde{y}} \mathbf{E}(S | \tilde{y}) = \frac{d}{d\tilde{y}} \sum_{i = 1}^k s_i \int_{\theta_{i-1}}^{\theta_i} P(y | \tilde{y}) dy$$
+
+Which in general case simplifies to
+$$\frac{d}{d\tilde{y}} \mathbf{E}(S | \tilde{y}) =  \sum_{i = 1}^k s_i \Big( P(y = \theta_i | \tilde{y}) - P(y = \theta_{i - 1} | \tilde{y})\Big)$$
+
+#### Deriving closed-form expression for ternary case with gaussian noise
+(TBD...)
