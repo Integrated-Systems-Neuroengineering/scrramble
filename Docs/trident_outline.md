@@ -65,3 +65,9 @@ $$\frac{d}{d\tilde{y}} \mathbf{E}(S | \tilde{y}) =  \sum_{i = 1}^k s_i \Big( P(y
 
 #### Deriving closed-form expression for ternary case with gaussian noise
 (TBD...)
+
+$$
+\begin{equation}
+P(S = -1 | \tilde{y}) = \int_{-\infty}^{\theta_-} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(u - \theta_-)^2}{2\sigma^2}} du
+\end{equation}
+$$
