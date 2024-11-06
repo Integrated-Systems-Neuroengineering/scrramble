@@ -63,11 +63,67 @@ $$\frac{d}{d\tilde{y}} \mathbf{E}(S | \tilde{y}) = \frac{d}{d\tilde{y}} \sum_{i 
 Which in general case simplifies to
 $$\frac{d}{d\tilde{y}} \mathbf{E}(S | \tilde{y}) =  \sum_{i = 1}^k s_i \Big( P(y = \theta_i | \tilde{y}) - P(y = \theta_{i - 1} | \tilde{y})\Big)$$
 
-#### Deriving closed-form expression for ternary case with gaussian noise
-(TBD...)
+### Deriving closed-form expression for ternary case with gaussian noise
+Writing out the probabilities.
 
 $$
 \begin{equation}
-P(S = -1 | \tilde{y}) = \int_{-\infty}^{\theta_-} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(u - \theta_-)^2}{2\sigma^2}} du
+P(S = -1 | \tilde{y}) = \int_{-\infty}^{\theta_-} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(u - \tilde{y})^2}{2\sigma^2}} du
 \end{equation}
 $$
+
+$$
+\begin{equation}
+P(S = 1 | \tilde{y}) = \int_{\theta_+}^{\infty} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(v - \tilde{y})^2}{2\sigma^2}} dv
+\end{equation}
+$$
+
+Note that $\tilde{y}$ can be either interpreted as the mean of the gaussian or the offset that you need to subtract from the input to a standard gaussian $\mathcal{N}(\mu = 0, \sigma)$.
+
+Applying the above equations to find the expected state, we get:
+
+$$
+\begin{equation*}
+\mathbf{E}(S | \tilde{y}) = (-1) \cdot \int_{-\infty}^{\theta_-} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(u - \tilde{y})^2}{2\sigma^2}} du + (0).P(S = 0 | \tilde{y}) + (1) \cdot \int_{\theta_+}^{\infty} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(v - \tilde{y})^2}{2\sigma^2}} dv
+\end{equation*}
+$$
+
+Note that $P(S = 0 | \tilde{y})$ can be written out as an integral, but it vanishes in expected value as it is multiplied by the state $S = 0$.
+
+Simplifying, we get the following:
+
+$$
+\begin{equation}
+\mathbf{E}(S | \tilde{y}) = \int_{\theta_+}^{\infty} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(v - \tilde{y})^2}{2\sigma^2}} dv - \int_{-\infty}^{\theta_-} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(u - \tilde{y})^2}{2\sigma^2}} du 
+\end{equation}
+$$
+
+Although during simulations we never really need to compute the expected state, it is essentially difference between two $\text{erf}(.)$ functions. 
+
+### Computing gradient of expected state
+In the backward-pass, we need to tell the network which gradient to use in place of the problematic gradient of the thresholding function $h(y)$. To achieve this, we will pass the gradient of the expected state in the backward pass. Note that as there is addition of noise to the input, this gradient is surprisingly the exact gradient of the expected state of the neuron given noise-free input.
+
+$$
+\begin{align*}
+\frac{d}{d\tilde{y}} \mathbf{E(S | \tilde{y})} &= \frac{d}{d\tilde{y}} \int_{\theta_+}^{\infty} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(v - \tilde{y})^2}{2\sigma^2}} dv - \frac{d}{d\tilde{y}} \int_{-\infty}^{\theta_-} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(u - \tilde{y})^2}{2\sigma^2}} du \\
+
+&= \int_{\theta_+}^{\infty} \frac{\partial}{\partial \tilde{y}} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(v - \tilde{y})^2}{2\sigma^2}} dv - \int_{-\infty}^{\theta_-}  \frac{\partial}{\partial \tilde{y}} \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(u - \tilde{y})^2}{2\sigma^2}} du \quad \text{(Leibnitz Rule)}
+\end{align*}
+$$
+
+For further simplification we first differentiate the integrand w.r.t. $\tilde{y}$ and then apply fundamental theorem of calculus. We'll end up with this equation
+
+$$
+\begin{equation}
+\frac{d}{d\tilde{y}} \mathbf{E(S | \tilde{y})} = \frac{1}{\sqrt{2\pi} \sigma} \Big( e^{- \frac{(\theta_- - \tilde{y})^2}{2\sigma^2}} + e^{- \frac{(\theta_+ - \tilde{y})^2}{2\sigma^2}}  \Big)
+\end{equation}
+$$
+
+Which is simply
+$$
+\begin{equation}
+\frac{d}{d\tilde{y}} \mathbf{E(S | \tilde{y})} = \mathcal{N}(\theta_-; \mu = \tilde{y}, \sigma) + \mathcal{N}(\theta_+; \mu = \tilde{y}, \sigma)
+\end{equation}
+$$
+
+We'll use eq (7) to find gradients in the backward pass.
