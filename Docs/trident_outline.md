@@ -1,4 +1,4 @@
-# TriDeNT (Tri-state Stochastic Neural Network)
+# TriDeNT (Tri-state Stochastic Deep Neural Network)
 
 ## Overview
 Deep neural networks with discrete activations may be useful for efficient implementation. To that extent, binary and ternary neural networks have been shown to perform well on benchmarking tasks like MNIST [insert some refs]. However, it seems that the optimization techniques either use local learning rules or utilize approximations of gradients in a backpropagation like setting [(Mostafa et al. 2017, Front. Neurosci.)](https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2017.00496/full). With added noise in the inputs, it might be possible to potentially leverage stochastic resonance to compute gradients. This would be useful for backpropagation and end-to-end training of neural networks with discrete states. In this analysis, we focus on ternary neural networks in which the activations $y \in \{-1, 0, 1\}$
@@ -127,3 +127,22 @@ $$
 $$
 
 We'll use eq (7) to find gradients in the backward pass.
+
+
+#### Visualizing the forward and backward passes
+![gradients visualization](gradients_vis_110624.png)
+
+## Preliminary results
+The results outlined below are preliminary! 
+
+#### Current model setup
+![alt text](net_cartoon_110624.png)
+
+#### MNIST
+Architecture: Fully connected feedforward network. Layer size: [784, 2000, 10]
+
+ Test-set accuracy = 96.22% (pending bootstrap analysis to determine the error bars, but I was able to consistently get similar figures!)
+
+![MNIST results](mnist_i-2k-10_110624.png)
+
+
