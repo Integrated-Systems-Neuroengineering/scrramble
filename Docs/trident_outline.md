@@ -132,17 +132,70 @@ We'll use eq (7) to find gradients in the backward pass.
 #### Visualizing the forward and backward passes
 ![gradients visualization](gradients_vis_110624.png)
 
+### Binary networks
+The analysis for ternary networks can be easily extended to binary networks. We now define the activation function as 
+
+$$
+\begin{equation}
+h(y) = \begin{cases}
+0, & \text{if } y < \theta \\
+1, & \text{if } y \geq \theta
+\end{cases}
+\end{equation}
+$$
+
+Note that $\{-1, +1\}$ binary networks are also similarly possible.
+
+The expectation value in this case simplifies to 
+
+$$
+\mathbf{E}[(S | \tilde{y})] = 0 \cdot P(S = 0 | \tilde{y}) + 1 \cdot P(S = 1 | \tilde{y}) \\
+= P(S = 1 | \tilde{y})
+$$
+
+This is simply
+$$
+\begin{equation}
+P(S = 1| \tilde{y}) = \int_{\theta}^{\infty} \frac{1}{\sqrt{2\pi} \sigma} e^{- \frac{(u - \tilde{y})^2}{2\sigma^2}} du
+\end{equation}
+$$
+
+This makes the gradient simply
+
+$$
+\begin{align}
+\frac{d}{d\tilde{y}}\mathbf{E}[(S | \tilde{y})] &= \int_{\theta}^{\infty} \frac{1}{\sqrt{2\pi} \sigma} (-1)\cdot \frac{\partial}{\partial u} e^{- \frac{(u - \tilde{y})^2}{2\sigma^2}} du \\
+
+&= \mathcal{N}(\theta; \mu = \tilde{y}, \sigma)
+
+
+
+\end{align}
+$$
+
+
+
+
+
+#### Visualizing the forward and backward passes
+![alt text](binary_01.png)
+
 ## Preliminary results
 The results outlined below are preliminary! 
 
 #### Current model setup
-![alt text](net_cartoon_110624.png)
+![alt text](image.png)
 
-#### MNIST
+#### MNIST with ternary states
 Architecture: Fully connected feedforward network. Layer size: [784, 2000, 10]
 
- Test-set accuracy = 96.22% (pending bootstrap analysis to determine the error bars, but I was able to consistently get similar figures!)
+ Test-set accuracy = $96.22\%$ (pending bootstrap analysis to determine the error bars, but I was able to consistently get similar figures!)
 
 ![MNIST results](mnist_i-2k-10_110624.png)
+
+#### MNIST with binary states
+Test-set accuracy = $97.49 \%$
+![alt text](mnist_binary.png)
+
 
 
