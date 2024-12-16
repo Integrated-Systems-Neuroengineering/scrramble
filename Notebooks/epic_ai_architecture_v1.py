@@ -79,10 +79,6 @@ class EICCore(nn.Module):
             idx = jax.random.permutation(shuffle_key, chunk_size)
          
 
-
-
-
-    
     @nn.compact
     def __call__(self, x):
         """
