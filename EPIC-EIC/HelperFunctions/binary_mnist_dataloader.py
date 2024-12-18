@@ -63,6 +63,11 @@ def load_and_process_mnist(data_path, binarize):
     train_images, val_images, test_images = images[:50000], images[50000:60000], images[60000:]
     train_labels, val_labels, test_labels = labels[:50000], labels[50000:60000], labels[60000:]
 
+    # reshape the images
+    train_images = train_images.reshape(-1, 1024)
+    val_images = val_images.reshape(-1, 1024)
+    test_images = test_images.reshape(-1, 1024)
+
     return (train_images, train_labels), (val_images, val_labels), (test_images, test_labels)
 
 def get_train_batches(train_images, train_labels, batch_size):

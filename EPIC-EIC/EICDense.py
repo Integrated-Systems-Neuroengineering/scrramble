@@ -29,14 +29,12 @@ class EICDense(nn.Module):
     out_size: int
     threshold: float
     noise_sd: float
-    key: jax.random.key
-    activation: callable = None
+    activation: callable
 
     def setup(self):
         """
         Set up dependent parameters
         """
-
         self.out_blocks = self.out_size//256 # number of blocks required at the output 
         self.in_blocks = self.in_size//256 # number of bloacks required at the input
 
@@ -53,9 +51,13 @@ class EICDense(nn.Module):
             (self.out_blocks, self.in_blocks, 256, 256)
         )
 
-        # if the activation is None, simply return linear map
-        if self.activation is None:
-            self.activation = lambda x, threshold, noise_sd, key: x
+
+    @staticmethod
+    def linear_map(x, threshold = 0., noise_sd = 0.1, key = None):
+        """
+        Linear map
+        """
+        return x
 
     def sigmoid_fn(self, x, threshold = 0.0, noise_sd = 0.1, key = jax.random.key(0)):
         """
@@ -73,16 +75,37 @@ class EICDense(nn.Module):
         x: jnp.ndarray, output of the layer
         """
 
-        assert x.shape == (self.in_size,), "Input shape is incorrect"
+        assert x.shape == (self.in_size,), f"Input shape is incorrect. Got {x.shape}, expected {(self.in_size,)}"
 
         x_reshaped = x.reshape(self.in_blocks, 256) # organize x into blocks of 256
 
         # make sure that the weights are positive
-        W_pos= jnp.square(self.W)
+        W_pos= jax.nn.relu(self.W)
 
         y = jnp.einsum("ijkl,jl->ijk", W_pos, x_reshaped)
 
-        key, split_key = jax.random.split(self.key)
-        y = self.activation(y, threshold = self.threshold, noise_sd = self.noise_sd, key = split_key)
+        key = self.make_rng("activation")
+        # print(f"EIC Key: {key}")
+        activation_fn = self.activation if self.activation is not None else self.linear_map
+        y = activation_fn(y, threshold = self.threshold, noise_sd = self.noise_sd, key = key)
 
         return y
+    
+    
+# testing...
+def __main__():
+    rng = jax.random.key(0)
+    key, subkey = jax.random.split(rng)
+    x = jax.random.normal(key, (1024,))
+    eic = EICDense(in_size = 1024, out_size = 2048, threshold=0., activation = custom_binary_gradient, noise_sd = 0.1)
+    params_eic = eic.init(key, x)
+    print("Initialized EICDense parameters")
+    print(f"Params: {params_eic}")
+    print(f"Params shape: {params_eic['params']['weights'].shape}")
+    y = eic.apply(params_eic, x, rngs = {"activation": subkey})
+    print(f"Output: {y}")
+    print(f"Output shape: {y.shape}")
+
+
+if __name__ == "__main__":
+    __main__()

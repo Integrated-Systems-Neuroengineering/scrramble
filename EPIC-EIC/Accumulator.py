@@ -2,6 +2,7 @@ import jax
 import jax.numpy as jnp
 import flax
 from flax import linen as nn
+from HelperFunctions.binary_trident_helper_functions import *
 
 # define the accumulator module
 class Accumulator(nn.Module):
@@ -17,7 +18,6 @@ class Accumulator(nn.Module):
     in_block_size: int
     threshold: float
     noise_sd: float
-    key: jax.random.key
     activation: callable = None
 
     def setup(self):
@@ -31,8 +31,13 @@ class Accumulator(nn.Module):
             (self.in_block_size, 256, 256)
         )
 
-        if self.activation is None:
-            self.activation = lambda x, threshold, noise_sd, key: x
+    @staticmethod
+    def linear_map(x, threshold = 0., noise_sd = 0.1, key = None):
+        """
+        Linear map
+        """
+        return x
+
 
     @nn.compact
     def __call__(self, x):
@@ -47,10 +52,38 @@ class Accumulator(nn.Module):
 
         assert x.shape[0] == self.in_block_size, "Input shape is incorrect"
 
+        # ensure positive 
+
         y = jnp.einsum('ijk,imk->ij', self.W, x)
-        y = self.activation(y, threshold = self.threshold, noise_sd = self.noise_sd, key = self.key)
+        key = self.make_rng("activation")
+
+        activation_fn = self.activation if self.activation is not None else self.linear_map
+        y = activation_fn(y, threshold = self.threshold, noise_sd = self.noise_sd, key = key)
 
         # flatten y before returning
         y = y.reshape(-1)
 
         return y
+
+# testing...
+def __main__():
+    rng = jax.random.key(42)
+    x = jax.random.normal(rng, (8, 4, 256))
+    acc = Accumulator(
+        in_block_size = x.shape[0],
+        threshold = 0.0,
+        noise_sd = 1.0,
+        activation = custom_binary_gradient
+    )
+
+    params = acc.init(rng, x)
+    print("Initialized accumulator parameters")
+    print("----------------------------------------")
+    print(f"Output shape: {params["params"]["weights"].shape}")
+    y = acc.apply(params, x, rngs = {"activation": rng})
+    print("----------------------------------------")
+    print(f"Accumulator output {y}, \n Output shape: {y.shape}")
+
+
+if __name__ == "__main__":
+    __main__()

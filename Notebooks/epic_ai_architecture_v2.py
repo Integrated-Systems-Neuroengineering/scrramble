@@ -176,7 +176,7 @@ class ShuffleBlocks(nn.Module):
     @nn.compact
     def __call__(self, x):
         """
-        Shuffle input vector x block-wise 
+        Shuffle input vector x, block-wise 
         Args:
         x: jnp.ndarray, input vector of shape (input_len,)
 
@@ -218,8 +218,6 @@ class ShuffleBlocks(nn.Module):
 
         return xpos - xneg
 
-
-
-
+# define the network
 
 
