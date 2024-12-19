@@ -84,9 +84,9 @@ class EICDense(nn.Module):
 
         y = jnp.einsum("ijkl,jl->ijk", W_pos, x_reshaped)
 
-        key = self.make_rng("activation")
-        # print(f"EIC Key: {key}")
         activation_fn = self.activation if self.activation is not None else self.linear_map
+
+        key = self.make_rng("activation")
         y = activation_fn(y, threshold = self.threshold, noise_sd = self.noise_sd, key = key)
 
         return y
@@ -104,6 +104,19 @@ def __main__():
     print(f"Params shape: {params_eic['params']['weights'].shape}")
     y = eic.apply(params_eic, x, rngs = {"activation": subkey})
     print(f"Output: {y}")
+    print(f"Output shape: {y.shape}")
+
+    print("TRIAL 2")
+
+    x = jax.random.normal(key, (1024,))
+    eic = EICDense(in_size = 1024, out_size = 2048, threshold=0., activation = custom_binary_gradient, noise_sd = 0.1)
+    params_eic = eic.init(subkey, x)
+    print("Initialized EICDense parameters")
+    print(f"Params: {params_eic}")
+    print(f"Params shape: {params_eic['params']['weights'].shape}")
+    y2 = eic.apply(params_eic, x, rngs = {"activation": subkey})
+    print(f"Output: {y2}")
+    print(jnp.linalg.norm(y - y2))
     print(f"Output shape: {y.shape}")
 
 
