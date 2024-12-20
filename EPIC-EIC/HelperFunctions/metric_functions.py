@@ -6,7 +6,7 @@ import jax
 import jax.numpy as jnp
 from jax import vmap, jit
 
-def accuracy(params, model, input, targets):
+def accuracy(params, model, input, targets, keys):
     """
     Compute accuracy of the model.
     Args:
@@ -16,7 +16,7 @@ def accuracy(params, model, input, targets):
     targets: jnp.ndarray, target data
     """
 
-    logits = vmap(lambda img: model.apply(params, img))(input)
+    logits = vmap(lambda img, key: model.apply(params, img, rngs = {"activation": key}))(input, keys)
     pred_labels = jnp.argmax(logits[:, :10], axis = -1)
     acc = jnp.mean(pred_labels == targets)
 
@@ -30,8 +30,8 @@ def cross_entropy_loss(logits, targets):
     targets: jnp.ndarray, targets
     """
 
-    one_hot_labels = jax.nn.one_hot(targets, num_classes = 10)
-    probits = jax.nn.log_softmax(logits[:, :10], axis = -1)
+    one_hot_labels = jax.nn.one_hot(targets, num_classes = 256)
+    probits = jax.nn.log_softmax(logits, axis = -1)
     ce_loss = -jnp.mean(jnp.sum(one_hot_labels * probits, axis = -1))
 
     return ce_loss

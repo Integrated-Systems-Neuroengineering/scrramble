@@ -60,8 +60,11 @@ def load_and_process_mnist(data_path, binarize):
     labels = np.concatenate([train_labels, test_labels], axis = 0)
 
     # split the data 50k-10k-10k
-    train_images, val_images, test_images = images[:50000], images[50000:60000], images[60000:]
-    train_labels, val_labels, test_labels = labels[:50000], labels[50000:60000], labels[60000:]
+    # train_images, val_images, test_images = images[:50000], images[50000:60000], images[60000:]
+    # train_labels, val_labels, test_labels = labels[:50000], labels[50000:60000], labels[60000:]
+
+    train_images, val_images, test_images = images[:500], images[500:600], images[600:700]
+    train_labels, val_labels, test_labels = labels[:500], labels[500:600], labels[600:700]
 
     # reshape the images
     train_images = train_images.reshape(-1, 1024)

@@ -45,7 +45,7 @@ def EIC_training_pipeline(
 
     # initialize the model
     rng = jax.random.key(0)
-    model = PseudoFFNet(key = rng)
+    model = PseudoFFNet()
     optimizer = optax.sgd(learning_rate)
     opt_state = optimizer.init(model)
 
@@ -60,8 +60,9 @@ def EIC_training_pipeline(
         print(f"Epoch: {epoch+1}")
 
         # compute accuracy, if epoch = 1 we get the baseline accuracy
-        train_acc = accuracy(params, model, train_inputs, train_labels)
-        val_acc = accuracy(params, model, val_inputs, val_labels)
+        eval_keys = jax.random.split(rng, train_inputs.shape[0])
+        train_acc = accuracy(params, model, train_inputs, train_labels, eval_keys)
+        val_acc = accuracy(params, model, val_inputs, val_labels, eval_keys)
         
         print(f"Train Accuracy: {train_acc*100:.2f}%, Validation Accuracy: {val_acc*100:.2f}%")
         print("_________________________________________________")
@@ -69,9 +70,10 @@ def EIC_training_pipeline(
         # training
         for batch in make_batches(train_inputs, train_labels, batch_size):
             batch_images, batch_labels = batch
+            keys = jax.random.split(rng, batch_images.shape[0])
 
             def loss_fn(params):
-                logits = vmap(lambda img: model.apply(params, img))(batch_images)
+                logits = vmap(lambda img, key: model.apply(params, img, rngs = {"activation": key}))(batch_images, keys)
                 return cross_entropy_loss(logits, batch_labels)
 
             loss, grads = jax.value_and_grad(loss_fn)(params)

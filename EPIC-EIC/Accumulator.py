@@ -66,24 +66,24 @@ class Accumulator(nn.Module):
         return y
 
 # testing...
-def __main__():
-    rng = jax.random.key(42)
-    x = jax.random.normal(rng, (8, 4, 256))
-    acc = Accumulator(
-        in_block_size = x.shape[0],
-        threshold = 0.0,
-        noise_sd = 1.0,
-        activation = custom_binary_gradient
-    )
+# def __main__():
+#     rng = jax.random.key(42)
+#     x = jax.random.normal(rng, (8, 4, 256))
+#     acc = Accumulator(
+#         in_block_size = x.shape[0],
+#         threshold = 0.0,
+#         noise_sd = 1.0,
+#         activation = custom_binary_gradient
+#     )
 
-    params = acc.init(rng, x)
-    print("Initialized accumulator parameters")
-    print("----------------------------------------")
-    print(f"Output shape: {params["params"]["weights"].shape}")
-    y = acc.apply(params, x, rngs = {"activation": rng})
-    print("----------------------------------------")
-    print(f"Accumulator output {y}, \n Output shape: {y.shape}")
+#     params = acc.init(rng, x)
+#     print("Initialized accumulator parameters")
+#     print("----------------------------------------")
+#     print(f"Output shape: {params["params"]["weights"].shape}")
+#     y = acc.apply(params, x, rngs = {"activation": rng})
+#     print("----------------------------------------")
+#     print(f"Accumulator output {y}, \n Output shape: {y.shape}")
 
 
-if __name__ == "__main__":
-    __main__()
+# if __name__ == "__main__":
+#     __main__()

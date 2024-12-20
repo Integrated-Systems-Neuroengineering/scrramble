@@ -80,7 +80,7 @@ class EICDense(nn.Module):
         x_reshaped = x.reshape(self.in_blocks, 256) # organize x into blocks of 256
 
         # make sure that the weights are positive
-        W_pos= jax.nn.relu(self.W)
+        W_pos= self.W #jax.nn.relu(self.W)
 
         y = jnp.einsum("ijkl,jl->ijk", W_pos, x_reshaped)
 
@@ -93,32 +93,32 @@ class EICDense(nn.Module):
     
     
 # testing...
-def __main__():
-    rng = jax.random.key(0)
-    key, subkey = jax.random.split(rng)
-    x = jax.random.normal(key, (1024,))
-    eic = EICDense(in_size = 1024, out_size = 2048, threshold=0., activation = custom_binary_gradient, noise_sd = 0.1)
-    params_eic = eic.init(key, x)
-    print("Initialized EICDense parameters")
-    print(f"Params: {params_eic}")
-    print(f"Params shape: {params_eic['params']['weights'].shape}")
-    y = eic.apply(params_eic, x, rngs = {"activation": subkey})
-    print(f"Output: {y}")
-    print(f"Output shape: {y.shape}")
+# def __main__():
+#     rng = jax.random.key(0)
+#     key, subkey = jax.random.split(rng)
+#     x = jax.random.normal(key, (1024,))
+#     eic = EICDense(in_size = 1024, out_size = 2048, threshold=0., activation = custom_binary_gradient, noise_sd = 0.1)
+#     params_eic = eic.init(key, x)
+#     print("Initialized EICDense parameters")
+#     print(f"Params: {params_eic}")
+#     print(f"Params shape: {params_eic['params']['weights'].shape}")
+#     y = eic.apply(params_eic, x, rngs = {"activation": subkey})
+#     print(f"Output: {y}")
+#     print(f"Output shape: {y.shape}")
 
-    print("TRIAL 2")
+#     print("TRIAL 2")
 
-    x = jax.random.normal(key, (1024,))
-    eic = EICDense(in_size = 1024, out_size = 2048, threshold=0., activation = custom_binary_gradient, noise_sd = 0.1)
-    params_eic = eic.init(subkey, x)
-    print("Initialized EICDense parameters")
-    print(f"Params: {params_eic}")
-    print(f"Params shape: {params_eic['params']['weights'].shape}")
-    y2 = eic.apply(params_eic, x, rngs = {"activation": subkey})
-    print(f"Output: {y2}")
-    print(jnp.linalg.norm(y - y2))
-    print(f"Output shape: {y.shape}")
+#     x = jax.random.normal(key, (1024,))
+#     eic = EICDense(in_size = 1024, out_size = 2048, threshold=0., activation = custom_binary_gradient, noise_sd = 0.1)
+#     params_eic = eic.init(subkey, x)
+#     print("Initialized EICDense parameters")
+#     print(f"Params: {params_eic}")
+#     print(f"Params shape: {params_eic['params']['weights'].shape}")
+#     y2 = eic.apply(params_eic, x, rngs = {"activation": subkey})
+#     print(f"Output: {y2}")
+#     print(jnp.linalg.norm(y - y2))
+#     print(f"Output shape: {y.shape}")
 
 
-if __name__ == "__main__":
-    __main__()
+# if __name__ == "__main__":
+#     __main__()
