@@ -51,10 +51,15 @@ class Accumulator(nn.Module):
         """
 
         assert x.shape[0] == self.in_block_size, "Input shape is incorrect"
+        # assert x.shape[1] == self.out_block_size, "Input shape is incorrect"
 
         # ensure positive 
+        W_pos = jax.nn.relu(self.W)
+        x = jnp.einsum("ijk->ik", x)
+        y = jnp.einsum("ijk,ik->ik", W_pos, x) 
 
-        y = jnp.einsum('ijk,imk->ij', self.W, x)
+
+        # y = jnp.einsum('ijk,imk->ij', W_pos, x) #jnp.einsum('imk,ijk->im', W_pos, x) #
         key = self.make_rng("activation")
 
         activation_fn = self.activation if self.activation is not None else self.linear_map

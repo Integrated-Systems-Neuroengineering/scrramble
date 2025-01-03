@@ -13,14 +13,15 @@ from HelperFunctions.binary_mnist_dataloader import *
 class EICNet(nn.Module):
     """
     EICNetwork -> Might supersede PseudoFFNet... in progress
+    1024 - 2048 - 256 - 10
     """
     def setup(self):
-        nsd = 0.5
-        self.fc1 = EICDense(in_size = 1024, out_size = 2048, threshold = 0.0, noise_sd = nsd, activation = custom_binary_gradient)
-        self.ac1 = Accumulator(in_block_size = 2048//256, threshold = 0., noise_sd = nsd, activation = custom_binary_gradient)
-        self.fc2 = EICDense(in_size = 2048, out_size = 10, threshold = 0.0, noise_sd = nsd, activation = custom_binary_gradient)
+        nsd = 1.
+        self.fc1 = EICDense(in_size = 256, out_size = 2048, threshold = 0.0, noise_sd = nsd, activation = custom_binary_gradient) # (8, 4, 256)
+        self.ac1 = Accumulator(in_block_size = 2048//256, threshold = 0., noise_sd = nsd, activation = custom_binary_gradient) # (2048,)
+        self.fc2 = EICDense(in_size = 2048, out_size = 256, threshold = 0.0, noise_sd = nsd, activation = custom_binary_gradient) 
         self.ac2 = Accumulator(in_block_size = 1, threshold = 0., noise_sd = nsd, activation = None)
-        # self.fc3 = EICDense(in_size = 1024, out_size = 10, threshold = 0.0, noise_sd = nsd, activation = custom_binary_gradient)
+        # self.fc3 = EICDense(in_size = 256, out_size = 10, threshold = 0.0, noise_sd = nsd, activation = custom_binary_gradient)
         # self.ac3 = Accumulator(in_block_size = 1, threshold = 0., noise_sd = nsd, activation = None)
         # print(f"Noise SD: {nsd}")
 

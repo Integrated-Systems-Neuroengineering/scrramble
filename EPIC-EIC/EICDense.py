@@ -47,7 +47,7 @@ class EICDense(nn.Module):
         self.num_cores = self.out_blocks * self.in_blocks # number of cores required
         self.W = self.param(
             "weights",
-            lambda key, shape: jnp.abs(nn.initializers.xavier_uniform()(key, shape)),
+            lambda key, shape: nn.initializers.xavier_normal()(key, shape),
             (self.out_blocks, self.in_blocks, 256, 256)
         )
 
@@ -80,12 +80,12 @@ class EICDense(nn.Module):
         x_reshaped = x.reshape(self.in_blocks, 256) # organize x into blocks of 256
 
         # make sure that the weights are positive
-        W_pos= self.W #jax.nn.relu(self.W)
+        W_pos= jax.nn.relu(self.W)
 
         y = jnp.einsum("ijkl,jl->ijk", W_pos, x_reshaped)
 
-        activation_fn = self.activation if self.activation is not None else self.linear_map
-
+        # activation_fn = self.activation if self.activation is not None else self.linear_map
+        activation_fn = self.sigmoid_fn
         key = self.make_rng("activation")
         y = activation_fn(y, threshold = self.threshold, noise_sd = self.noise_sd, key = key)
 

@@ -11,11 +11,11 @@ def binary_activation(x, threshold, noise_sd, key):
     """
     # key, key2 = jax.random.split(key, 2)
 
-    # generate noise
-    noise = jax.random.normal(key, shape = x.shape) * noise_sd
+    # # generate noise
+    # noise = jax.random.normal(key, shape = x.shape) * noise_sd
 
-    # inject noise
-    x = x + noise
+    # # inject noise
+    # x = x + noise
 
     s = jnp.where(
         x < threshold, 0.0, 1.0
