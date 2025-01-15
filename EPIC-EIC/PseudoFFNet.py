@@ -6,7 +6,7 @@ import flax
 import matplotlib.pyplot as plt
 from flax import linen as nn
 from EICDense import *
-from ShuffleBlocks import *
+from ShuffleBlock import *
 from Accumulator import *
 from HelperFunctions.binary_trident_helper_functions import *
 from HelperFunctions.binary_mnist_dataloader import *
@@ -120,29 +120,29 @@ class PseudoFFNet(nn.Module):
 
 
 # testing the network
-def __main__():
-    rng = jax.random.PRNGKey(0)
-    x = jax.random.normal(rng, (1024,))
-    # y = toy_pipeline(x, key)
-    # print(y.shape)
-    # plt.matshow(y.reshape(-1, 256))
-    net1 = PseudoFFNet()
-    params = net1.init(rng, x)
-    y, next_key = net1.apply(params, x, rngs = {"activation": rng})   
-    print(y.shape)
-    print(y[:10])
+# def __main__():
+#     rng = jax.random.PRNGKey(0)
+#     x = jax.random.normal(rng, (1024,))
+#     # y = toy_pipeline(x, key)
+#     # print(y.shape)
+#     # plt.matshow(y.reshape(-1, 256))
+#     net1 = PseudoFFNet()
+#     params = net1.init(rng, x)
+#     y, next_key = net1.apply(params, x, rngs = {"activation": rng})   
+#     print(y.shape)
+#     print(y[:10])
 
-    print("Trial 2")
-    params = net1.init(rng, x)
-    y1, next_key = net1.apply(params, x, rngs = {"activation": next_key})   
-    print(y1.shape)
-    print(y1[:10])
-    print(jnp.linalg.norm(y - y1))
+#     print("Trial 2")
+#     params = net1.init(rng, x)
+#     y1, next_key = net1.apply(params, x, rngs = {"activation": next_key})   
+#     print(y1.shape)
+#     print(y1[:10])
+#     print(jnp.linalg.norm(y - y1))
 
 
 
-if __name__ == "__main__":
-    __main__()
+# if __name__ == "__main__":
+#     __main__()
 
 
 

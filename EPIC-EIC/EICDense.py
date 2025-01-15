@@ -59,11 +59,18 @@ class EICDense(nn.Module):
         """
         return x
 
-    def sigmoid_fn(self, x, threshold = 0.0, noise_sd = 0.1, key = jax.random.key(0)):
+    @staticmethod
+    def sigmoid_fn(x, threshold = 0.0, noise_sd = 0.1, key = jax.random.key(0)):
         """
         Simple sigmoid.
         """
         return jax.nn.sigmoid(x)
+    
+    def relu_fn(self, x, threshold = 0.0, noise_sd = 0.1, key = jax.random.key(0)):
+        """
+        Simple ReLU.
+        """
+        return jax.nn.relu(x)
 
     def __call__(self, x):
         """
@@ -84,8 +91,8 @@ class EICDense(nn.Module):
 
         y = jnp.einsum("ijkl,jl->ijk", W_pos, x_reshaped)
 
-        # activation_fn = self.activation if self.activation is not None else self.linear_map
-        activation_fn = self.sigmoid_fn
+        activation_fn = self.activation if self.activation is not None else self.linear_map
+        # activation_fn = self.relu_fn
         key = self.make_rng("activation")
         y = activation_fn(y, threshold = self.threshold, noise_sd = self.noise_sd, key = key)
 
