@@ -1,0 +1,2048 @@
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(139113.7, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(552.44556, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(710.70056, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(32920.37, dtype=float32), 'kernel': Array(54558.055, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(230110.39, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(508898.1, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(159631.84, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(64., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(8.53125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(54060.945, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(195.60098, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(285.95502, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(18443.85, dtype=float32), 'kernel': Array(32866.316, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(101112.83, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(223770.27, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(66930.4, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(32., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(6.296875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(90233.04, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(343.13553, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(428.8226, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(29227.467, dtype=float32), 'kernel': Array(56894.914, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(149216.66, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(330396.66, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(117688.82, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(160., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(8.125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(69629.36, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(289.96057, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(417.4172, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(28858.238, dtype=float32), 'kernel': Array(51099.203, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(125812.14, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(285362.62, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(99268.31, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(160., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(6.65625, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(94558.21, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(414.10733, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(581.67706, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(29853.771, dtype=float32), 'kernel': Array(52153.027, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(162968.36, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(362444.34, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(137983.11, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(32., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(7.828125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(26681.205, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(102.5049, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(130.48845, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(7550.8022, dtype=float32), 'kernel': Array(13597.85, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(52791.312, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(112778.02, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(40382.84, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(2.2773438, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(89684.24, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(395.06836, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(521.2285, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(22132.791, dtype=float32), 'kernel': Array(39063.242, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(146175.34, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(334737.5, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(133240.58, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(8., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(6.46875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(41879.91, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(174.85979, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(186.38173, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(8673.128, dtype=float32), 'kernel': Array(13848.012, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(75065.68, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(168700.42, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(68861.4, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(4., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(2.6425781, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(58571.77, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(233.74678, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(285.6508, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(14216.491, dtype=float32), 'kernel': Array(25245.87, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(103067.31, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(223105.9, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(92319.74, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(32., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(4.01709, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(60392.734, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(253.11157, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(303.14536, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(9973.412, dtype=float32), 'kernel': Array(21467.73, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(103137.1, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(224067.03, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(98698.4, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(48., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(3.328125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(50428.25, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(208.97815, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(188.52948, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(11760.63, dtype=float32), 'kernel': Array(20423.176, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(85421.05, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(192038.02, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(89631.39, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(16., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(3.34375, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(56768.465, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(240.23183, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(208.82315, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(7086.039, dtype=float32), 'kernel': Array(12004.833, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(96138.13, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(205231.64, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(89492.59, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(48., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(2.546875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(49950.938, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(214.95706, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(169.59383, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(9712.097, dtype=float32), 'kernel': Array(16518.688, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(84665.9, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(188786.58, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(77647.28, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(8., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(3.140625, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(27081.275, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(109.584915, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(89.05185, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(5237.064, dtype=float32), 'kernel': Array(9900.081, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(48141.973, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(104221.7, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(43211.39, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(2., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(1.1933594, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(41125.38, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(179.7952, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(127.03179, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(9621.27, dtype=float32), 'kernel': Array(17733.16, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(71626.43, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(154932.45, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(76415.77, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(8., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(2.3945312, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(32928.508, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(142.32866, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(118.154236, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(11034.1, dtype=float32), 'kernel': Array(19577.295, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(58633.465, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(124211.22, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(59514.414, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(4., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(2.6289062, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(30315.791, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(130.64255, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(83.13931, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(5286.19, dtype=float32), 'kernel': Array(10673.47, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(54984.055, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(116549.95, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(52972.938, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(16., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(1.5820312, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(27958.396, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(113.41778, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(68.42604, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(3733.43, dtype=float32), 'kernel': Array(6440.407, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(48710.21, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(104634.5, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(45890.47, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(4., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(1.3554688, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(35185.297, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(151.32619, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(83.749214, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(6807.4937, dtype=float32), 'kernel': Array(12099.262, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(64026.05, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(135808.3, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(64390.887, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(1.8203125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(18180.979, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(73.87616, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(49.115124, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(1054.8516, dtype=float32), 'kernel': Array(3129.0737, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(36002.08, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(76550.38, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(32398.422, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(4., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.81640625, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(11703.675, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(49.19251, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(20.376793, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(1121.9766, dtype=float32), 'kernel': Array(2824.919, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(22882.557, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(47954.66, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(19981.027, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(4., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.546875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(27728.297, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(118.55639, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(49.10828, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(2258.0588, dtype=float32), 'kernel': Array(3544.7559, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(51580.81, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(111159.91, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(51592.324, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(2., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.6582031, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(13757.524, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(54.641884, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(13.8281355, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(4.4609566, dtype=float32), 'kernel': Array(1796.8772, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(24556.752, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(50790.46, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(26436.17, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.5, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.41796875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(13189.248, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(55.97211, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(20.053894, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(632.7786, dtype=float32), 'kernel': Array(1906.603, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(26645.123, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(54794.93, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(25526.25, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(1., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.2244873, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(13586.203, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(53.923187, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(15.372933, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(316.30026, dtype=float32), 'kernel': Array(1254.4276, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(24824.627, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(51282.062, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(19307.89, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(5., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.30078125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(14745.749, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(60.285084, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(8.8960905, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(794.7838, dtype=float32), 'kernel': Array(1436.8231, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(25995.092, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(54962.99, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(23710.094, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(5., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.26171875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(6593.537, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(26.764524, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(2.3690915, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(854.68335, dtype=float32), 'kernel': Array(1932.6738, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(12456.588, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(26559.986, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(12522.034, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(3., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.04296875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(13205.725, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(60.02356, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(12.876734, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(590.7086, dtype=float32), 'kernel': Array(1861.9976, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(27184.645, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(57080.195, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(25966.723, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.5, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.23828125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(4434.7207, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(19.678389, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(3.472235, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(223.64246, dtype=float32), 'kernel': Array(678.72186, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(8628.279, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(17622.14, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(9530.807, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.375, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.05371094, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(4642.697, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(19.856134, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(2.4602072, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(530.8751, dtype=float32), 'kernel': Array(792.48206, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(9577.4375, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(19733.104, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(8911.677, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.25, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.0546875, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(5559.2637, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(24.812271, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(7.5445485, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(390.0108, dtype=float32), 'kernel': Array(1240.0836, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(10740.315, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(22359.014, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(12101.822, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(2.5, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.12207031, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(7853.6377, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(34.653507, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(3.0348423, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(125.97935, dtype=float32), 'kernel': Array(557.30225, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(13735.984, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(31362.871, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(17290.033, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(3., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.05273438, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(2662.6577, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(12.292815, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.37674153, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(30.398216, dtype=float32), 'kernel': Array(220.38928, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(5883.4478, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(12013.627, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(6465.6045, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(2., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.00683594, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(6304.159, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(33.87017, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(1.8001721, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(151.03894, dtype=float32), 'kernel': Array(560.47876, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(14285.485, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(30253.488, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(13613.454, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(5., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.05078125, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(1862.7219, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(8.415155, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.00083068, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(51.680233, dtype=float32), 'kernel': Array(73.24175, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(4199.2144, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(8269.964, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(3843.198, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(1., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.0012207, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(1596.063, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(8.561057, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.1025933, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(12.051795, dtype=float32), 'kernel': Array(198.65623, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(3548.1135, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(7971.8623, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(4724.7124, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.75, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.00170898, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(2483.1626, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(10.856895, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.2840133, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(35.20774, dtype=float32), 'kernel': Array(163.41264, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(5257.9526, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(10369.607, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(5100.8496, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.25, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.00341797, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(1665.7604, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(9.391001, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(3.1287396, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(116.824646, dtype=float32), 'kernel': Array(201.1907, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(3904.9395, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(8604.614, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(3631.0686, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.125, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.04882812, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(1.4156014, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0.00624691, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(7.2152307e-06, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0.02769154, dtype=float32), 'kernel': Array(0.36159572, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(2.5806286, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(5.8906074, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(2.824409, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(6.1035156e-05, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(4146.807, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(20.115065, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(4.228621, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(206.8079, dtype=float32), 'kernel': Array(519.92334, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(8131.6943, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(17701.598, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(9507.785, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.375, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.06835938, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(1759.9133, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(10.013394, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.450954, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(751.9895, dtype=float32), 'kernel': Array(1928.2299, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(5022.9106, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(10703.226, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(4172.421, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.0390625, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.00878906, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(1997.4176, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(9.753151, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.25499657, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(499.1842, dtype=float32), 'kernel': Array(553.5193, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(5104.6245, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(10024.297, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(5178.249, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.00048828, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(529.53217, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(2.6095185, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.8541085, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(56.706757, dtype=float32), 'kernel': Array(271.6925, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(1422.0526, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(2989.379, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(1042.2528, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.046875, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.01306152, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(1306.6067, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(7.1742244, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.21060814, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(159.72894, dtype=float32), 'kernel': Array(420.50546, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(3506.2805, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(7281.1396, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(3274.696, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.125, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.00170898, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(413.82693, dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(1.811349, dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0.00083167, dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(25.929949, dtype=float32), 'kernel': Array(77.21555, dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(775.6274, dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(1680.3932, dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(829.6164, dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0.01171875, dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0.00036621, dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer ac3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer conv1, Gradient Norms: {'bias': Array(0., dtype=float32), 'kernel': Array(0., dtype=float32)}
+Layer fc1, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc2, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer fc3, Gradient Norms: {'weights': Array(0., dtype=float32)}
+Layer p2, Gradient Norms: {'tau': Array(0., dtype=float32)}
+Layer p3, Gradient Norms: {'tau': Array(0., dtype=float32)}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer conv1, Gradient Norms: {'bias': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>, 'kernel': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p2, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p3, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer conv1, Gradient Norms: {'bias': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>, 'kernel': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p2, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p3, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer conv1, Gradient Norms: {'bias': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>, 'kernel': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p2, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p3, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer conv1, Gradient Norms: {'bias': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>, 'kernel': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p2, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p3, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer conv1, Gradient Norms: {'bias': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>, 'kernel': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p1, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p2, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p3, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+
+Gradient Norms per Layer:
+Layer ac1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer ac3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer conv1, Gradient Norms: {'bias': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>, 'kernel': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc1, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc2, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer fc3, Gradient Norms: {'weights': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p1, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p2, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+Layer p3, Gradient Norms: {'tau': Traced<ShapedArray(float32[])>with<DynamicJaxprTrace(level=1/0)>}
+

@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from jax import vmap, jit
 
-
+# print("Modified custom grad to STE")
 
 ## define binary thresholding function: states [-1, 1]
 def binary_activation(x, threshold, noise_sd, key):
@@ -11,11 +11,11 @@ def binary_activation(x, threshold, noise_sd, key):
     """
     # key, key2 = jax.random.split(key, 2)
 
-    # # generate noise
-    # noise = jax.random.normal(key, shape = x.shape) * noise_sd
+    # generate noise
+    noise = jax.random.normal(key, shape = x.shape) * noise_sd
 
-    # # inject noise
-    # x = x + noise
+    # inject noise
+    x = x + noise
 
     s = jnp.where(
         x < threshold, 0.0, 1.0
@@ -46,7 +46,8 @@ def custom_binary_gradient_fwd(x, threshold, noise_sd, key):
 
 def custom_binary_gradient_bwd(residuals, gradients):
     x, threshold, noise_sd = residuals
-    grad = gaussian_pdf(x = x - threshold, mu = 0, sigma = noise_sd)
+    key, subkey = jax.random.split(jax.random.key(0))
+    grad = binary_activation(x=x, threshold=threshold, noise_sd=noise_sd, key=subkey) #gaussian_pdf(x = x - threshold, mu = 0, sigma = noise_sd*10)
     return (grad*gradients, None, None, None)
 
 custom_binary_gradient.defvjp(custom_binary_gradient_fwd, custom_binary_gradient_bwd)
