@@ -6,9 +6,6 @@ import tensorflow_datasets as tfds
 
 DATA_PATH = f"/Users/vikrantjaltare/OneDrive - UC San Diego/Datasets/"
 
-## testing the load mnist function
-DATA_PATH = f"/Users/vikrantjaltare/OneDrive - UC San Diego/Datasets/"
-
 def load_and_process_mnist(data_path, binarize):
     """
     Pipeline to load, binarize, resize and batch MNIST dataset.

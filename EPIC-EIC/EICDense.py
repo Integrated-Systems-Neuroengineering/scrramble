@@ -1,17 +1,10 @@
-# defining the EICDense module
 import jax
 import jax.numpy as jnp
-import optax
 import flax
-from flax import linen as nn
-from functools import partial
-import tensorflow as tf
-import tensorflow_datasets as tfds
-from collections import defaultdict
-from HelperFunctions.binary_trident_helper_functions import *
+from flax import nnx
+from flax.nnx.nn import initializers
 
-
-class EICDense(nn.Module):
+class EICDense(nnx.Module):
     """
     Pseudo-dense layer using EIC Cores.
     Args:
@@ -25,23 +18,20 @@ class EICDense(nn.Module):
     x: jnp.ndarray, output of the layer
     """
 
-    in_size: int
-    out_size: int
+    def __init__(self, in_size, out_size, key):
+        self.in_size = in_size
+        self.out_size = out_size
 
-    def setup(self):
-        """
-        Set up dependent parameters
-        """
-        self.out_blocks = max(self.out_size//256, 1) # number of blocks required at the output 
-        self.in_blocks = max(self.in_size//256, 1) # number of bloacks required at the input
+        # initialize the number of cores required
+        self.in_blocks = in_size // 256
+        self.out_blocks = out_size // 256
+        self.num_cores = self.in_blocks * self.out_blocks
 
-
-        self.num_cores = self.out_blocks * self.in_blocks # number of cores required
-        self.W = self.param(
-            "weights",
-            lambda key, shape: nn.initializers.xavier_normal()(key, shape),
-            (self.out_blocks, self.in_blocks, 256, 256)
-        )
+        # initialize the core weights
+        # weights reshaped as (out_blocks, in_blocks, 256, 256)y
+        # assumes that input is shaped as (batch_size, in_blocks, 256)
+        glorot_initializer = initializers.glorot_normal()
+        self.cores = nnx.Param(glorot_initializer(key, (self.out_blocks, self.in_blocks, 256, 256)))
 
 
     def __call__(self, x):
@@ -59,12 +49,19 @@ class EICDense(nn.Module):
         x_reshaped = x.reshape(x.shape[0], self.in_blocks, 256) # organize x into blocks of 256 for every batch
 
         # make sure that the weights are positive
-        W_pos= jax.nn.softplus(self.W)
+        self.cores = jax.nn.softplus(self.cores)
+
+        y = jnp.einsum("ijkl,bjl->bijk", self.cores, x_reshaped)
 
         # quantize weights
         # W_pos = quantize_params(W_pos, bits = 8)
 
-        y = jnp.einsum("ijkl,bjl->bijk", W_pos, x_reshaped)
-
-
         return y
+    
+# # test
+# key = jax.random.key(123124)
+# ed = EICDense(in_size = 1024, out_size = 2048, key = key)
+# x = jax.random.normal(key, (10, 1024))*0.01
+# y = ed(x)
+# print(y.shape)
+# print(ed.cores.shape)

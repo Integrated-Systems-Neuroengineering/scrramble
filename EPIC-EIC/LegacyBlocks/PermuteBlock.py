@@ -1,30 +1,39 @@
-# define the accumulator module
 import jax
 import jax.numpy as jnp
+import optax
 import flax
-from flax import nnx
-from flax.nnx.nn import initializers
+import matplotlib.pyplot as plt
+from flax import linen as nn
+from EICDense import *
+from ShuffleBlock import *
+from Accumulator import *
+from ShuffleBlock import *
+from HelperFunctions.binary_trident_helper_functions import *
+from HelperFunctions.binary_mnist_dataloader import *
 
-
-class PermuteBlock(nnx.Module):
+class PermuteBlock(nn.Module):
     """
     Contains two fixed permutation matrices (pos and neg) to shuffle the input block-wise.
-    This block should be used at the beginning of the pipeline so that balanced inputs are fed into the EICDense/
     """
 
-    def __init__(self, 
-                 input_size: int
-                 ):
-        
-        # define permutation axes
-        self.input_size = input_size
-        self.permute_block_size = 16
-        self.core_input_size = 256
-        self.num_slots = self.core_input_size // self.permute_block_size # should be 16 in the latest iteration
-        self.num_subvectors = self.input_size // self.core_input_size # for input_size = 1024, should be 4
+    input_size: int
+    permute_block_size: int = 16 # previously 64
+    core_input_size: int = 256
 
-        # initialize the temperature parameter
-        self.tau = nnx.Param(1.0)
+    def setup(self):
+        """
+        Set up permutation matrices
+        """
+
+
+        self.num_slots = self.core_input_size // self.permute_block_size # should be 16 in the latest iteration
+        self.num_subvectors = self.input_size // self.core_input_size # for input_size = 1024, should be 256
+
+        self.tau = self.param(
+            'tau',
+            nn.initializers.constant(10),
+            ()
+        ) # temperature paramter
 
         # generate two independent permutation sequences
         key = jax.random.key(1245)
@@ -42,6 +51,7 @@ class PermuteBlock(nnx.Module):
         self.Pneg = m2[p2]
         self.Pneg = jax.nn.softmax(self.Pneg, axis = -1)
 
+    
     def __call__(self, x):
         """
         Apply permutations and return (xpos - xneg)
@@ -64,12 +74,3 @@ class PermuteBlock(nnx.Module):
         xout = xout.reshape((x.shape[0], self.input_size))
 
         return xout
-    
-# test
-# per = PermuteBlock(input_size = 2048)
-# y_per = per(y_acc)
-# plt.imshow(y_per.reshape(-1, 256))
-# print(y_per.shape)
-# # print(per.acc_cores.shape)
-# # print(jax.tree.map(jnp.shape, nnx.state(per, nnx.Param)))
-# nnx.display(per)
