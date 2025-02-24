@@ -47,7 +47,7 @@ def custom_binary_gradient_fwd(x, threshold, noise_sd, key):
 def custom_binary_gradient_bwd(residuals, gradients):
     x, threshold, noise_sd = residuals
     key, subkey = jax.random.split(jax.random.key(0))
-    grad = gaussian_pdf(x = x - threshold, mu = 0, sigma = noise_sd*10)
+    grad = jnp.where(jnp.abs(x) <= 1.0, 1.0, 0.0) #gaussian_pdf(x = x - threshold, mu = 0, sigma = noise_sd*10)
     return (grad*gradients, None, None, None)
 
 custom_binary_gradient.defvjp(custom_binary_gradient_fwd, custom_binary_gradient_bwd)

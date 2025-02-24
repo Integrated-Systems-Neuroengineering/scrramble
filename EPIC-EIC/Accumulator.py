@@ -41,7 +41,7 @@ class Accumulator(nnx.Module):
         # assert x.shape[1] == self.out_block_size, "Input shape is incorrect"
 
         # ensure positive 
-        self.acc_cores = jax.nn.softplus(self.acc_cores)
+        # self.acc_cores = jax.nn.softplus(self.acc_cores)
         # W_pos = quantize_params(W_pos, bits = 8)
         
         x = jnp.einsum("bijk->bik", x)
