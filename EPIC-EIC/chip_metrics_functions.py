@@ -20,7 +20,7 @@ def get_num_cores(params):
     return size_metrics
 
 metric_params = {
-    'layers': [1024, 2048, 512, 256], # include layer sizes
+    'layers': [256, 4096, 2048, 256], # include layer sizes
 }
 
 print(get_num_cores(metric_params))
