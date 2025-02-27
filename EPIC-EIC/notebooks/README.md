@@ -7,5 +7,6 @@
 
 ## Contents
 ---
-1. Basic conv net capturing EIC chip architecture
+1. Basic conv net capturing EIC chip architecture 
+   1. Insert an Open in Colab link here
 2. 
