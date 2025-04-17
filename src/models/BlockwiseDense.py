@@ -4,7 +4,7 @@ import jax.numpy as jnp
 import flax
 from flax import nnx
 from flax.nnx.nn import initializers
-
+from utils import rram_quantize
 
 class BlockwiseDense(nnx.Module):
     """
@@ -22,7 +22,7 @@ class BlockwiseDense(nnx.Module):
 
     def __init__(self, in_size: int, 
                 out_size: int,
-                rngs: nnx.Rng,
+                rngs: nnx.Rngs,
                 num_rows: int = 256,
                 num_cols: int = 256):
 
@@ -69,8 +69,7 @@ class BlockwiseDense(nnx.Module):
 
         y = jnp.einsum("ijkl,bjl->bijk", cores, x_reshaped)
 
-        # quantize weights
-        # W_pos = quantize_params(W_pos, bits = 8)
+        # TODO: quantize weights 
 
         return y
     

@@ -29,7 +29,7 @@ class PermuteWeightSharing(nnx.Module):
         # self.num_subvectors = self.input_size // self.core_input_size # for input_size = 1024, should be 4
 
         # initialize the temperature parameter
-        self.tau = nnx.Param(1.0)
+        # self.tau = nnx.Param(1.0) TODO: uncomment this if the old approach is better.
 
         # generate two independent permutation sequences
         # key = jax.random.key(1245)
@@ -42,25 +42,25 @@ class PermuteWeightSharing(nnx.Module):
         m2 = jnp.eye(self.num_slots)*self.tau
 
         # generate the permutation matrices
-        self.Ppos = m1[p1]
-        self.Ppos = nnx.Variable(jax.nn.softmax(self.Ppos, axis = -1))
-        self.Pneg = m2[p2]
-        self.Pneg = nnx.Variable(jax.nn.softmax(self.Pneg, axis = -1))
+        self.Ppos = nnx.Variable(m1[p1])
+        # self.Ppos = nnx.Variable(jax.nn.softmax(self.Ppos, axis = -1))
+        self.Pneg = nnx.Variable(m2[p2])
+        # self.Pneg = nnx.Variable(jax.nn.softmax(self.Pneg, axis = -1))
 
-    def __call__(self, x: jax.Array) -> jax.Array:
+    def __call__(self, x):
         """
         Applies permutation to input tensor.
         Args:
-        x: jnp.ndarray, shape = (out_blocks, in_blocks, 256) e.g. (8, 4, 256) for 1-24 - > 2048
+        x: jnp.ndarray, shape = (batch_size, out_blocks, in_blocks, 256) e.g. (8, 4, 256) for 1-24 - > 2048
 
         Returns:
-        y: jnp.ndarray, shape = (out_blocks, in_blocks, 256) e.g. (8, 4, 256) for 1-24 - > 2048
+        y: jnp.ndarray, shape = (batch_size, out_blocks, in_blocks, 256) e.g. (8, 4, 256) for 1-24 - > 2048
         """
 
         assert x.shape[-1] == self.core_input_size, f"Input shape is incorrect. Got {x.shape[-1]}, expected {self.core_input_size}"
         # assert self.num_subvectors * self.num_slots * self.permute_block_size == self.input_size, f"Inconsistent metrics!"
 
-        x = x.reshape(x.shape[0], x.shape[1], self.num_slots, -1) # removed batch dimension
+        x = x.reshape(x.shape[0], x.shape[1], x.shape[2], self.num_slots, -1)
 
 
         xpos = jnp.einsum("ij, ...jk -> ...ik", self.Ppos.value, x)
@@ -68,6 +68,6 @@ class PermuteWeightSharing(nnx.Module):
 
         xout = xpos - xneg
 
-        xout = xout.reshape(x.shape[0], x.shape[1], -1) # removed batch dimension
+        xout = xout.reshape(x.shape[0], x.shape[1], x.shape[2], -1)
 
         return xout

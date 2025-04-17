@@ -1,11 +1,10 @@
 # define the accumulator module
 import jax
+import math
 import jax.numpy as jnp
 import flax
 from flax import nnx
 from flax.nnx.nn import initializers
-
-from accelerator.quantized_layers import fake_quantize
 
 
 class WeightSharingAccumulator(nnx.Module):
@@ -26,7 +25,7 @@ class WeightSharingAccumulator(nnx.Module):
         self.out_size = out_size
 
         # this should be the same as the number of output blocks from the EICDense
-        self.out_block = max(out_size // 256, 1)  # number of blocks required at the output 
+        self.out_block = math.ceil(out_size/256) #max(out_size // 256, 1)  # number of blocks required at the output 
 
         # set up the params
         glorot_initializer = initializers.glorot_normal()
@@ -44,23 +43,17 @@ class WeightSharingAccumulator(nnx.Module):
         x: jnp.ndarray, output of the accumulator
         """
 
-        assert x.shape[0] == self.out_block, f"Input shape is incorrect. Got {x.shape[0]}, expected {self.out_block}" # removed batch dimension
+        assert x.shape[1] == self.out_block, f"Input shape is incorrect. Got {x.shape[1]}, expected {self.out_block}"
         # assert x.shape[1] == self.out_block_size, "Input shape is incorrect"
 
 
         # ensure positive 
         acc_cores = jax.nn.softplus(self.acc_cores.value)
-        # acc_cores = fake_quantize(acc_cores, num_bits = 8)
-        # W_pos = quantize_params(W_pos, bits = 8)
 
-        # x = jnp.einsum("bijk->bik", x)
-        y = jnp.einsum('ojk,oik->oj', acc_cores, x) # removed batch dimension
-        # y = jnp.einsum("ijk,bik->bik", self.acc_cores, x)
-        
-        # y = jnp.einsum("orc,boic->bor", acc_cores, x) 
+        y = jnp.einsum('ojk,boik->boj', acc_cores, x)
 
         # flatten y before returning
-        y = y.flatten() # removed batch dimension
+        y = y.reshape((y.shape[0], -1)) # (batch_size, out_size)
 
         return y
 
