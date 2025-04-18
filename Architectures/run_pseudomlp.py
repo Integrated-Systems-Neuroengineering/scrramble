@@ -25,7 +25,7 @@ import seaborn as sns
 DATA_PATH = f"/local_disk/vikrant/datasets/"
 
 # import the model
-layers = [1024, 2048, 1024, 256] # 19 cores setup [1024, 512, 512, 256], 61 cores setup: [1024, 2048, 512, 256]
+layers = [1024, 4096, 256] # 19 cores setup [1024, 512, 512, 256], 61 cores setup: [1024, 2048, 512, 256]
 rngs = nnx.Rngs(params=134, activation=67565)
 model = PseudoMLP(
     layers=layers,
@@ -33,7 +33,7 @@ model = PseudoMLP(
     dense_activation_fn=clipping_ste,
     accumulator_activation_fn=clipping_ste,
     threshold=0.0,
-    noise_sd=0.01
+    noise_sd=0.05
 )
 
 print(f"No. of cores: {model.get_num_cores()}")
@@ -82,7 +82,7 @@ print("Data loaded successfully!")
 # ----------------------------------------
 # Define the optimizer and loss function
 # ----------------------------------------
-learning_rate = 0.005
+learning_rate = 9e-4
 momentum = 0.9
 
 optimizer = nnx.Optimizer(model, optax.adamw(learning_rate, momentum))

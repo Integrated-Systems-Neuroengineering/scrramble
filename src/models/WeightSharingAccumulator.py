@@ -19,13 +19,15 @@ class WeightSharingAccumulator(nnx.Module):
     """
 
     def __init__(self, out_size: int,
-                 rngs: nnx.Rngs):
+                 rngs: nnx.Rngs,
+                 num_rows: int = 256):
 
         self.rngs = rngs
         self.out_size = out_size
+        self.num_rows = num_rows
 
         # this should be the same as the number of output blocks from the EICDense
-        self.out_block = math.ceil(out_size/256) #max(out_size // 256, 1)  # number of blocks required at the output 
+        self.out_block = math.ceil(out_size/self.num_rows) #max(out_size // 256, 1)  # number of blocks required at the output 
 
         # set up the params
         glorot_initializer = initializers.glorot_normal()
