@@ -4,7 +4,7 @@ from .BlockwiseDense import BlockwiseDense
 from .WeightSharingAccumulator import WeightSharingAccumulator
 from .PermuteWeightSharing import PermuteWeightSharing
 from .PermuteBlockwiseDense import PermuteBlockwiseDense
+from .MLPLayer import MLPLayer
 
 
-
-__all__  = ["TestConvNet", "BlockwiseDense", "WeightSharing", "PermuteWeightSharing", "PermuteBlockwiseDense"]
+__all__  = ["TestConvNet", "BlockwiseDense", "WeightSharingAccumulator", "PermuteWeightSharing", "PermuteBlockwiseDense", "MLPLayer"]

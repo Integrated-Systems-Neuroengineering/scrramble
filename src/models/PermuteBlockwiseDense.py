@@ -36,8 +36,8 @@ class PermuteBlockwiseDense(nnx.Module):
         p2 = jax.random.permutation(self.rngs.params(), self.num_slots) # jnp.roll(p1, shift = 1) #
 
         # generate permutation matrices
-        m1 = jnp.eye(self.num_slots)*self.tau
-        m2 = jnp.eye(self.num_slots)*self.tau
+        m1 = jnp.eye(self.num_slots)#*self.tau
+        m2 = jnp.eye(self.num_slots)#*self.tau
 
         # generate the permutation matrices: TODO: remove the softmax if possible
         self.Ppos = nnx.Variable(m1[p1]) # Trying this approach

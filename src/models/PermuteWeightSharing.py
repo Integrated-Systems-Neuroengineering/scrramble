@@ -16,15 +16,17 @@ class PermuteWeightSharing(nnx.Module):
     def __init__(self, 
                 #  input_size: int,
                  rngs: nnx.Rngs,
+                 num_slots: int = 16,
+                 core_input_size: int = 256
                  ):
         
         # self.input_size = input_size
         self.rngs = rngs
-        self.num_slots = 16
+        self.num_slots = num_slots
 
         # define permutation axes
         # self.permute_block_size = 16
-        self.core_input_size = 256
+        self.core_input_size = core_input_size
         # self.num_slots = self.core_input_size // self.permute_block_size # should be 16 in the latest iteration
         # self.num_subvectors = self.input_size // self.core_input_size # for input_size = 1024, should be 4
 
@@ -38,8 +40,8 @@ class PermuteWeightSharing(nnx.Module):
         p2 = jax.random.permutation(self.rngs.params(), self.num_slots)
 
         # generate permutation matrices
-        m1 = jnp.eye(self.num_slots)*self.tau
-        m2 = jnp.eye(self.num_slots)*self.tau
+        m1 = jnp.eye(self.num_slots)#*self.tau
+        m2 = jnp.eye(self.num_slots)#*self.tau
 
         # generate the permutation matrices
         self.Ppos = nnx.Variable(m1[p1])

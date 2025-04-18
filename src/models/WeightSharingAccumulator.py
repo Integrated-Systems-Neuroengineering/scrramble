@@ -47,8 +47,8 @@ class WeightSharingAccumulator(nnx.Module):
         # assert x.shape[1] == self.out_block_size, "Input shape is incorrect"
 
 
-        # ensure positive 
-        acc_cores = jax.nn.softplus(self.acc_cores.value)
+        # ensure positive: relu and softplus work
+        acc_cores = nnx.relu(self.acc_cores.value)#nnx.softplus(self.acc_cores.value)
 
         y = jnp.einsum('ojk,boik->boj', acc_cores, x)
 

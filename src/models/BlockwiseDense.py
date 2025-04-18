@@ -62,10 +62,8 @@ class BlockwiseDense(nnx.Module):
         # organize x into blocks of 256 for every batch
         x_reshaped = x_padded.reshape(x.shape[0], self.in_blocks, self.num_rows) 
 
-        # make sure that the weights are positive
-        cores = nnx.relu(self.cores.value)
-
-        # add a way to quantize the weights
+        # make sure that the weights are positive: relu and softplus work
+        cores = nnx.relu(self.cores.value)#nnx.softplus(self.cores.value)
 
         y = jnp.einsum("ijkl,bjl->bijk", cores, x_reshaped)
 
