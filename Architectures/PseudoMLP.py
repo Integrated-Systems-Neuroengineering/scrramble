@@ -94,7 +94,7 @@ class PseudoMLP(nnx.Module):
             return sum(cores_per_layer)
 
 
-## testing
+# testing
 def __main__():
     rngs = nnx.Rngs(params=345, activation=67565)
     model = PseudoMLP(

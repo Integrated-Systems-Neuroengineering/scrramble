@@ -25,7 +25,7 @@ import seaborn as sns
 DATA_PATH = f"/local_disk/vikrant/datasets/"
 
 # import the model
-layers = [1024, 4096, 256] # 19 cores setup [1024, 512, 512, 256], 61 cores setup: [1024, 2048, 512, 256]
+layers = [1024, 2048, 1024, 256] # 19 cores setup [1024, 512, 512, 256], 61 cores setup: [1024, 2048, 512, 256]
 rngs = nnx.Rngs(params=134, activation=67565)
 model = PseudoMLP(
     layers=layers,
@@ -33,7 +33,7 @@ model = PseudoMLP(
     dense_activation_fn=clipping_ste,
     accumulator_activation_fn=clipping_ste,
     threshold=0.0,
-    noise_sd=0.05
+    noise_sd=1e-2
 )
 
 print(f"No. of cores: {model.get_num_cores()}")
@@ -43,9 +43,9 @@ print(f"No. of cores: {model.get_num_cores()}")
 # ----------------------------------------
 tf.random.set_seed(0)  # Set the random seed for reproducibility.
 
-train_steps = 5000
-eval_every = 200
-batch_size = 512
+train_steps = 10000
+eval_every = 1000
+batch_size = 256
 train_ds: tf.data.Dataset = tfds.load('mnist', split='train', data_dir=DATA_PATH)
 test_ds: tf.data.Dataset = tfds.load('mnist', split='test', data_dir=DATA_PATH)
 
@@ -82,7 +82,7 @@ print("Data loaded successfully!")
 # ----------------------------------------
 # Define the optimizer and loss function
 # ----------------------------------------
-learning_rate = 9e-4
+learning_rate = 1e-3
 momentum = 0.9
 
 optimizer = nnx.Optimizer(model, optax.adamw(learning_rate, momentum))
@@ -149,7 +149,10 @@ for step, batch in enumerate(train_ds.as_numpy_iterator()):
       metrics_history[f'test_{metric}'].append(value)
     metrics.reset()  # Reset the metrics for the next training epoch.
 
+    print("------------------------")
     print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
+    print(f"Step {step}: Train loss: {metrics_history['train_loss'][-1]}, Accuracy: {metrics_history['train_accuracy'][-1]}")
+    print("------------------------")
 
 best_accuracy = max(metrics_history['test_accuracy'])
 print(f"Best accuracy: {best_accuracy}")
