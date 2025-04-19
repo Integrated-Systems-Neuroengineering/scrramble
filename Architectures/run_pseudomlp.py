@@ -33,7 +33,7 @@ model = PseudoMLP(
     dense_activation_fn=clipping_ste,
     accumulator_activation_fn=clipping_ste,
     threshold=0.0,
-    noise_sd=1e-2
+    noise_sd=1e-1
 )
 
 print(f"No. of cores: {model.get_num_cores()}")
@@ -45,7 +45,7 @@ tf.random.set_seed(0)  # Set the random seed for reproducibility.
 
 train_steps = 10000
 eval_every = 1000
-batch_size = 256
+batch_size = 500
 train_ds: tf.data.Dataset = tfds.load('mnist', split='train', data_dir=DATA_PATH)
 test_ds: tf.data.Dataset = tfds.load('mnist', split='test', data_dir=DATA_PATH)
 
