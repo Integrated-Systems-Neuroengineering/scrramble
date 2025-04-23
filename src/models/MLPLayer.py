@@ -28,7 +28,7 @@ class MLPLayer(nnx.Module):
     threshold: float = 0.0, # threshold for binary activation
     noise_sd: float = 0.05, # standard deviation for noise for binary activation
     quantize: str = 'log', # quantization method
-    bits: int = 8, # bits for quantization
+    quantize_bits: int = 8, # bits for quantization
     g_inf: float = 2.0, # maximum RRAM conductance per device
     g_min: float = 1e-5, # minimum RRAM conductance per device
     tau: float = 0.2 # time constant for RRAM device
@@ -42,7 +42,7 @@ class MLPLayer(nnx.Module):
         self.threshold = threshold
         self.noise_sd = noise_sd
         self.quantize = quantize
-        self.bits = bits
+        self.quantize_bits = quantize_bits
         self.g_inf = g_inf
         self.g_min = g_min
         self.tau = tau
@@ -57,16 +57,21 @@ class MLPLayer(nnx.Module):
             in_size = self.in_size,
             out_size = self.out_size,
             rngs = self.rngs,
-            # quantize = self.quantize,
-            # bits = self.bits,
-            # g_inf = self.g_inf,
-            # g_min = self.g_min,
-            # tau = self.tau
+            quantize = self.quantize,
+            quantize_bits = self.quantize_bits,
+            g_inf = self.g_inf,
+            g_min = self.g_min,
+            tau = self.tau
         )
 
         self.accumulator = WeightSharingAccumulator(
             out_size = self.out_size,
-            rngs = self.rngs
+            rngs = self.rngs,
+            quantize = self.quantize,
+            quantize_bits = self.quantize_bits,
+            g_inf = self.g_inf,
+            g_min = self.g_min,
+            tau = self.tau
         )
 
         self.permute_dense = PermuteBlockwiseDense(

@@ -3,18 +3,22 @@ import tensorflow_datasets as tfds
 
 DATA_PATH = "/local_disk/vikrant/datasets"
 
-def load_mnist(batch_size: int, train_steps: int, binarize: bool = True, greyscale: bool = True, data_dir: str = DATA_PATH, seed: int = 0, threshold: float = 0.5, shuffle_buffer: int = 1024):
+def load_cifar10(batch_size: int, train_steps: int, binarize: bool = True, greyscale: bool = True, data_dir: str = DATA_PATH, seed: int = 0, threshold: float = 0.5, shuffle_buffer: int = 1024):
     """
     Load CIFAR-10 dataset
     """
 
     tf.random.set_seed(seed)
 
-    train_ds, test_ds = tfds.load('mnist', split=['train', 'test'], data_dir=data_dir)
+    train_ds, test_ds = tfds.load('cifar10', split=['train', 'test'], data_dir=data_dir)
 
     # normalize
     def _normalize(sample):
         img = tf.cast(sample['image'], tf.float32) / 255.0
+
+        if greyscale:
+            img = tf.reduce_mean(img, axis=-1, keepdims=True)
+        
         return {'image': img, 'label': sample['label']}
 
     train_ds = train_ds.map(_normalize)
@@ -41,7 +45,7 @@ def __main__():
     batch_size = 128
     train_steps = 5000
     eval_every = 50
-    train_ds, test_ds = load_mnist(batch_size = batch_size, train_steps = train_steps, binarize=True)
+    train_ds, test_ds = load_cifar10(batch_size = batch_size, train_steps = train_steps, binarize=True)
     batch = next(iter(train_ds))
     print(batch['image'].shape)
 

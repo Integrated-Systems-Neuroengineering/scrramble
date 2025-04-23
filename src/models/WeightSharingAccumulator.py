@@ -5,6 +5,7 @@ import jax.numpy as jnp
 import flax
 from flax import nnx
 from flax.nnx.nn import initializers
+from utils import rram_quantize
 
 
 class WeightSharingAccumulator(nnx.Module):
@@ -20,18 +21,32 @@ class WeightSharingAccumulator(nnx.Module):
 
     def __init__(self, out_size: int,
                  rngs: nnx.Rngs,
-                 num_rows: int = 256):
+                 num_rows: int = 256,
+                 num_cols: int = 256,
+                 quantize: str = 'log',
+                 quantize_bits: int = 8,
+                 g_inf: float = 2.0,
+                 g_min: float = 1e-3,
+                 tau: float = 0.75
+                 ):
 
         self.rngs = rngs
         self.out_size = out_size
         self.num_rows = num_rows
+        self.num_cols = num_cols
+
+        self.quantize = quantize
+        self.quantize_bits = quantize_bits
+        self.g_inf = g_inf
+        self.g_min = g_min
+        self.tau = tau
 
         # this should be the same as the number of output blocks from the EICDense
         self.out_block = math.ceil(out_size/self.num_rows) #max(out_size // 256, 1)  # number of blocks required at the output 
 
         # set up the params
         glorot_initializer = initializers.glorot_normal()
-        self.acc_cores = nnx.Param(glorot_initializer(self.rngs.params(), (self.out_block, 256, 256)))
+        self.acc_cores = nnx.Param(glorot_initializer(self.rngs.params(), (self.out_block, self.num_rows, self.num_cols)))
 
 
 
@@ -51,6 +66,11 @@ class WeightSharingAccumulator(nnx.Module):
 
         # ensure positive: relu and softplus work
         acc_cores = nnx.relu(self.acc_cores.value)#nnx.softplus(self.acc_cores.value)
+
+        if self.quantize is not None:
+            acc_cores = acc_cores.reshape(-1,)
+            acc_cores = jax.vmap(rram_quantize, in_axes=(0, None, None, None, None, None))(acc_cores, self.tau, self.g_inf, self.g_min, self.quantize_bits, self.quantize)
+            acc_cores = acc_cores.reshape(self.out_block, self.num_rows, self.num_cols)
 
         y = jnp.einsum('ojk,boik->boj', acc_cores, x)
 
