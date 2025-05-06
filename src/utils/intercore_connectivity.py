@@ -15,6 +15,7 @@ def intercore_connectivity(
     slots_per_core: int,
     avg_slot_connectivity: int,
     key: jax.random.key,
+    balanced: bool = True
     ):
 
     """
@@ -126,7 +127,8 @@ def intercore_connectivity(
         else:
             raise ValueError(f"Connectivity matrix is not balanced. 95th percentile is {perc}")
 
-        # return balance_list
+    if balanced:
+        verify_connectivity(C)
 
     return C
 
@@ -204,5 +206,5 @@ def __main__():
     fig, ax = plot_connectivity_matrix(test_run, title=r"$C_{ijkl}$", figsize=(5, 5), dpi=110)
     plt.show()
 
-if __name__ == "__main__":
-    __main__()
+# if __name__ == "__main__":
+#     __main__()
