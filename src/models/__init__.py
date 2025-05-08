@@ -5,6 +5,6 @@ from .WeightSharingAccumulator import WeightSharingAccumulator
 from .PermuteWeightSharing import PermuteWeightSharing
 from .PermuteBlockwiseDense import PermuteBlockwiseDense
 from .MLPLayer import MLPLayer
+from .ScRRAMBLe import ScRRAMBLeLayer, ScRRAMBLeClassifier
 
-
-__all__  = ["TestConvNet", "BlockwiseDense", "WeightSharingAccumulator", "PermuteWeightSharing", "PermuteBlockwiseDense", "MLPLayer"]
+__all__  = ["TestConvNet", "BlockwiseDense", "WeightSharingAccumulator", "PermuteWeightSharing", "PermuteBlockwiseDense", "MLPLayer", "ScRRAMBLeLayer", "ScRRAMBLeClassifier"]
