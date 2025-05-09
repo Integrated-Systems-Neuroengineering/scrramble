@@ -29,7 +29,9 @@ class ScRRAMBLeLayer(nnx.Module):
         slot_length: int,
         activation: Callable,
         rngs: nnx.Rngs,
-        core_length: int = 256
+        core_length: int = 256,
+        threshold: float = 0.0,
+        noise_sd: float = 0.05
 
 
     ):
@@ -44,7 +46,9 @@ class ScRRAMBLeLayer(nnx.Module):
         self.slot_length = slot_length
         self.activation = activation
         self.rngs = rngs
-        self.activation = partial(self.activation, threshold=0.0, noise_sd=0.05, key=self.rngs.activation())
+        self.threshold = threshold
+        self.noise_sd = noise_sd
+        self.activation = partial(self.activation, threshold=self.threshold, noise_sd=self.noise_sd, key=self.rngs.activation())
 
         # define weights for input cores
         initializer = initializers.glorot_normal()
