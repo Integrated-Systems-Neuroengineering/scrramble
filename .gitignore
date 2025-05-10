@@ -1,0 +1,20 @@
+# gitignore file for ScRRAMBLe/TriDeNT
+
+# directories
+Docs/
+Figures/
+
+# Ignore compiled files
+*.o
+*.pyc
+*.class
+
+
+# Ignore environment files with sensitive information
+.env
+.env.local
+.DS_Store
+
+# Ignore log files
+*.log
+
