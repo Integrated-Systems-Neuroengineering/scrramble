@@ -89,7 +89,7 @@ class ScRRAMBLeMNIST(nnx.Module):
             x: jax.Array, input data. Assumed to be flattened MNIST image. No batch.
             output_coding: str, specifies how the binary output should be interpreted. Choices are: ['population', 'svm', ...]. Only 'population' is implemented so far.
         Returns:
-            out: jax.Array, output of calssifier with population coding applied. (batch_size, group_size)
+            out: jax.Array, output of classifier with population coding applied. (batch_size, group_size)
         """
 
         # reshape the image
@@ -171,7 +171,7 @@ def eval_step(model: ScRRAMBLeMNIST, metrics: nnx.MultiMetric, batch):
 # ------------------------------------------------------------------
 
 # number of resamples
-n_resamples = 100
+n_resamples = 10
 
 # budget of cores
 n_cores = 16
@@ -210,91 +210,99 @@ train_ds, test_ds = load_mnist(
     threshold=dataset_dict['threshold'],
 )
 
+# @nnx.jit()
+def run_weight_sharing_analysis():
+    key1 = jax.random.key(134)
 
-key1 = jax.random.key(134)
+    # architecture loop
+    for idx, a in tqdm(enumerate(in_out_list), total=len(in_out_list), desc="Architecture loop"):
+        no, ni = a
 
-# architecture loop
-for idx, a in tqdm(enumerate(in_out_list), total=len(in_out_list), desc="Architecture loop"):
-    no, ni = a
+        # average connectivity loop
+        for lam in tqdm(avg_conn_list, total=len(avg_conn_list), desc=r"Connectivity loop"):
 
-    # average connectivity loop
-    for lam in tqdm(avg_conn_list, total=len(avg_conn_list), desc=r"Connectivity loop"):
+            # resample loop
+            for r in tqdm(range(n_resamples), desc="Resampling loop"):
+                key1, key2, key3 = jax.random.split(key1, 3)
+                rng = nnx.Rngs(params=key1, activation=key2, permute=key3)
 
-        # resample loop
-        for r in tqdm(range(n_resamples), desc="Resampling loop"):
-            key1, key2, key3 = jax.random.split(key1, 3)
-            rng = nnx.Rngs(params=key1, activation=key2, permute=key3)
+                # define the model and optimizer
+                model = ScRRAMBLeMNIST(
+                    input_vector_size=32*32,
+                    input_cores=ni,
+                    output_cores=no,
+                    avg_slot_connectivity=lam,
+                    slots_per_core=4,
+                    slot_length=64,
+                    activation=clipping_ste,
+                    rngs=rng,
+                    group_size=10,
+                    core_length=256,
+                    threshold=0.0,
+                    noise_sd=0.05
+                )
 
-            # define the model and optimizer
-            model = ScRRAMBLeMNIST(
-                input_vector_size=32*32,
-                input_cores=ni,
-                output_cores=no,
-                avg_slot_connectivity=lam,
-                slots_per_core=4,
-                slot_length=64,
-                activation=clipping_ste,
-                rngs=rng,
-                group_size=10,
-                core_length=256,
-                threshold=0.0,
-                noise_sd=0.05
-            )
+                optimizer = nnx.Optimizer(model, optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']))
+                metrics = nnx.MultiMetric(accuracy=nnx.metrics.Accuracy(), loss=nnx.metrics.Average('loss'))
 
-            optimizer = nnx.Optimizer(model, optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']))
-            metrics = nnx.MultiMetric(accuracy=nnx.metrics.Accuracy(), loss=nnx.metrics.Average('loss'))
+                # training loop
+                metrics_history = {
+                'train_loss': [],
+                'train_accuracy': [],
+                'test_loss': [],
+                'test_accuracy': [],
+                }
 
-            # training loop
-            metrics_history = {
-            'train_loss': [],
-            'train_accuracy': [],
-            'test_loss': [],
-            'test_accuracy': [],
-            }
+                eval_every = dataset_dict['eval_every']
+                train_steps = dataset_dict['train_steps']
 
-            eval_every = dataset_dict['eval_every']
-            train_steps = dataset_dict['train_steps']
+                for step, batch in tqdm(enumerate(train_ds.as_numpy_iterator()), total=len(train_ds), desc="Training loop"):
+                    # Run the optimization for one step and make a stateful update to the following:
+                    # - The train state's model parameters
+                    # - The optimizer state
+                    # - The training loss and accuracy batch metrics
 
-            for step, batch in tqdm(enumerate(train_ds.as_numpy_iterator()), total=len(train_ds), desc="Training loop"):
-                # Run the optimization for one step and make a stateful update to the following:
-                # - The train state's model parameters
-                # - The optimizer state
-                # - The training loss and accuracy batch metrics
+                    train_step(model, optimizer, metrics, batch)
 
-                train_step(model, optimizer, metrics, batch)
+                    if step > 0 and (step % eval_every == 0 or step == train_steps - 1):  # One training epoch has passed.
+                        # Log the training metrics.
+                        for metric, value in metrics.compute().items():  # Compute the metrics.
+                            metrics_history[f'train_{metric}'].append(value)  # Record the metrics.
+                        metrics.reset()  # Reset the metrics for the test set.
 
-                if step > 0 and (step % eval_every == 0 or step == train_steps - 1):  # One training epoch has passed.
-                    # Log the training metrics.
-                    for metric, value in metrics.compute().items():  # Compute the metrics.
-                        metrics_history[f'train_{metric}'].append(value)  # Record the metrics.
-                    metrics.reset()  # Reset the metrics for the test set.
+                        # Compute the metrics on the test set after each training epoch.
+                        for test_batch in test_ds.as_numpy_iterator():
+                            eval_step(model, metrics, test_batch)
 
-                    # Compute the metrics on the test set after each training epoch.
-                    for test_batch in test_ds.as_numpy_iterator():
-                        eval_step(model, metrics, test_batch)
+                        # Log the test metrics.
+                        for metric, value in metrics.compute().items():
+                            metrics_history[f'test_{metric}'].append(value)
+                        metrics.reset()  # Reset the metrics for the next training epoch.
 
-                    # Log the test metrics.
-                    for metric, value in metrics.compute().items():
-                        metrics_history[f'test_{metric}'].append(value)
-                    metrics.reset()  # Reset the metrics for the next training epoch.
+                        # print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
 
-                    # print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
+                # get the best metrics 
+                best_test_accuracy = max(metrics_history['test_accuracy'])
+                best_train_accuracy = max(metrics_history['train_accuracy'])
+                best_test_loss = min(metrics_history['test_loss'])
+                best_train_loss = min(metrics_history['train_loss'])
+                arch_dict['arch'].append(int(idx))
+                arch_dict['test_accuracy'].append(float(best_test_accuracy))
+                arch_dict['train_accuracy'].append(float(best_train_accuracy))
+                arch_dict['test_loss'].append(float(best_test_loss))
+                arch_dict['train_loss'].append(float(best_train_loss))
+                arch_dict['avg_slot_connectivity'].append(int(lam))
+                print(f"Architecture: {in_out_list[idx]}, Avg. connectivity = {lam}, Test accuracy: {best_test_accuracy}, Train accuracy: {best_train_accuracy}")
 
-            # get the best metrics 
-            best_test_accuracy = max(metrics_history['test_accuracy'])
-            best_train_accuracy = max(metrics_history['train_accuracy'])
-            best_test_loss = min(metrics_history['test_loss'])
-            best_train_loss = min(metrics_history['train_loss'])
-            arch_dict['arch'].append(idx)
-            arch_dict['test_accuracy'].append(best_test_accuracy)
-            arch_dict['train_accuracy'].append(best_train_accuracy)
-            arch_dict['test_loss'].append(best_test_loss)
-            arch_dict['train_loss'].append(best_train_loss)
-            arch_dict['avg_slot_connectivity'].append(lam)
-            print(f"Architecture: {in_out_list[idx]}, Avg. connectivity = {lam}, Test accuracy: {best_test_accuracy}, Train accuracy: {best_train_accuracy}")
+    # save the architecture dict
+    today = date.today().isoformat()
+    logs_path = "/local_disk/vikrant/scrramble/logs" # saving in the local_disk
+    filename_ = os.path.join(logs_path, f'mnist_arch_dict_cores_{n_cores}_resmp_{n_resamples}_{today}.pkl')
+    with open(filename_, 'wb') as f:
+        pickle.dump(arch_dict, f)
+    
 
-# save the architecture dict
-today = date.today().isoformat()
+if __name__ == "__main__":
+    run_weight_sharing_analysis()
+    print(f"Saved architecture dict to {filename_}")
 
-with open(f'mnist_arch_dict_cores_{n_cores}_{today}.pkl', 'wb') as f:
-    pickle.dump(arch_dict, f)
