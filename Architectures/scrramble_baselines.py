@@ -17,6 +17,7 @@ import os
 import pickle
 import numpy as np
 from functools import partial
+from datetime import date
 
 from utils import clipping_ste, intercore_connectivity, plot_connectivity_matrix, load_mnist
 from models import ScRRAMBLeLayer, ScRRAMBLeClassifier
@@ -54,7 +55,7 @@ class BinaryRegressor(nnx.Module):
         """
         x = x.reshape(x.shape[0], self.in_size)
         x = nnx.vmap(self.linear, in_axes=0)(x)
-        return nnx.sigmoid(x)
+        return nnx.softmax(x)
 
 
 # ----------------------------------------------------------------
@@ -89,6 +90,9 @@ class FeedForwardNetwork(nnx.Module):
         - Ignore the dimension of batch, we will be using vmap
         """
 
+        # flatten the input
+        x = x.reshape(x.shape[0], -1)
+
         for layer in self.network[:-1]:
             x = self.activation(layer(x))
 
@@ -102,8 +106,8 @@ class FeedForwardNetwork(nnx.Module):
 # ----------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 64,
-    'train_steps': 5000,
+    'batch_size': 128,
+    'train_steps': 6000,
     'binarize': True,
     'greyscale': True,
     'data_dir': data_dir,
@@ -147,6 +151,28 @@ def eval_step(model, metrics: nnx.MultiMetric, batch):
     loss, logits = loss_fn(model, batch)
     metrics.update(loss=loss, logits=logits, labels=batch['label'])  # In-place updates.
 
+# -------------------------------------------------------------------
+# Saving metrics
+# -------------------------------------------------------------------
+def save_metrics(metrics_dict: dict, filename: str, logs_directory: str = "/local_disk/vikrant/scrramble/logs"):
+    """
+    Saving metrics to a file
+    """
+
+    today = date.today().isoformat()
+    test_acc = round(metrics_dict['test_accuracy'][-1]*100)
+    filename = f"{filename}_a_{test_acc}_{today}.pkl"
+    filepath = os.path.join(logs_directory, filename)
+
+    # if the directory does not exist, create it
+    if not os.path.exists(logs_directory):
+        os.makedirs(logs_directory)
+
+    with open(filepath, "wb") as f:
+        pickle.dump(metrics_dict, f)
+    
+    print(f"Metrics saved to {filepath}")
+
 
 
 # -------------------------------------------------------------------
@@ -163,7 +189,7 @@ arch_dict = {
 hyperparameters = {
     'learning_rate': 5e-4,
     'momentum': 0.9, 
-    'weight_decay': 1e-2
+    'weight_decay': 1e-4
 }
 
 logistic_metrics = {
@@ -179,6 +205,35 @@ ff_metrics = {
     'test_accuracy': [],
     'test_loss': []
 }
+
+# ----------------------------------------------------------------
+# Data Loading: Logistic regression
+# ----------------------------------------------------------------
+data_dir = "/local_disk/vikrant/datasets"
+dataset_dict = {
+    'batch_size': 128,
+    'train_steps': 6000,
+    'binarize': True,
+    'greyscale': True,
+    'data_dir': data_dir,
+    'seed': 101,
+    'shuffle_buffer': 1024,
+    'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
+    'eval_every': 200,
+}
+
+train_ds, test_ds = load_mnist(
+    batch_size=dataset_dict['batch_size'],
+    train_steps=dataset_dict['train_steps'],
+    binarize=dataset_dict['binarize'],
+    greyscale=dataset_dict['greyscale'],
+    data_dir=dataset_dict['data_dir'],
+    seed=dataset_dict['seed'],
+    shuffle_buffer=dataset_dict['shuffle_buffer'],
+    threshold=dataset_dict['threshold'],
+)
+
+
 
 # initialize the models
 key1 = jax.random.key(0)
@@ -238,6 +293,77 @@ def run_logistic(model=logistic_model, optimizer=logistic_optimizer, metrics=met
 
             print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
 
+    # save the metrics
+    filename = "baseline_logistic_regression"
+    save_metrics(metrics_history, filename)
+
+    return metrics_history
+
+# ----------------------------------------------------------------
+# Data Loading: Feedforward network
+# ----------------------------------------------------------------
+data_dir = "/local_disk/vikrant/datasets"
+dataset_dict = {
+    'batch_size': 128,
+    'train_steps': 6000,
+    'binarize': True,
+    'greyscale': True,
+    'data_dir': data_dir,
+    'seed': 101,
+    'shuffle_buffer': 1024,
+    'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
+    'eval_every': 200,
+}
+
+train_ds, test_ds = load_mnist(
+    batch_size=dataset_dict['batch_size'],
+    train_steps=dataset_dict['train_steps'],
+    binarize=dataset_dict['binarize'],
+    greyscale=dataset_dict['greyscale'],
+    data_dir=dataset_dict['data_dir'],
+    seed=dataset_dict['seed'],
+    shuffle_buffer=dataset_dict['shuffle_buffer'],
+    threshold=dataset_dict['threshold'],
+)
+
+def run_ff(model=ff_model, optimizer=ff_optimizer, metrics=metrics, dataset_dict=dataset_dict, metrics_history=ff_metrics):
+    """
+    Run the logistic regression model
+    """
+
+    eval_every = dataset_dict['eval_every']
+    train_steps = dataset_dict['train_steps']
+
+    for step, batch in enumerate(train_ds.as_numpy_iterator()):
+        # Run the optimization for one step and make a stateful update to the following:
+        # - The train state's model parameters
+        # - The optimizer state
+        # - The training loss and accuracy batch metrics
+
+        train_step(model, optimizer, metrics, batch)
+
+        if step > 0 and (step % eval_every == 0 or step == train_steps - 1):  # One training epoch has passed.
+            # Log the training metrics.
+            for metric, value in metrics.compute().items():  # Compute the metrics.
+                metrics_history[f'train_{metric}'].append(float(value))  # Record the metrics.
+            metrics.reset()  # Reset the metrics for the test set.
+
+            # Compute the metrics on the test set after each training epoch.
+            for test_batch in test_ds.as_numpy_iterator():
+                eval_step(model, metrics, test_batch)
+
+            # Log the test metrics.
+            for metric, value in metrics.compute().items():
+                metrics_history[f'test_{metric}'].append(float(value))
+            metrics.reset()  # Reset the metrics for the next training epoch.
+
+            print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
+
+    # save the metrics
+    filename = "baseline_ff"
+    save_metrics(metrics_history, filename)
+
+    return metrics_history
 
 
 
@@ -273,4 +399,9 @@ def run_logistic(model=logistic_model, optimizer=logistic_optimizer, metrics=met
 
 
 if __name__ == "__main__":
-    run_logistic()
+    print("Running the logistic regression model")
+    log_metrics = run_logistic()
+    print("Running the feedforward network model")
+    ff_metrics = run_ff()
+
+    print('done')

@@ -304,5 +304,4 @@ def run_weight_sharing_analysis():
 
 if __name__ == "__main__":
     run_weight_sharing_analysis()
-    print(f"Saved architecture dict to {filename_}")
 
