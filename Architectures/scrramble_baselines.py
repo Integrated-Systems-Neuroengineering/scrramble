@@ -178,8 +178,12 @@ def save_metrics(metrics_dict: dict, filename: str, logs_directory: str = "/loca
 # -------------------------------------------------------------------
 # Pipeline
 # -------------------------------------------------------------------
+ni = 20
+no = 12
+print(f"Size same as number of cores: {ni+no}")
+
 arch_dict = {
-    'ff_layers' : [784, 256*10, 256*6, 10],
+    'ff_layers' : [784, 256*ni, 256*no, 10],
     'threshold' : 0.0,
     'noise_sd' : 0.05,
     'activation': clipping_ste,
@@ -294,7 +298,7 @@ def run_logistic(model=logistic_model, optimizer=logistic_optimizer, metrics=met
             print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
 
     # save the metrics
-    filename = "baseline_logistic_regression"
+    filename = f"baseline_logistic_regression_cores_{ni+no}"
     save_metrics(metrics_history, filename)
 
     return metrics_history
@@ -304,7 +308,7 @@ def run_logistic(model=logistic_model, optimizer=logistic_optimizer, metrics=met
 # ----------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 128,
+    'batch_size': 256,
     'train_steps': 6000,
     'binarize': True,
     'greyscale': True,
@@ -360,8 +364,8 @@ def run_ff(model=ff_model, optimizer=ff_optimizer, metrics=metrics, dataset_dict
             print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
 
     # save the metrics
-    filename = "baseline_ff"
-    save_metrics(metrics_history, filename)
+    # filename = f"baseline_ff_cores_{ni+no}"
+    # save_metrics(metrics_history, filename)
 
     return metrics_history
 
@@ -399,8 +403,8 @@ def run_ff(model=ff_model, optimizer=ff_optimizer, metrics=metrics, dataset_dict
 
 
 if __name__ == "__main__":
-    print("Running the logistic regression model")
-    log_metrics = run_logistic()
+    # print("Running the logistic regression model")
+    # log_metrics = run_logistic()
     print("Running the feedforward network model")
     ff_metrics = run_ff()
 

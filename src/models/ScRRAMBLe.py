@@ -99,7 +99,6 @@ class ScRRAMBLeLayer(nnx.Module):
         y2 = jnp.einsum('ijklm,ikm->ijl', self.Wo.value, y1)
 
         # apply the non-linearity
-
         return self.activation(y2)
 
 # define a population coding module

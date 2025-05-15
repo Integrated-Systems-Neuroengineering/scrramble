@@ -174,8 +174,8 @@ def eval_step(model: ScRRAMBLeMNIST, metrics: nnx.MultiMetric, batch):
 n_resamples = 10
 
 # budget of cores
-n_cores = 16
-ni_list = [8, 10, 12]
+n_cores = 32
+ni_list = [16, 20, 28]
 no_list = [n_cores - ni for ni in ni_list]
 in_out_list = [(ni, no) for ni, no in zip(ni_list, no_list)]
 
@@ -186,7 +186,7 @@ avg_conn_list = jnp.arange(1, 10, 1).tolist()
 hyperparameters = {
     'learning_rate': 5e-4,
     'momentum': 0.9, 
-    'weight_decay': 1e-2
+    'weight_decay': 1e-4
 }
 
 # architecture dict
