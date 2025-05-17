@@ -178,12 +178,13 @@ def save_metrics(metrics_dict: dict, filename: str, logs_directory: str = "/loca
 # -------------------------------------------------------------------
 # Pipeline
 # -------------------------------------------------------------------
-ni = 20
-no = 12
-print(f"Size same as number of cores: {ni+no}")
+ni = 10
+no = 6
+# print(f"Size same as number of cores: {ni+no}")
+print(f"No. params ALMOST as number of cores: {ni+no}")
 
 arch_dict = {
-    'ff_layers' : [784, 256*ni, 256*no, 10],
+    'ff_layers' : [784, 700, 465, 10],
     'threshold' : 0.0,
     'noise_sd' : 0.05,
     'activation': clipping_ste,
