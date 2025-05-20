@@ -118,17 +118,20 @@ class ScRRAMBLeMNIST(nnx.Module):
 # -------------------------------------------------------------------
 # Loading the dataset
 # ------------------------------------------------------------------
+
+# for good choice of hyperparameters refer to scrramble_mnist_code.py
+
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 64,
-    'train_steps': 5000,
+    'batch_size': 64, # batch size
+    'train_steps': 20000, # number of training steps
     'binarize': True,
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 200,
+    'eval_every': 500,
 }
 
 train_ds, test_ds = load_mnist(
@@ -175,7 +178,7 @@ n_resamples = 10
 
 # budget of cores
 n_cores = 32
-ni_list = [16, 20, 28]
+ni_list = [16, 20]
 no_list = [n_cores - ni for ni in ni_list]
 in_out_list = [(ni, no) for ni, no in zip(ni_list, no_list)]
 
@@ -184,7 +187,7 @@ avg_conn_list = jnp.arange(1, 10, 1).tolist()
 
 # optimizers
 hyperparameters = {
-    'learning_rate': 5e-4,
+    'learning_rate': 7e-4,
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }

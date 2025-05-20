@@ -148,21 +148,35 @@ class ScRRAMBLeMNIST(nnx.Module):
             
         else:
             raise NotImplementedError("Non-population coding not implemented yet.")
+
+
+    def get_params(self):
+        """
+        Get the number of parameters in the model
+        Naive implementation
+        """
+        Wi = self.scrramble_layer.Wi.value.flatten()
+        Wo = self.scrramble_layer.Wo.value.flatten()
+        params = Wi.shape[0] + Wo.shape[0]
+
+        return params
+
+
     
 # -------------------------------------------------------------------
 # Loading the dataset
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 64,
-    'train_steps': 5000,
-    'binarize': True,
+    'batch_size': 64, # 64 is a good batch size for MNIST
+    'train_steps': 20000, # run for longer, 20000 is good!
+    'binarize': True, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 200,
+    'eval_every': 500,
 }
 
 train_ds, test_ds = load_mnist(
@@ -204,12 +218,20 @@ def eval_step(model: ScRRAMBLeMNIST, metrics: nnx.MultiMetric, batch):
 # Pipeline
 # ------------------------------------------------------------------
 
+# 16 cores give 1,048,576 parameters
+# 20 cores gives 2,097,152 parameters
+total_cores = 32
+ni = 20
+ni, no = [ni, total_cores - ni]
+
+print(f"No. of cores = {ni + no}")
+
 rngs = nnx.Rngs(params=0, activation=1, permute=2)
 model = ScRRAMBLeMNIST(
     input_vector_size=32*32,
-    input_cores=10,
-    output_cores=6,
-    avg_slot_connectivity=9,
+    input_cores=ni,
+    output_cores=no,
+    avg_slot_connectivity=12,
     slots_per_core=4,
     slot_length=64,
     activation=clipping_ste,
@@ -217,12 +239,14 @@ model = ScRRAMBLeMNIST(
     group_size=10,
     core_length=256,
     threshold=0.0,
-    noise_sd=0.05
+    noise_sd=0.05 # standard deviation of the noise distribution (typical value = 0.05)
 )
+
+print(f"Model parameters: {model.get_params()}")
 
 # optimizers
 hyperparameters = {
-    'learning_rate': 5e-4,
+    'learning_rate': 7e-4, # 1e-3 seems to work well
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }
@@ -306,8 +330,8 @@ if __name__ == "__main__":
         train_ds=train_ds,
         test_ds=test_ds,
         dataset_dict=dataset_dict,
-        save_model_flag=True,
-        save_metrics_flag=True
+        save_model_flag=False,
+        save_metrics_flag=False
     )
 
 

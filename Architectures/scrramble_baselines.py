@@ -93,12 +93,29 @@ class FeedForwardNetwork(nnx.Module):
         # flatten the input
         x = x.reshape(x.shape[0], -1)
 
-        for layer in self.network[:-1]:
+        # for layer in self.network[:-1]:
+        #     x = self.activation(layer(x))
+
+        for layer in self.network:
             x = self.activation(layer(x))
 
-        x = nnx.softmax(self.network[-1](x))
+        # x = nnx.softmax(self.network[-1](x))
 
         return x
+
+    def get_params(self):
+        """
+        Get the number of parameters in the model
+        """
+
+        parameters = 0
+        for layer in self.network:
+            w_shape = layer.kernel.shape[0] * layer.kernel.shape[1]
+            b_shape = layer.bias.shape[0]
+            parameters += w_shape + b_shape
+        
+        return parameters
+
 
 
 # ----------------------------------------------------------------
@@ -178,13 +195,13 @@ def save_metrics(metrics_dict: dict, filename: str, logs_directory: str = "/loca
 # -------------------------------------------------------------------
 # Pipeline
 # -------------------------------------------------------------------
-ni = 10
-no = 6
+# ni = 10
+# no = 6
 # print(f"Size same as number of cores: {ni+no}")
-print(f"No. params ALMOST as number of cores: {ni+no}")
+# print(f"No. params ALMOST as number of cores: {ni+no}")
 
 arch_dict = {
-    'ff_layers' : [784, 700, 465, 10],
+    'ff_layers' : [784, 1200, 1000, 10], # gives 1,059,210
     'threshold' : 0.0,
     'noise_sd' : 0.05,
     'activation': clipping_ste,
@@ -255,6 +272,8 @@ ff_model = FeedForwardNetwork(
     noise_sd=arch_dict['noise_sd'],
     activation=arch_dict['activation'],
 )
+
+print(f"# parameters in FF network: {ff_model.get_params()}")
 
 logistic_optimizer = nnx.Optimizer(logistic_model, optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay'], b1=hyperparameters['momentum']))
 ff_optimizer = nnx.Optimizer(ff_model, optax.adamw(learning_rate=hyperparameters['learning_rate'],  weight_decay=hyperparameters['weight_decay'], b1=hyperparameters['momentum']))

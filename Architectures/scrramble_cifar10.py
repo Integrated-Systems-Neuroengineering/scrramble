@@ -1,0 +1,1 @@
+## TODO: Implement the SCRRAMBLe architecture for CIFAR-10
