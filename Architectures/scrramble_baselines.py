@@ -201,7 +201,7 @@ def save_metrics(metrics_dict: dict, filename: str, logs_directory: str = "/loca
 # print(f"No. params ALMOST as number of cores: {ni+no}")
 
 arch_dict = {
-    'ff_layers' : [784, 1200, 1000, 10], # gives 1,059,210
+    'ff_layers' : [784, 1150, 1000, 10], # gives 1,059,210; [784, 1150, 1000, 10] has 2063760 parameters
     'threshold' : 0.0,
     'noise_sd' : 0.05,
     'activation': clipping_ste,
@@ -350,7 +350,7 @@ train_ds, test_ds = load_mnist(
     threshold=dataset_dict['threshold'],
 )
 
-def run_ff(model=ff_model, optimizer=ff_optimizer, metrics=metrics, dataset_dict=dataset_dict, metrics_history=ff_metrics):
+def run_ff(model=ff_model, optimizer=ff_optimizer, metrics=metrics, dataset_dict=dataset_dict, metrics_history=ff_metrics, save_files=False):
     """
     Run the logistic regression model
     """
@@ -384,8 +384,12 @@ def run_ff(model=ff_model, optimizer=ff_optimizer, metrics=metrics, dataset_dict
             print(f"Step {step}: Test loss: {metrics_history['test_loss'][-1]}, Accuracy: {metrics_history['test_accuracy'][-1]}")
 
     # save the metrics
-    # filename = f"baseline_ff_cores_{ni+no}"
-    # save_metrics(metrics_history, filename)
+    print(f"best test accuracy: {max(metrics_history['test_accuracy'])}")
+    if save_files:
+        today = date.today().isoformat()
+        filename = f"baseline_ff_cores_par_2M"
+        save_metrics(metrics_history, filename)
+        print(f"Metrics saved to {filename}")
 
     return metrics_history
 
@@ -426,6 +430,6 @@ if __name__ == "__main__":
     # print("Running the logistic regression model")
     # log_metrics = run_logistic()
     print("Running the feedforward network model")
-    ff_metrics = run_ff()
+    ff_metrics = run_ff(save_files=True)
 
     print('done')

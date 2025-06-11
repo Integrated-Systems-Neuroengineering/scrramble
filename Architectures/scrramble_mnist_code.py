@@ -115,6 +115,31 @@ class ScRRAMBLeMNIST(nnx.Module):
             noise_sd=noise_sd
         )
 
+    @staticmethod
+    def chunkwise_reshape(x):
+        """
+        Reshape the input in a block-wise manner similar to how a conv layer would process an image
+        Args:
+            x: jax.Array, input data (image)
+        Returns:
+            x: jax.Array, flattened data
+        """
+        # reshape into 32x32
+        x = jax.image.resize(x, (x.shape[0], 32, 32, 1), method='nearest')
+
+        # reshape again
+        x = jnp.reshape(x, (x.shape[0], 8, 8, 4, 4, 1))
+
+        # flatten along the last two dimensions
+        x = jnp.reshape(x, (x.shape[0], 8, 8, -1))
+
+        # flatten the first two dimensions
+        x = jnp.reshape(x, (x.shape[0], -1))
+
+        return x
+
+
+
     @partial(nnx.jit, static_argnames=['output_coding'])
     def __call__(self, x, output_coding: str = 'population'):
         """
@@ -128,8 +153,10 @@ class ScRRAMBLeMNIST(nnx.Module):
 
         # reshape the image
         # print(x.shape)
-        x = jax.image.resize(x, (x.shape[0], 32, 32, 1), method='nearest')
-        x = x.reshape(x.shape[0], -1)
+        # x = jax.image.resize(x, (x.shape[0], 32, 32, 1), method='nearest')
+        # x = x.reshape(x.shape[0], -1)
+
+        x = self.chunkwise_reshape(x)
 
         # using vmap do the forward pass
         y = nnx.vmap(self.scrramble_layer, in_axes=0)(x)
