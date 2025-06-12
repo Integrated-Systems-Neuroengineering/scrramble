@@ -5,6 +5,7 @@ from .rram_quantize import rram_quantize
 from .intercore_connectivity import intercore_connectivity, plot_connectivity_matrix
 from .create_synthetic_classification import create_classification_dataset, batch_iterator
 from .load_mnist import load_mnist
+from .load_mnist_with_validation import load_mnist_with_validation
 
 
-__all__  = ["clipping_ste", "rram_quantize", "intercore_connectivity", "plot_connectivity_matrix", "create_classification_dataset", "batch_iterator", "load_mnist"]
+__all__  = ["clipping_ste", "rram_quantize", "intercore_connectivity", "plot_connectivity_matrix", "create_classification_dataset", "batch_iterator", "load_mnist", "load_mnist_with_validation"]
