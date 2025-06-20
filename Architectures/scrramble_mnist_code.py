@@ -139,7 +139,6 @@ class ScRRAMBLeMNIST(nnx.Module):
         return x
 
 
-
     @partial(nnx.jit, static_argnames=['output_coding'])
     def __call__(self, x, output_coding: str = 'population'):
         """
