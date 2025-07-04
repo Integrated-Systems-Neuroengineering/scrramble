@@ -1,5 +1,5 @@
 """
-Use this script to run analysis of weight sharing in ScRRAMBLE on MNIST
+Use this script to train ScRRAMBLE on MNIST.
 """
 
 import jax

@@ -7,5 +7,6 @@ from .PermuteBlockwiseDense import PermuteBlockwiseDense
 from .MLPLayer import MLPLayer
 from .ScRRAMBLe import ScRRAMBLeLayer, ScRRAMBLeClassifier
 from .ScRRAMBLeCapsLayer import ScRRAMBLeCapsLayer
+from .ScRRAMBLeCapsNet import ScRRAMBLeCapsNet
 
-__all__  = ["TestConvNet", "BlockwiseDense", "WeightSharingAccumulator", "PermuteWeightSharing", "PermuteBlockwiseDense", "MLPLayer", "ScRRAMBLeLayer", "ScRRAMBLeClassifier", "ScRRAMBLeCapsLayer"]
+__all__  = ["TestConvNet", "BlockwiseDense", "WeightSharingAccumulator", "PermuteWeightSharing", "PermuteBlockwiseDense", "MLPLayer", "ScRRAMBLeLayer", "ScRRAMBLeClassifier", "ScRRAMBLeCapsLayer", "ScRRAMBLeCapsNet"]

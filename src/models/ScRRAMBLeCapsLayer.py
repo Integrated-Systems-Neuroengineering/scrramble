@@ -78,10 +78,9 @@ class ScRRAMBLeCapsLayer(nnx.Module):
     def __call__(self, x: jax.Array) -> jax.Array:
         """
         Forward pass through the capsule layer with ScRRAMBLe routing
+        Args:
+        x: jax.Array. flattened input, No batch dimension. Shape should be (input_vector_size,). e.g. (1000,)
         """
-
-        # flatten the input
-        x = x.flatten()
 
         # pad the input with zeros if the length is not a multiple of capsule size
         if x.shape[0]%self.capsule_size != 0:
