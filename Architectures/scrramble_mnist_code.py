@@ -218,7 +218,7 @@ train_ds, test_ds = load_mnist(
 
 # -------------------------------------------------------------------
 # Training functions
-# ------------------------------------------------------------------
+# -------------------------------------------------------------------
 def loss_fn(model: ScRRAMBLeMNIST, batch):
   logits = model(batch['image'])
   loss = optax.softmax_cross_entropy_with_integer_labels(

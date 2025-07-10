@@ -8,8 +8,9 @@ import flax
 from flax import nnx
 import optax
 from functools import partial
-# from models.ScRRAMBLeCapsLayer import ScRRAMBLeCapsLayer
-# from models.ScRRAMBLeCapsNet import ScRRAMBLeCapsNet
+from models.ScRRAMBLeCapsLayer import ScRRAMBLeCapsLayer
+from models import ScRRAMBLeCapsNet
+from utils.activation_functions import quantized_relu_ste, squash
 
 
 # -------------------------------------------
@@ -25,24 +26,29 @@ def margin_loss(
     ):
 
     caps_output = model(batch['image']) # this output will be in shape (batch_size, num_output_cores (10), slots/receptive fields per core, slot/receptive_field_length)
-    print(f"Caps output shape: {caps_output.shape}")
+    # print(f"Caps output shape: {caps_output.shape}")
 
     # the length of the vector encodes probability of a class
     caps_output = caps_output.reshape(caps_output.shape[0], num_classes, -1)
-    print(f"Caps output reshaped: {caps_output.shape}") # at this point this should be (batch_size, num_output_cores, 256) for the default core length of 256
+    # print(f"Caps output reshaped: {caps_output.shape}") # at this point this should be (batch_size, num_output_cores, 256) for the default core length of 256
+
+    # apply squash function along the last axis
+    caps_output = squash(caps_output, axis=-1, eps=1e-8)
 
     caps_output_magnitude = jnp.linalg.norm(caps_output, axis=-1)
-    print(f"Caps output magnitude: {caps_output_magnitude}") # this should be (batch_size, num_output_cores (10))
-    print(f"Caps output magnitude shape: {caps_output_magnitude.shape}") # this should be (batch_size, num_output_cores (10))
+    # print(f"Caps output magnitude: {caps_output_magnitude}") # this should be (batch_size, num_output_cores (10))
+    # print(f"Caps output magnitude shape: {caps_output_magnitude.shape}") # this should be (batch_size, num_output_cores (10))
 
     # create one-hot-encoded labels
     labels = batch['label']
     labels = jax.nn.one_hot(labels, num_classes=caps_output_magnitude.shape[1])
-    print(f"Labels shape: {labels.shape}") # this should be (batch_size, num_output_cores)
+    # print(f"Labels shape: {labels.shape}") # this should be (batch_size, num_output_cores)
 
     # compute the margin loss
-    loss = jnp.sum(labels * jax.nn.relu(m_plus - caps_output_magnitude)**2 + lambda_ * (1 - labels) * jax.nn.relu(caps_output_magnitude - m_minus)**2)
-    print(f"Loss: {loss}")
+    loss_per_sample = jnp.sum(labels * jax.nn.relu(m_plus - caps_output_magnitude)**2 + lambda_ * (1 - labels) * jax.nn.relu(caps_output_magnitude - m_minus)**2, axis=1)
+    loss = jnp.mean(loss_per_sample)
+
+    # print(f"Loss: {loss}")
 
     return loss, caps_output_magnitude
 

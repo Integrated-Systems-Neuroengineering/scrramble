@@ -24,14 +24,10 @@ dataset_dict = {
 def load_and_augment_mnist(
     batch_size: int,
     train_steps: int,
-    binarize: bool,
-    greyscale: bool,
     data_dir: str,
     seed: int,
     shuffle_buffer: int,
-    threshold: float, # this is the binarization threshold, not to be confused with the threshold in the model
     augmentation: bool = True,
-    aug_translate: bool = True,
     num_translations: int = 4,
     max_shift: int = 3,
     quantize_bits: int = 8,
@@ -174,5 +170,5 @@ def __main__():
         augmentation=True,
     )
 
-if __name__ == "__main__":
-    __main__()
+# if __name__ == "__main__":
+#     __main__()
