@@ -110,7 +110,7 @@ class ScRRAMBLeCapsNet(nnx.Module):
             connection_probability: float, # fraction of total receptive fields on sender side that each receiving slot/receptive field takes input from
             rngs: nnx.Rngs,
             layer_sizes: list = [20, 10, 10], # number of capsules in each layer of the capsnet. e.g. [20, 10] means 20 capsules in layer 1 and 10 capsules in layer 2
-            activation_function: Callable = quantized_relu_ste, # activation function to use in the network
+            activation_function: Callable = nnx.relu, # activation function to use in the network
     ):
         
         self.input_vector_size = input_vector_size

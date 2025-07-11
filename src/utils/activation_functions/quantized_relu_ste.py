@@ -7,8 +7,8 @@ from functools import partial
 
 def quantized_relu(
     x: float, # input value, set up uses vmap
-    bits: int = 4,
-    max_value: float = 1.0,
+    bits: int = 8,
+    max_value: float = 5.0,
 ):
 
     """
@@ -65,8 +65,24 @@ def quantized_relu_bwd(
     bits, max_value, residuals, gradients
 ):
     x = residuals
-    grad = jnp.where(x > 0, 1.0, 0.0)
+    grad = 1.0 #jnp.where(x > 0, 1.0, 0.0)
 
     return (grad*gradients, )
 
 quantized_relu_ste.defvjp(quantized_relu_fwd, quantized_relu_bwd)
+
+
+## testing
+def __main__():
+    rngs = nnx.Rngs(params=0, activation=1, default=46732)
+    test_input = jax.random.normal(rngs.params(), (3, 5, 10))
+
+    out = quantized_relu_ste(test_input, bits=8, max_value=1.0)
+
+    print(f"Test output shape = {out.shape}")
+    print(f"Test output = {out}")
+
+if __name__ == '__main__':
+    __main__()
+    
+
