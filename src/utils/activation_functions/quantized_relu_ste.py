@@ -45,7 +45,7 @@ def quantized_relu(
 def quantized_relu_ste(
     x: float,
     bits: int = 8,
-    max_value: float = 2.0,
+    max_value: float = 5.0,
     **kwargs
 ):
 

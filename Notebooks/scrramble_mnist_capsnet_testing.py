@@ -168,7 +168,8 @@ class ScRRAMBLeLayer(nnx.Module):
         # y1 = self.activation(y1)
         y1_shape = y1.shape
         y1 = y1.flatten() # last dimesion represents output of a core
-        y1 = jax.vmap(self.activation, in_axes=(0, None, None))(y1, 10, 10.0)
+        # y1 = jax.vmap(self.activation, in_axes=(0, None, None))(y1, 10, 10.0)
+        y1 = nnx.hard_tanh(y1)
         y1 = y1.reshape(y1_shape)  # reshape back to the original shape
 
         # scramble the input to cores in layers l
@@ -180,7 +181,8 @@ class ScRRAMBLeLayer(nnx.Module):
         # apply the non-linearity
         y2_shape = y2.shape
         y2 = y2.flatten() # last dimesion represents output of a core
-        y2 = jax.vmap(self.activation, in_axes=(0, None, None))(y2, 10, 10.0)
+        # y2 = jax.vmap(self.activation, in_axes=(0, None, None))(y2, 10, 10.0)
+        y2 = nnx.hard_tanh(y2)
         y2 = y2.reshape(y2_shape)  # reshape back to the original shape
         return y2
 
@@ -325,15 +327,15 @@ class ScRRAMBLeMNIST(nnx.Module):
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 128, # 64 is a good batch size for MNIST
-    'train_steps':  500, # run for longer, 20000 is good!
+    'batch_size': 64, # 64 is a good batch size for MNIST
+    'train_steps': 20000, # run for longer, 20000 is good!
     'binarize': True, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 20,
+    'eval_every': 1000,
 }
 
 train_ds, test_ds = load_mnist(

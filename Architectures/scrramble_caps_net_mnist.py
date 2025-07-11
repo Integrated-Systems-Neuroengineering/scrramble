@@ -155,7 +155,8 @@ class ScRRAMBLeCapsNet(nnx.Module):
             x = jnp.reshape(x, (x.shape[0], -1))
             shape_x = x.shape
             x = x.flatten()
-            x = jax.vmap(self.activation_function, in_axes=(0, None, None))(x, 8, 1.0) # 8 bits, 1.0 is the max clipping threshold.
+            # x = jax.vmap(self.activation_function, in_axes=(0, None, None))(x, 8, 1.0) # 8 bits, 1.0 is the max clipping threshold.
+            x = nnx.relu(x)
             x = jnp.reshape(x, shape_x)
 
         return x
@@ -165,15 +166,15 @@ class ScRRAMBLeCapsNet(nnx.Module):
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 32, # 64 is a good batch size for MNIST
-    'train_steps': 5000, # run for longer, 20000 is good!
+    'batch_size': 64, # 64 is a good batch size for MNIST
+    'train_steps': 10000, # run for longer, 20000 is good!
     'binarize': True, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 500,
+    'eval_every': 1000,
 }
 
 # loading the dataset
@@ -217,15 +218,15 @@ model = ScRRAMBLeCapsNet(
     input_vector_size=1024,
     capsule_size=256,
     receptive_field_size=64,
-    connection_probability=0.70,
+    connection_probability=0.10,
     rngs=rngs,
-    layer_sizes=[20, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+    layer_sizes=[30, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
     activation_function=qrelu
 )
 
 # optimizers
 hyperparameters = {
-    'learning_rate': 7e-4, # 1e-3 seems to work well
+    'learning_rate': 1e-4, # 1e-3 seems to work well
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }
@@ -295,6 +296,18 @@ def train_scrramble_capsnet_mnist(
 
     best_accuracy = max(metrics_history['valid_accuracy'])
     print(f"Best accuracy: {best_accuracy}")
+
+    # find the test set accuracy
+    for test_batch in test_ds.as_numpy_iterator():
+        eval_step(model, metrics, test_batch)
+        # print the metrics
+    for metric, value in metrics.compute().items():
+        metrics_history[f'test_{metric}'].append(float(value))
+    metrics.reset()  # Reset the metrics for the next training epoch.
+
+    print("="*50)
+    print(f"Test loss: {metrics_history['test_loss'][-1]}, Test accuracy: {metrics_history['test_accuracy'][-1]}")
+    print("="*50)
 
     if save_model_flag:
         today = date.today().isoformat()
