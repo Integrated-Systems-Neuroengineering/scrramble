@@ -1,7 +1,10 @@
 """
-Use this script to train ScRRAMBLe CapsNet on MNIST. 
+Use this script to sweep the connection probability parameter of inter-capsule/core connectivity. 
 
-Created on: 07/02/2025
+- Assumes a budget of 60 cores. 50 cores form primary capsules and 10 cores form parent capsules each corresponding to a digit class.
+- The simulation uses ReLU activation in the caapsules and the margin loss uses squash function.
+
+Created on: 07/11/2025
 
 Author: Vikrant Jaltare
 """
@@ -65,32 +68,6 @@ def save_model(state, filename):
     
     print(f"Model saved to {filename_}")
 
-
-@partial(jax.custom_vjp, nondiff_argnums=(1, 2))
-def qrelu(x: float, bits: int = 8, max_value: float = 2.0):
-    # Forward pass: quantize
-    x_relu = jnp.maximum(x, 0.0)  # ReLU
-    x_clipped = jnp.minimum(x_relu, max_value)  # Clip to max_value
-    
-    # Quantize
-    num_levels = 2**bits - 1
-    scale = num_levels / max_value
-    quantized = jnp.round(x_clipped * scale) / scale
-    
-    return quantized
-
-def qrelu_fwd(x: float, bits: int = 8, max_value: float = 2.0):
-    result = qrelu(x, bits, max_value)
-    return result, x
-
-def qrelu_bwd(bits, max_value, residuals, gradients):
-    x = residuals
-    # Straight-through: pass gradient if input would be in valid range
-    mask = (x > 0) & (x <= max_value)
-    grad = jnp.where(mask, 1.0, 0.0)
-    return (grad * gradients,)
-
-qrelu.defvjp(qrelu_fwd, qrelu_bwd)
 
 # -------------------------------------------------------------------
 # Define the MNIST CapsNet Model
@@ -156,7 +133,7 @@ class ScRRAMBLeCapsNet(nnx.Module):
             x = jax.vmap(layer, in_axes=(0,))(x)
             x = jnp.reshape(x, (x.shape[0], -1))
             shape_x = x.shape
-            # x = x.flatten()
+            x = x.flatten()
             # x = jax.vmap(self.activation_function, in_axes=(0, None, None))(x, 8, 1.0) # 8 bits, 1.0 is the max clipping threshold.
             x = self.activation_function(x)  # Apply the activation function.
             x = jnp.reshape(x, shape_x)
@@ -168,7 +145,7 @@ class ScRRAMBLeCapsNet(nnx.Module):
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 64, # 64 is a good batch size for MNIST
+    'batch_size': 100, # 64 is a good batch size for MNIST
     'train_steps': 20000, # run for longer, 20000 is good!
     'binarize': True, 
     'greyscale': True,
@@ -187,11 +164,6 @@ train_ds, valid_ds, test_ds = load_and_augment_mnist(
     seed=dataset_dict['seed'],
     shuffle_buffer=dataset_dict['shuffle_buffer'],
 )
-
-# test if the dataset is loaded correctly by checking the shapes of the datasets
-# print(f"Train dataset shape: {train_ds.element_spec['image'].shape}, {train_ds.element_spec['label'].shape}")
-# print(f"Valid dataset shape: {valid_ds.element_spec['image'].shape}, {valid_ds.element_spec['label'].shape}")
-# print(f"Test dataset shape: {test_ds.element_spec['image'].shape}, {test_ds.element_spec['label'].shape}")
 
 # -------------------------------------------------------------------
 # Training functions
@@ -212,158 +184,152 @@ def eval_step(model: ScRRAMBLeCapsNet, metrics: nnx.MultiMetric, batch, loss_fn:
 # -------------------------------------------------------------------
 # Pipeline
 # -------------------------------------------------------------------
-key = jax.random.key(10)
-key1, key2, key3, key4 = jax.random.split(key, 4)
-rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
 
-model = ScRRAMBLeCapsNet(
-    input_vector_size=1024,
-    capsule_size=256,
-    receptive_field_size=64,
-    connection_probability=0.1,
-    rngs=rngs,
-    layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
-    activation_function=nnx.relu
-)
-
-# optimizers
+# hyperparameters
 hyperparameters = {
     'learning_rate': 0.7e-4, # 1e-3 seems to work well
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }
 
-optimizer = nnx.Optimizer(
-    model,
-    optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay'])
-)
+# average connectivities to sweep over
+conn_probabilities = jnp.arange(0.1, 1.1, 0.1).tolist()
+conn_probabilities.insert(0, 0.05)  # add 0.05 to the list
+print(f"Connection probabilities to sweep over: {conn_probabilities}")
 
-metrics = nnx.MultiMetric(
-    accuracy=nnx.metrics.Accuracy(),
-    loss=nnx.metrics.Average('loss')
-)
-
-
-metrics_history = {
-'train_loss': [],
-'train_accuracy': [],
-'test_loss': [],
-'valid_loss': [],
-'valid_accuracy': [],
-'test_accuracy': [],
-'step': []
+# architecture dict
+arch_dict = {
+    'test_accuracy': [],
+    'valid_accuracy' : [],
+    'train_accuracy': [],
+    'test_loss' : [],
+    'valid_loss' : [],
+    'train_loss' : [],
+    'connection_probability': []
 }
 
-# -------------------------------------------------------------------
-# Training function
-# -------------------------------------------------------------------
-def train_scrramble_capsnet_mnist(
-        model: ScRRAMBLeCapsNet = model,
-        optimizer: nnx.Optimizer = optimizer,
-        train_ds: tf.data.Dataset = train_ds,
-        valid_ds: tf.data.Dataset = valid_ds,
-        dataset_dict: dict = dataset_dict,
-        save_model_flag: bool = False,
-        save_metrics_flag: bool = False,
-):
-    
-    eval_every = dataset_dict['eval_every']
-    train_steps = dataset_dict['train_steps']
+num_resamples = 5 # 5 resamples for each connection probability
 
-    for step, batch in enumerate(train_ds.as_numpy_iterator()):
-        # Run the optimization for one step and make a stateful update to the following:
-        # - The train state's model parameters
-        # - The optimizer state
-        # - The training loss and accuracy batch metrics
+# define the analysis function
+def run_sweep_analysis():
 
-        train_step(model, optimizer, metrics, batch)
+    key1 = jax.random.key(654)
 
-        if step > 0 and (step % eval_every == 0 or step == train_steps - 1):  # One training epoch has passed.
-            metrics_history['step'].append(step)  # Record the step.
-            # Log the training metrics.
-            for metric, value in metrics.compute().items():  # Compute the metrics.
-                metrics_history[f'train_{metric}'].append(float(value))  # Record the metrics.
-            metrics.reset()  # Reset the metrics for the test set.
+    for idx, p in tqdm(enumerate(conn_probabilities), total=len(conn_probabilities), desc="Connection probabilities"):
+        print(f"Connection probability: {p}")
 
-            # Compute the metrics on the validation set after each training epoch.
-            for valid_batch in valid_ds.as_numpy_iterator():
-                eval_step(model, metrics, valid_batch)
+        # resample loop
+        for r in tqdm(range(num_resamples), desc="resampling..."):
+            key1, key2, key3, key4 = jax.random.split(key1, 4)
+            rngs = nnx.Rngs(params=key1, activations=key2, default=key3, permute=key4)
 
-            # Log the validation metrics.
+            # define the model
+            model = ScRRAMBLeCapsNet(
+                    input_vector_size=1024,
+                    capsule_size=256,
+                    receptive_field_size=64,
+                    connection_probability=p,
+                    rngs=rngs,
+                    layer_sizes=[50, 10],  # 60 capsules in the first layer and (translates to sum of layer_sizes cores total)
+                    activation_function=nnx.relu
+                )
+            
+            # define the optimizer
+            optimizer = nnx.Optimizer(
+                            model,
+                            optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay'])
+                        )
+            
+            # define metrics logging
+            metrics = nnx.MultiMetric(
+                        accuracy=nnx.metrics.Accuracy(),
+                        loss=nnx.metrics.Average('loss')
+                    )
+            
+            # define dictionary to store the metrics
+            metrics_history = {
+                                'train_loss': [],
+                                'train_accuracy': [],
+                                'test_loss': [],
+                                'valid_loss': [],
+                                'valid_accuracy': [],
+                                'test_accuracy': [],
+                                'step': []
+                        }
+            
+            eval_every = dataset_dict['eval_every']
+            train_steps = dataset_dict['train_steps']
+
+            # TRAINING LOOP
+            for step, batch in enumerate(train_ds.as_numpy_iterator()):
+                # train step
+                train_step(model, optimizer, metrics, batch)
+
+                # add the metrics
+                if step > 0 and (step % eval_every == 0 or step == train_steps - 1):
+                    # log the training metrics
+                    for metric, value in metrics.compute().items():
+                        metrics_history[f"train_{metric}"].append(float(value))
+                    metrics.reset() 
+
+                    # EVALUATE ON VALIDATION SET
+                    for valid_batch in valid_ds.as_numpy_iterator():
+                        eval_step(model, metrics, valid_batch)
+                    
+                    # log the validation metrics
+                    for metric, value in metrics.compute().items():
+                        metrics_history[f"valid_{metric}"].append(float(value))
+                    metrics.reset()
+
+            # After training is complete, evaluate the model in the test set
+            for test_batch in test_ds.as_numpy_iterator():
+                eval_step(model, metrics, test_batch)
+
+            # log the test metrics
             for metric, value in metrics.compute().items():
-                metrics_history[f'valid_{metric}'].append(float(value))
-            metrics.reset()  # Reset the metrics for the next training epoch.
+                metrics_history[f"test_{metric}"].append(float(value))
+            metrics.reset()
 
-            print(f"Step {step}: Valid loss: {metrics_history['valid_loss'][-1]}, Accuracy: {metrics_history['valid_accuracy'][-1]}")
+            print("=="*20)
+            print(f"Test accuracy: {metrics_history['test_accuracy'][-1]}")
+            print(f"Test loss: {metrics_history['test_loss'][-1]}")
+            print("=="*20)
 
-    best_accuracy = max(metrics_history['valid_accuracy'])
-    print(f"Best accuracy: {best_accuracy}")
 
-    # find the test set accuracy
-    for test_batch in test_ds.as_numpy_iterator():
-        eval_step(model, metrics, test_batch)
-        # print the metrics
-    for metric, value in metrics.compute().items():
-        metrics_history[f'test_{metric}'].append(float(value))
-    metrics.reset()  # Reset the metrics for the next training epoch.
+        # save the best metrics
+        test_accuracy = metrics_history['test_accuracy'][-1]
+        test_loss = metrics_history['test_loss'][-1]
+        best_valid_accuracy = max(metrics_history['valid_accuracy'])
+        best_valid_loss = min(metrics_history['valid_loss'])
+        best_train_accuracy = max(metrics_history['train_accuracy'])
+        best_train_loss = min(metrics_history['train_loss'])
 
-    print("="*50)
-    print(f"Test loss: {metrics_history['test_loss'][-1]}, Test accuracy: {metrics_history['test_accuracy'][-1]}")
-    print("="*50)
+        # append to the arch_dict
+        arch_dict['test_accuracy'].append(float(test_accuracy))
+        arch_dict['valid_accuracy'].append(float(best_valid_accuracy))
+        arch_dict['train_accuracy'].append(float(best_train_accuracy))
+        arch_dict['test_loss'].append(float(test_loss))
+        arch_dict['valid_loss'].append(float(best_valid_loss))
+        arch_dict['train_loss'].append(float(best_train_loss))
+        arch_dict['connection_probability'].append(float(p))
+    
+    # save the metrics
+    # save the architecture dict
+    today = date.today().isoformat()
+    logs_path = "/local_disk/vikrant/scrramble/logs" # saving in the local_disk
+    filename_ = os.path.join(logs_path, f'capsnet_scrramble_relu_caps60_{today}.pkl')
+    with open(filename_, 'wb') as f:
+        pickle.dump(arch_dict, f)
 
-    if save_model_flag:
-        today = date.today().isoformat()
-        filename = f"sscamble_mnist_model_ci_{model.input_cores}_co_{model.output_cores}_acc_{best_accuracy*100:.0f}_{today}.pkl"
-        graphdef, state = nnx.split(model)
-        save_model(state, filename)
 
-    if save_metrics_flag:
-        today = date.today().isoformat()
-        filename = f"sscamble_mnist_metrics_ci_{model.input_cores}_co_{model.output_cores}_acc_{best_accuracy*100:.0f}_{today}.pkl"
-        save_metrics(metrics_history, filename)
+            
 
-    return model
 
 if __name__ == "__main__":
-    model = train_scrramble_capsnet_mnist(
-        model=model,
-        optimizer=optimizer,
-        train_ds=train_ds,
-        valid_ds=valid_ds,
-        dataset_dict=dataset_dict,
-        save_model_flag=False,
-        save_metrics_flag=False,
+    run_sweep_analysis()
 
-    )
+    print("Sweep analysis completed.")
 
 
-# # testing
-# def __main__():
-#     rngs = nnx.Rngs(params=0, activations=1, permute=2, default=3564132)
+            
 
-#     model = ScRRAMBLeCapsNet(
-#         input_vector_size=1024,
-#         capsule_size=256,
-#         receptive_field_size=64,
-#         connection_probability=0.2,
-#         rngs=rngs,
-#         layer_sizes=[20, 10]  # 20 capsules in the first layer and
-
-#     )
-
-#     print(f"Model number of capsules/effective capsules for input: {model.layer_sizes}")
-
-#     x = jax.random.normal(rngs.default(), (10, 32, 32, 1))
-#     out = model(x)
-
-#     # print the output shape
-#     print(f"Output shape: {out.shape}")
-
-#     out = jnp.reshape(out, (out.shape[0], model.layer_sizes[-1], -1))
-
-#     print(f"Output shape after reshaping: {out.shape}")
-
-#     print(f"Some outputs: {out[0, 0, :10]}")
-
-# if __name__ == "__main__":
-#     __main__()

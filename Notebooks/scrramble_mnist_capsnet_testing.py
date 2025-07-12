@@ -1,5 +1,7 @@
 """
 Use this script to train ScRRAMBLE on MNIST.
+
+Author: Vikrant Jaltare
 """
 
 import jax
