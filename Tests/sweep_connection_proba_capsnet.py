@@ -205,10 +205,12 @@ arch_dict = {
     'test_loss' : [],
     'valid_loss' : [],
     'train_loss' : [],
-    'connection_probability': []
+    'connection_probability': [],
+    'step': [],
+    'resamples': []
 }
 
-num_resamples = 5 # 5 resamples for each connection probability
+num_resamples = 10 # 10 resamples for each connection probability
 
 # define the analysis function
 def run_sweep_analysis():
@@ -262,6 +264,8 @@ def run_sweep_analysis():
 
             # TRAINING LOOP
             for step, batch in enumerate(train_ds.as_numpy_iterator()):
+                # append the step to the metrics history
+                metrics_history['step'].append(step)
                 # train step
                 train_step(model, optimizer, metrics, batch)
 
@@ -281,54 +285,68 @@ def run_sweep_analysis():
                         metrics_history[f"valid_{metric}"].append(float(value))
                     metrics.reset()
 
-            # After training is complete, evaluate the model in the test set
-            for test_batch in test_ds.as_numpy_iterator():
-                eval_step(model, metrics, test_batch)
+                    # Evaluate on the test step for EACH step: We later pick the test accuracy and loss corresponding to the best validation accuracy and loss.
+                    for test_batch in test_ds.as_numpy_iterator():
+                        eval_step(model, metrics, test_batch)
 
-            # log the test metrics
-            for metric, value in metrics.compute().items():
-                metrics_history[f"test_{metric}"].append(float(value))
-            metrics.reset()
+                    # log the test metrics
+                    for metric, value in metrics.compute().items():
+                        metrics_history[f"test_{metric}"].append(float(value))
+                    metrics.reset()
+
+            # print("=="*20)
+            # print(f"Test accuracy: {metrics_history['test_accuracy'][-1]}")
+            # print(f"Test loss: {metrics_history['test_loss'][-1]}")
+            # print("=="*20)
+
+            # pick the index for the best validation accuracy
+            best_valid_index = int(jnp.argmax(jnp.array(metrics_history['valid_accuracy'])))
+            best_step = metrics_history['step'][best_valid_index]
+
+            # save the best metrics
+            test_accuracy = metrics_history['test_accuracy'][best_valid_index]
+            test_loss = metrics_history['test_loss'][best_valid_index]
+            best_valid_accuracy = metrics_history['valid_accuracy'][best_valid_index]
+            best_valid_loss = metrics_history['valid_loss'][best_valid_index]
+            best_train_accuracy = metrics_history['train_accuracy'][best_valid_index]
+            best_train_loss = metrics_history['train_loss'][best_valid_index]
 
             print("=="*20)
-            print(f"Test accuracy: {metrics_history['test_accuracy'][-1]}")
-            print(f"Test loss: {metrics_history['test_loss'][-1]}")
+            print(f"Test accuracy: {test_accuracy}")
+            print(f"Test loss: {test_loss}")
             print("=="*20)
 
-
-        # save the best metrics
-        test_accuracy = metrics_history['test_accuracy'][-1]
-        test_loss = metrics_history['test_loss'][-1]
-        best_valid_accuracy = max(metrics_history['valid_accuracy'])
-        best_valid_loss = min(metrics_history['valid_loss'])
-        best_train_accuracy = max(metrics_history['train_accuracy'])
-        best_train_loss = min(metrics_history['train_loss'])
-
-        # append to the arch_dict
-        arch_dict['test_accuracy'].append(float(test_accuracy))
-        arch_dict['valid_accuracy'].append(float(best_valid_accuracy))
-        arch_dict['train_accuracy'].append(float(best_train_accuracy))
-        arch_dict['test_loss'].append(float(test_loss))
-        arch_dict['valid_loss'].append(float(best_valid_loss))
-        arch_dict['train_loss'].append(float(best_train_loss))
-        arch_dict['connection_probability'].append(float(p))
+            # append to the arch_dict
+            arch_dict['test_accuracy'].append(float(test_accuracy))
+            arch_dict['valid_accuracy'].append(float(best_valid_accuracy))
+            arch_dict['train_accuracy'].append(float(best_train_accuracy))
+            arch_dict['test_loss'].append(float(test_loss))
+            arch_dict['valid_loss'].append(float(best_valid_loss))
+            arch_dict['train_loss'].append(float(best_train_loss))
+            arch_dict['connection_probability'].append(float(p))
+            arch_dict['step'].append(int(best_step))
+            arch_dict['resamples'].append(int(r))
     
     # save the metrics
     # save the architecture dict
     today = date.today().isoformat()
     logs_path = "/local_disk/vikrant/scrramble/logs" # saving in the local_disk
-    filename_ = os.path.join(logs_path, f'capsnet_scrramble_relu_caps60_{today}.pkl')
+
+    # create the logs directory if it doesn't exist
+    os.makedirs(logs_path, exist_ok=True)
+    
+    filename_ = os.path.join(logs_path, f'capsnet_scrramble_relu_caps{sum(model.layer_sizes):d}_{today}.pkl')
     with open(filename_, 'wb') as f:
         pickle.dump(arch_dict, f)
 
 
             
-
-
 if __name__ == "__main__":
     run_sweep_analysis()
 
+    print("++"*30)
     print("Sweep analysis completed.")
+    print("++"*30)
 
 
             
