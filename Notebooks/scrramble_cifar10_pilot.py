@@ -74,6 +74,33 @@ def save_model(state, filename):
 # Defining the model
 # -------------------------------------------------------------------
 
+class ReconstructionLayer(nnx.Module):
+    """
+    Feedforward layer that reconstructs the input from parent capsules.
+    """
+
+    def __init__(self,
+                 *,
+                 rngs: nnx.Rngs):
+        
+        
+        self.linear1 = nnx.Linear(in_features=2560, out_features=5000, rngs=rngs)
+        self.linear2 = nnx.Linear(in_features=5000, out_features=4000, rngs=rngs)
+        self.linear3 = nnx.Linear(in_features=4000, out_features=3072, rngs=rngs)
+
+    def __call__(self, x: jax.Array) -> jax.Array:
+        """
+        Forward pass through reconstruction layer
+        """
+
+        x = nnx.relu(self.linear1(x))
+        x = nnx.relu(self.linear2(x))
+        x = nnx.sigmoid(self.linear(3))
+
+        return x
+
+
+
 class ScRRAMBLeCIFAR(nnx.Module):
 
     def __init__(self, 
@@ -127,8 +154,95 @@ class ScRRAMBLeCIFAR(nnx.Module):
 
         #TODO: Add code for primary -> parent capsules and FC layer
 
+        # routing between primary and parent capsules
+        self.parent_capsule_layer = ScRRAMBLeCapsLayer(
+            input_vector_size=self.num_orimary_capsules*self.capsule_size,
+            num_capsules=self.num_parent_capsules,
+            capsule_size=self.capsule_size,
+            receptive_field_size=self.receptive_field_size,
+            connection_probability=self.connection_probability,
+            rngs=self.rngs,
+        )
+
+        # define the fully connected layer
+        self.reconstruction_layer = ReconstructionLayer(rngs=self.rngs)
+
+    @staticmethod
+    def spatial_block_reshape(x: jax.Array) -> jax.Array:
+        """
+        Reshape the input image to a 1-D vector, preserving the spatial relationships. 
+        """
+
+        x_blocks = x.reshape(2, 2, 16, 16, 3).reshape(256, 12)
+        x_flat = x_blocks.reshape(-1) # 3072
+
+        return x_flat
+    
+    def skip_connection(self, x:jax.Array) -> jax.Array:
+        """
+        Skip connection from input to parent capsules
+        """
+        # reshape x into (input capsules, receptive fields per capsule, receptive field size])
+        x_reshaped = x.reshape(self.input_eff_capsules, self.receptive_field_per_capsule, self.receptive_field_size)
+
+        # perform ScrRAMBLe routing
+        x_routed = jnp.einsum('ijkl,ijm->klm', self.C_input_to_parent, x_reshaped)
+
+        # flatten it before returning
+        x_routed_flat = x_routed.reshape(-1)
+        return x_routed_flat
+    
+    def get_active_capsule(self, x:jax.Array) -> jax.Array:
+
+        """
+        Assumes the input arrives from the parent capsule layer in form (parent capsules, receptive fields per capsule, receptive field size)
+        """
+
+        x_reshape = x.reshape(x.shape[0], -1)
+
+        # take norm along the last dimension
+        norms = jnp.linalg.norm(x_reshape, axis=-1)
+
+        # pick the argmax
+        active_capsule = jnp.argmax(norms, axis=-1)
+
+        # construct the mask
+        mask = jnp.zeros(self.capsule_size*self.num_parent_capsules)
+        mask = mask.at[active_capsule:(active_capsule+1)*self.capsule_size-1].set(1.0)
+        # mask = nnx.Variable(mask)
+
+        return mask
 
 
 
-        
+
+    def __call__(self, x: jax.Array) -> jax.Array:
+        """
+        Forward pass through the CIFAR10 model.
+        Args:
+            x: jax.Array, input image of shape (B, 32, 32, 3)
+        """
+
+        # flatten input using spatial block reshape
+        x = jax.vmap(self.spatial_block_reshape, in_axes=(0,))(x)  # (B, 3072)
+
+        # pass through the primary capsule layer
+        x = jax.vmap(self.primary_caps_layer, in_axes=(0,))(x)
+
+        # construct the skip connection input
+        x_skip = jax.vmap(self.skip_connection, in_axes=(0,))(x)
+
+        # pass through the parent capsule layer
+        x = (x_skip + jax.vmap(self.parent_capsule_layer, in_axes=(0,))(x))
+
+        # only consider the most active parent capsule
+        x_recon = x.reshape(-1)
+        mask = jax.vmap(self.get_active_capsule, in_axes=(0,))(x)
+        x_recon = mask * x_recon
+
+        # pass through the reconstruction layer
+        x_recon = jax.vmap(self.reconstruction_layer, in_axes=(0,))(x_recon)
+
+        return x_recon, x
+
 
