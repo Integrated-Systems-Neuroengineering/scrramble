@@ -6,6 +6,9 @@ Use this script to sweep the connection probability parameter of inter-capsule/c
 
 Created on: 07/11/2025
 
+# Edited on: 07/18/2025
+- Include sweep over different core sizes (20, 30, 60)
+
 Author: Vikrant Jaltare
 """
 import jax
@@ -145,7 +148,7 @@ class ScRRAMBLeCapsNet(nnx.Module):
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 100, # 64 is a good batch size for MNIST
+    'batch_size': 100, # 64-100 is a good batch size for MNIST
     'train_steps': 20000, # run for longer, 20000 is good!
     'binarize': True, 
     'greyscale': True,
@@ -207,125 +210,137 @@ arch_dict = {
     'train_loss' : [],
     'connection_probability': [],
     'step': [],
-    'resamples': []
+    'resamples': [],
+    'num_cores': [],
 }
 
-num_resamples = 10 # 10 resamples for each connection probability
+num_resamples = 100 # 50 resamples for each connection probability
+
+primary_caps_list = [10, 20, 50]
 
 # define the analysis function
 def run_sweep_analysis():
 
     key1 = jax.random.key(654)
 
-    for idx, p in tqdm(enumerate(conn_probabilities), total=len(conn_probabilities), desc="Connection probabilities"):
-        print(f"Connection probability: {p}")
+    for pci, primary_caps in enumerate(primary_caps_list):
+        print("__"*20)
+        print(f"Primary capsules = {primary_caps}")
+        print("__"*20)
 
-        # resample loop
-        for r in tqdm(range(num_resamples), desc="resampling..."):
-            key1, key2, key3, key4 = jax.random.split(key1, 4)
-            rngs = nnx.Rngs(params=key1, activations=key2, default=key3, permute=key4)
+        for idx, p in tqdm(enumerate(conn_probabilities), total=len(conn_probabilities), desc="Connection probabilities"):
+            print(f"Connection probability: {p}")
 
-            # define the model
-            model = ScRRAMBLeCapsNet(
-                    input_vector_size=1024,
-                    capsule_size=256,
-                    receptive_field_size=64,
-                    connection_probability=p,
-                    rngs=rngs,
-                    layer_sizes=[50, 10],  # 60 capsules in the first layer and (translates to sum of layer_sizes cores total)
-                    activation_function=nnx.relu
-                )
-            
-            # define the optimizer
-            optimizer = nnx.Optimizer(
-                            model,
-                            optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay'])
-                        )
-            
-            # define metrics logging
-            metrics = nnx.MultiMetric(
-                        accuracy=nnx.metrics.Accuracy(),
-                        loss=nnx.metrics.Average('loss')
+            # resample loop
+            for r in tqdm(range(num_resamples), desc="resampling..."):
+                key1, key2, key3, key4 = jax.random.split(key1, 4)
+                rngs = nnx.Rngs(params=key1, activations=key2, default=key3, permute=key4)
+
+                # define the model
+                model = ScRRAMBLeCapsNet(
+                        input_vector_size=1024,
+                        capsule_size=256,
+                        receptive_field_size=64,
+                        connection_probability=p,
+                        rngs=rngs,
+                        layer_sizes=[primary_caps, 10],  # primary_caps in the first layer and (translates to sum of layer_sizes cores total)
+                        activation_function=nnx.relu
                     )
-            
-            # define dictionary to store the metrics
-            metrics_history = {
-                                'train_loss': [],
-                                'train_accuracy': [],
-                                'test_loss': [],
-                                'valid_loss': [],
-                                'valid_accuracy': [],
-                                'test_accuracy': [],
-                                'step': []
-                        }
-            
-            eval_every = dataset_dict['eval_every']
-            train_steps = dataset_dict['train_steps']
+                
+                # define the optimizer
+                optimizer = nnx.Optimizer(
+                                model,
+                                optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay'])
+                            )
+                
+                # define metrics logging
+                metrics = nnx.MultiMetric(
+                            accuracy=nnx.metrics.Accuracy(),
+                            loss=nnx.metrics.Average('loss')
+                        )
+                
+                # define dictionary to store the metrics
+                metrics_history = {
+                                    'train_loss': [],
+                                    'train_accuracy': [],
+                                    'test_loss': [],
+                                    'valid_loss': [],
+                                    'valid_accuracy': [],
+                                    'test_accuracy': [],
+                                    'step': []
+                            }
+                
+                eval_every = dataset_dict['eval_every']
+                train_steps = dataset_dict['train_steps']
 
-            # TRAINING LOOP
-            for step, batch in enumerate(train_ds.as_numpy_iterator()):
-                # append the step to the metrics history
-                metrics_history['step'].append(step)
-                # train step
-                train_step(model, optimizer, metrics, batch)
+                # TRAINING LOOP
+                for step, batch in enumerate(train_ds.as_numpy_iterator()):
+                    # train step
+                    train_step(model, optimizer, metrics, batch)
 
-                # add the metrics
-                if step > 0 and (step % eval_every == 0 or step == train_steps - 1):
-                    # log the training metrics
-                    for metric, value in metrics.compute().items():
-                        metrics_history[f"train_{metric}"].append(float(value))
-                    metrics.reset() 
+                    # add the metrics
+                    if step > 0 and (step % eval_every == 0 or step == train_steps - 1):
 
-                    # EVALUATE ON VALIDATION SET
-                    for valid_batch in valid_ds.as_numpy_iterator():
-                        eval_step(model, metrics, valid_batch)
-                    
-                    # log the validation metrics
-                    for metric, value in metrics.compute().items():
-                        metrics_history[f"valid_{metric}"].append(float(value))
-                    metrics.reset()
+                        # append the step to the metrics history
+                        metrics_history['step'].append(step)
 
-                    # Evaluate on the test step for EACH step: We later pick the test accuracy and loss corresponding to the best validation accuracy and loss.
-                    for test_batch in test_ds.as_numpy_iterator():
-                        eval_step(model, metrics, test_batch)
+                        # log the training metrics
+                        for metric, value in metrics.compute().items():
+                            metrics_history[f"train_{metric}"].append(float(value))
+                        metrics.reset() 
 
-                    # log the test metrics
-                    for metric, value in metrics.compute().items():
-                        metrics_history[f"test_{metric}"].append(float(value))
-                    metrics.reset()
+                        # EVALUATE ON VALIDATION SET
+                        for valid_batch in valid_ds.as_numpy_iterator():
+                            eval_step(model, metrics, valid_batch)
+                        
+                        # log the validation metrics
+                        for metric, value in metrics.compute().items():
+                            metrics_history[f"valid_{metric}"].append(float(value))
+                        metrics.reset()
 
-            # print("=="*20)
-            # print(f"Test accuracy: {metrics_history['test_accuracy'][-1]}")
-            # print(f"Test loss: {metrics_history['test_loss'][-1]}")
-            # print("=="*20)
+                        # Evaluate on the test step for EACH step: We later pick the test accuracy and loss corresponding to the best validation accuracy and loss.
+                        for test_batch in test_ds.as_numpy_iterator():
+                            eval_step(model, metrics, test_batch)
 
-            # pick the index for the best validation accuracy
-            best_valid_index = int(jnp.argmax(jnp.array(metrics_history['valid_accuracy'])))
-            best_step = metrics_history['step'][best_valid_index]
+                        # log the test metrics
+                        for metric, value in metrics.compute().items():
+                            metrics_history[f"test_{metric}"].append(float(value))
+                        metrics.reset()
 
-            # save the best metrics
-            test_accuracy = metrics_history['test_accuracy'][best_valid_index]
-            test_loss = metrics_history['test_loss'][best_valid_index]
-            best_valid_accuracy = metrics_history['valid_accuracy'][best_valid_index]
-            best_valid_loss = metrics_history['valid_loss'][best_valid_index]
-            best_train_accuracy = metrics_history['train_accuracy'][best_valid_index]
-            best_train_loss = metrics_history['train_loss'][best_valid_index]
+                # print("=="*20)
+                # print(f"Test accuracy: {metrics_history['test_accuracy'][-1]}")
+                # print(f"Test loss: {metrics_history['test_loss'][-1]}")
+                # print("=="*20)
 
-            print("=="*20)
-            print(f"Test accuracy: {test_accuracy}")
-            print(f"Test loss: {test_loss}")
-            print("=="*20)
+                # pick the index for the best validation accuracy
+                best_valid_index = int(jnp.argmax(jnp.array(metrics_history['valid_accuracy'])))
+                best_step = metrics_history['step'][best_valid_index]
 
-            # append to the arch_dict
-            arch_dict['test_accuracy'].append(float(test_accuracy))
-            arch_dict['valid_accuracy'].append(float(best_valid_accuracy))
-            arch_dict['train_accuracy'].append(float(best_train_accuracy))
-            arch_dict['test_loss'].append(float(test_loss))
-            arch_dict['valid_loss'].append(float(best_valid_loss))
-            arch_dict['train_loss'].append(float(best_train_loss))
-            arch_dict['connection_probability'].append(float(p))
-            arch_dict['step'].append(int(best_step))
-            arch_dict['resamples'].append(int(r))
+                # save the best metrics
+                test_accuracy = metrics_history['test_accuracy'][best_valid_index]
+                test_loss = metrics_history['test_loss'][best_valid_index]
+                best_valid_accuracy = metrics_history['valid_accuracy'][best_valid_index]
+                best_valid_loss = metrics_history['valid_loss'][best_valid_index]
+                best_train_accuracy = metrics_history['train_accuracy'][best_valid_index]
+                best_train_loss = metrics_history['train_loss'][best_valid_index]
+
+                print("=="*20)
+                print(f"Num cores: {sum(model.layer_sizes) - model.input_eff_capsules}")
+                print(f"Test accuracy: {test_accuracy}")
+                print(f"Test loss: {test_loss}")
+                print("=="*20)
+
+                # append to the arch_dict
+                arch_dict['test_accuracy'].append(float(test_accuracy))
+                arch_dict['valid_accuracy'].append(float(best_valid_accuracy))
+                arch_dict['train_accuracy'].append(float(best_train_accuracy))
+                arch_dict['test_loss'].append(float(test_loss))
+                arch_dict['valid_loss'].append(float(best_valid_loss))
+                arch_dict['train_loss'].append(float(best_train_loss))
+                arch_dict['connection_probability'].append(float(p))
+                arch_dict['step'].append(int(best_step))
+                arch_dict['resamples'].append(int(r))
+                arch_dict['num_cores'].append(int(sum(model.layer_sizes) - model.input_eff_capsules))
     
     # save the metrics
     # save the architecture dict
@@ -335,7 +350,7 @@ def run_sweep_analysis():
     # create the logs directory if it doesn't exist
     os.makedirs(logs_path, exist_ok=True)
     
-    filename_ = os.path.join(logs_path, f'capsnet_scrramble_relu_caps{sum(model.layer_sizes):d}_{today}.pkl')
+    filename_ = os.path.join(logs_path, f'capsnet_scrramble_relu_caps{sum(model.layer_sizes) - model.input_eff_capsules:d}_{today}.pkl')
     with open(filename_, 'wb') as f:
         pickle.dump(arch_dict, f)
 

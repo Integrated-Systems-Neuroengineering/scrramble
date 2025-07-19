@@ -588,10 +588,11 @@ def train_cifar10(
         train_ds,
         valid_ds,
         test_ds,
-        hyperparameters,
         dataset_dict,
         optimizer: nnx.Optimizer,
         metrics: nnx.MultiMetric,
+        save_model_flag: bool = False,
+        save_metrics_flag: bool = False,
 
 ):
     eval_every = dataset_dict['eval_every']
@@ -612,6 +613,71 @@ def train_cifar10(
         metrics_history['step'].append(int(step))
 
         train_step(model, optimizer, metrics, batch)
+
+        if (step > 0) and (step%eval_every == 0 or step == train_steps-1):
+            metrics_history['step'].append(step)
+
+            # Log the training metrics.
+            for metric, value in metrics.compute().items():  # Compute the metrics.
+                metrics_history[f'train_{metric}'].append(float(value))  # Record the metrics.
+            metrics.reset()  # Reset the metrics for the test set.
+
+            # Compute the metrics on the validation set after each training epoch.
+            for valid_batch in valid_ds.as_numpy_iterator():
+                eval_step(model, metrics, valid_batch)
+
+            # Log the validation metrics.
+            for metric, value in metrics.compute().items():
+                metrics_history[f'valid_{metric}'].append(float(value))
+            metrics.reset()  # Reset the metrics for the next training epoch.
+
+            print(f"Step {step}: Valid loss: {metrics_history['valid_loss'][-1]}, Accuracy: {metrics_history['valid_accuracy'][-1]}")
+
+    best_accuracy = max(metrics_history['valid_accuracy'])
+    print(f"Best accuracy: {best_accuracy}")
+
+    # find the test set accuracy
+    for test_batch in test_ds.as_numpy_iterator():
+        eval_step(model, metrics, test_batch)
+        # print the metrics
+    for metric, value in metrics.compute().items():
+        metrics_history[f'test_{metric}'].append(float(value))
+    metrics.reset()  # Reset the metrics for the next training epoch.
+
+    print("="*50)
+    print(f"Test loss: {metrics_history['test_loss'][-1]}, Test accuracy: {metrics_history['test_accuracy'][-1]}")
+    print("="*50)
+
+    if save_model_flag:
+        today = date.today().isoformat()
+        filename = f"sscamble_mnist_model_ci_{model.input_cores}_co_{model.output_cores}_acc_{best_accuracy*100:.0f}_{today}.pkl"
+        graphdef, state = nnx.split(model)
+        save_model(state, filename)
+
+    if save_metrics_flag:
+        today = date.today().isoformat()
+        filename = f"sscamble_mnist_metrics_ci_{model.input_cores}_co_{model.output_cores}_acc_{best_accuracy*100:.0f}_{today}.pkl"
+        save_metrics(metrics_history, filename)
+
+    return model
+
+if __name__ == "__main__":
+    model = train_cifar10(
+        model=model,
+        train_ds=train_ds,
+        valid_ds=valid_ds,
+        test_ds=test_ds,
+        dataset_dict=dataset_dict,
+        optimizer=optimizer,
+        metrics=metrics,
+        save_model_flag=False,  # set to True to save the model
+        save_metrics_flag=False,  # set to True to save the metrics
+    )
+
+
+        
+
+        
 
 
 

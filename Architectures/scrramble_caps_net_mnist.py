@@ -168,15 +168,15 @@ class ScRRAMBLeCapsNet(nnx.Module):
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 64, # 64 is a good batch size for MNIST
-    'train_steps': 20000, # run for longer, 20000 is good!
+    'batch_size': 100, # 64 is a good batch size for MNIST
+    'train_steps': 30, # run for longer, 20000 is good!
     'binarize': True, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 1000,
+    'eval_every': 2,
 }
 
 # loading the dataset
@@ -220,7 +220,7 @@ model = ScRRAMBLeCapsNet(
     input_vector_size=1024,
     capsule_size=256,
     receptive_field_size=64,
-    connection_probability=0.1,
+    connection_probability=0.2,
     rngs=rngs,
     layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
     activation_function=nnx.relu
