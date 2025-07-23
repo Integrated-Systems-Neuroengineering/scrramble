@@ -244,9 +244,9 @@ class ReconstructionLayer(nnx.Module):
                  ):
         
         
-        self.linear1 = nnx.Linear(in_features=input_features, out_features=500, rngs=rngs)
-        # self.linear2 = nnx.Linear(in_features=4000, out_features=4000, rngs=rngs)
-        self.linear3 = nnx.Linear(in_features=500, out_features=3072, rngs=rngs)
+        self.linear1 = nnx.Linear(in_features=input_features, out_features=4000, rngs=rngs)
+        self.linear2 = nnx.Linear(in_features=4000, out_features=4000, rngs=rngs)
+        self.linear3 = nnx.Linear(in_features=4000, out_features=3072, rngs=rngs)
 
     def __call__(self, x: jax.Array) -> jax.Array:
         """
@@ -254,7 +254,7 @@ class ReconstructionLayer(nnx.Module):
         """
 
         x = nnx.relu(self.linear1(x))
-        # x = nnx.relu(self.linear2(x))
+        x = nnx.relu(self.linear2(x))
         x = nnx.sigmoid(self.linear3(x))
 
         return x
@@ -515,7 +515,7 @@ hyperparameters = {
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 30, # 64 is a good batch size for MNIST
+    'batch_size': 100, # 64 is a good batch size for MNIST
     'train_steps': 20000, # run for longer, 20000 is good!
     'binarize': True, 
     'greyscale': False,
@@ -545,7 +545,7 @@ train_ds, valid_ds, test_ds = load_cifar10(
 
 model_params = {
     'input_vector_size': 3072,  # CIFAR-10 images are 32x32x3 = 3072
-    'num_primary_capsules': 20,  # number of primary capsules
+    'num_primary_capsules': 50,  # number of primary capsules
     'num_parent_capsules': 10,  # number of parent capsules
     'connection_probability': 0.2,  # connection probability between capsules
 
