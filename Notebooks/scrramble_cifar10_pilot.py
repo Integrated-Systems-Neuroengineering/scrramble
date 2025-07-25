@@ -200,39 +200,6 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         return Wc
 
 
-## testing
-def __main__():
-    rngs = nnx.Rngs(params=0, activation=1, default=46732)
-    test_input = jax.random.normal(rngs.params(), (10, 1000))
-    test_net = ScRRAMBLeCapsLayer(
-        input_vector_size=1000,
-        num_capsules=4,
-        capsule_size=256,
-        receptive_field_size=64,
-        connection_probability=0.8,
-        rngs=rngs
-    )
-
-    nnx.display(test_net)
-
-    test_out = jax.vmap(test_net, in_axes=(0,))(test_input)
-
-    # testing the output shape
-    print(f"Test output shape = {test_out.shape}")
-    test_out = test_out.flatten()
-    test_out = jax.vmap(quantized_relu_ste, in_axes=(0, None, None))(test_out, 8, 1.0)
-    print(f"Some outputs = {test_out[:10]}")
-
-    # testing the connectivity visualization
-    Wc = test_net.visualize_connectivity()
-    print(f"Connectivity matrix shape = {Wc.shape}")
-    # print some values
-    print(f"Some connectivity values = {Wc[:4, :4]}")
-
-# if __name__ == "__main__":
-#     __main__()
-
-
 class ReconstructionLayer(nnx.Module):
     """
     Feedforward layer that reconstructs the input from parent capsules.
@@ -267,6 +234,7 @@ class ScRRAMBLeCIFAR(nnx.Module):
                 input_vector_size: int,
                 num_primary_capsules: int,
                 num_parent_capsules: int,
+                num_intermediate_capsules: int,
                 connection_probability: float,
                 rngs: nnx.Rngs,
                 receptive_field_size: int = 64,
@@ -281,6 +249,7 @@ class ScRRAMBLeCIFAR(nnx.Module):
         self.rngs = rngs
         self.receptive_field_size = receptive_field_size
         self.capsule_size = capsule_size
+        self.num_intermediate_capsules = num_intermediate_capsules
 
         self.receptive_field_per_capsule = math.ceil(self.capsule_size / self.receptive_field_size)
 
@@ -294,6 +263,15 @@ class ScRRAMBLeCIFAR(nnx.Module):
         self.primary_caps_layer = ScRRAMBLeCapsLayer(
             input_vector_size=self.input_vector_size,
             num_capsules=self.num_primary_capsules,
+            capsule_size=self.capsule_size,
+            receptive_field_size=self.receptive_field_size,
+            connection_probability=self.connection_probability,
+            rngs=self.rngs,
+        )
+
+        self.intermediate_caps_layer = ScRRAMBLeCapsLayer(
+            input_vector_size=self.num_primary_capsules*self.capsule_size,
+            num_capsules=self.num_intermediate_capsules,
             capsule_size=self.capsule_size,
             receptive_field_size=self.receptive_field_size,
             connection_probability=self.connection_probability,
@@ -390,6 +368,9 @@ class ScRRAMBLeCIFAR(nnx.Module):
         # pass through the primary capsule layer
         x = jax.vmap(self.primary_caps_layer, in_axes=(0,))(x)
 
+        # pass through the intermediate capsule layer
+        x = jax.vmap(self.intermediate_caps_layer, in_axes=(0,))(x)
+
         # pass through the parent capsule layer
         parent_input = x + x_skip.reshape(x_skip.shape[0], self.num_primary_capsules, self.receptive_field_per_capsule, self.receptive_field_size) 
         x = jax.vmap(self.parent_capsule_layer, in_axes=(0,))(parent_input)
@@ -456,7 +437,7 @@ def margin_loss(
 
 
 
-def loss_fn(model, batch, num_classes=10, m_plus=0.9, m_minus=0.1, lambda_=0.5, regularizer=5e-4):
+def loss_fn(model, batch, num_classes=10, m_plus=0.9, m_minus=0.1, lambda_=0.5, regularizer=5e-6):
     """
     Combine margin loss and reconstruction loss.
     Args:
@@ -505,7 +486,7 @@ def eval_step(model: ScRRAMBLeCIFAR, metrics: nnx.MultiMetric, batch, loss_fn: C
 
 # hyperparameters
 hyperparameters = {
-    'learning_rate': 0.7e-4, # 1e-3 seems to work well
+    'learning_rate': 1e-4, # 1e-3 seems to work well
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }
@@ -545,7 +526,8 @@ train_ds, valid_ds, test_ds = load_cifar10(
 
 model_params = {
     'input_vector_size': 3072,  # CIFAR-10 images are 32x32x3 = 3072
-    'num_primary_capsules': 50,  # number of primary capsules
+    'num_primary_capsules': 100,  # number of primary capsules
+    'num_intermediate_capsules': 100,  # number of intermediate capsules
     'num_parent_capsules': 10,  # number of parent capsules
     'connection_probability': 0.2,  # connection probability between capsules
 
@@ -556,6 +538,7 @@ rngs = nnx.Rngs(params=0, activations=1, permute=2, default=2345)
 model = ScRRAMBLeCIFAR(
     input_vector_size=model_params['input_vector_size'],
     num_primary_capsules=model_params['num_primary_capsules'],
+    num_intermediate_capsules=model_params['num_intermediate_capsules'],
     num_parent_capsules=model_params['num_parent_capsules'],
     connection_probability=model_params['connection_probability'],
     rngs=rngs,

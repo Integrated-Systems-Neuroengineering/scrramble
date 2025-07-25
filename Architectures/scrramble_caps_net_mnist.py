@@ -46,6 +46,8 @@ def save_metrics(metrics_dict, filename):
     metrics_dir = "/local_disk/vikrant/scrramble/logs"
     filename = os.path.join(metrics_dir, filename)
 
+    os.makedirs(os.path.dirname(filename), exist_ok=True)  # Ensure the directory exists.
+
     with open(filename, 'wb') as f:
         pickle.dump(metrics_dict, f)
 
@@ -59,6 +61,8 @@ def save_model(state, filename):
 
     checkpoint_dir = "/local_disk/vikrant/scrramble/models"
     filename_ = os.path.join(checkpoint_dir, filename)
+
+    os.makedirs(os.path.dirname(filename_), exist_ok=True)  # Ensure the directory exists.
 
     with open(filename_, 'wb') as f:
         pickle.dump(state, f)
@@ -169,14 +173,14 @@ class ScRRAMBLeCapsNet(nnx.Module):
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
     'batch_size': 100, # 64 is a good batch size for MNIST
-    'train_steps': 30, # run for longer, 20000 is good!
+    'train_steps': int(2e4), # run for longer, 20000 is good!
     'binarize': True, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 2,
+    'eval_every': 1000,
 }
 
 # loading the dataset
@@ -222,7 +226,7 @@ model = ScRRAMBLeCapsNet(
     receptive_field_size=64,
     connection_probability=0.2,
     rngs=rngs,
-    layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+    layer_sizes=[60, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
     activation_function=nnx.relu
 )
 
@@ -313,13 +317,13 @@ def train_scrramble_capsnet_mnist(
 
     if save_model_flag:
         today = date.today().isoformat()
-        filename = f"sscamble_mnist_model_ci_{model.input_cores}_co_{model.output_cores}_acc_{best_accuracy*100:.0f}_{today}.pkl"
+        filename = f"sscamble_mnist_capsnet_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
         graphdef, state = nnx.split(model)
         save_model(state, filename)
 
     if save_metrics_flag:
         today = date.today().isoformat()
-        filename = f"sscamble_mnist_metrics_ci_{model.input_cores}_co_{model.output_cores}_acc_{best_accuracy*100:.0f}_{today}.pkl"
+        filename = f"sscamble_mnist_capsnet_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
         save_metrics(metrics_history, filename)
 
     return model
@@ -331,8 +335,8 @@ if __name__ == "__main__":
         train_ds=train_ds,
         valid_ds=valid_ds,
         dataset_dict=dataset_dict,
-        save_model_flag=False,
-        save_metrics_flag=False,
+        save_model_flag=True,
+        save_metrics_flag=True,
 
     )
 
