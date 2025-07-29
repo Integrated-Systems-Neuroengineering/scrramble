@@ -127,27 +127,27 @@ class ScRRAMBLeCapsNetWithReconstruction(nnx.Module):
         return x_recon, x
     
 
-# testing
-def __main__():
-    key = jax.random.key(10)
-    key1, key2, key3, key4 = jax.random.split(key, 4)
-    rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
+# # testing
+# def __main__():
+#     key = jax.random.key(10)
+#     key1, key2, key3, key4 = jax.random.split(key, 4)
+#     rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
 
-    model = ScRRAMBLeCapsNetWithReconstruction(
-        input_vector_size=1024,
-        capsule_size=256,
-        receptive_field_size=64,
-        connection_probability=0.2,
-        rngs=rngs,
-        layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
-        activation_function=nnx.relu
-    )
+#     model = ScRRAMBLeCapsNetWithReconstruction(
+#         input_vector_size=1024,
+#         capsule_size=256,
+#         receptive_field_size=64,
+#         connection_probability=0.2,
+#         rngs=rngs,
+#         layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+#         activation_function=nnx.relu
+#     )
 
-    # dummy input
-    x_test = jax.random.normal(rngs.default(), (10, 28, 28, 1))
-    recon, caps_out = model(x_test)
-    print("Reconstruction shape:", recon.shape)
-    print("Capsule output shape:", caps_out.shape)
+#     # dummy input
+#     x_test = jax.random.normal(rngs.default(), (10, 28, 28, 1))
+#     recon, caps_out = model(x_test)
+#     print("Reconstruction shape:", recon.shape)
+#     print("Capsule output shape:", caps_out.shape)
 
-if __name__ == "__main__":
-    __main__()
+# if __name__ == "__main__":
+#     __main__()
