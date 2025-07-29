@@ -23,6 +23,8 @@ from tqdm import tqdm
 from datetime import date
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+# mpl.use('Agg')  # Use a non-interactive backend for matplotlib.
 
 from models import ScRRAMBLeCapsLayer
 
@@ -334,13 +336,13 @@ model = ScRRAMBLeCapsNetWithReconstruction(
     receptive_field_size=64,
     connection_probability=0.2,
     rngs=rngs,
-    layer_sizes=[60, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+    layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
     activation_function=nnx.relu
 )
 
 # optimizers
 hyperparameters = {
-    'learning_rate': 0.7e-4, # 1e-3 seems to work well
+    'learning_rate': 0.8e-4, # 1e-3 seems to work well
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }
@@ -425,13 +427,13 @@ def train_scrramble_capsnet_mnist(
 
     if save_model_flag:
         today = date.today().isoformat()
-        filename = f"sscamble_mnist_capsnet_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
+        filename = f"sscamble_mnist_capsnet_recon_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
         graphdef, state = nnx.split(model)
         save_model(state, filename)
 
     if save_metrics_flag:
         today = date.today().isoformat()
-        filename = f"sscamble_mnist_capsnet_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
+        filename = f"sscamble_mnist_capsnet_recon_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
         save_metrics(metrics_history, filename)
 
     return model
@@ -443,8 +445,8 @@ if __name__ == "__main__":
         train_ds=train_ds,
         valid_ds=valid_ds,
         dataset_dict=dataset_dict,
-        save_model_flag=False,
-        save_metrics_flag=False,
+        save_model_flag=True,
+        save_metrics_flag=True,
 
     )
 
