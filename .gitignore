@@ -3,6 +3,7 @@
 # directories
 Docs/
 Figures/
+Plotting/
 
 # Ignore compiled files
 *.o

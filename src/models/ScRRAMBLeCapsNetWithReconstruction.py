@@ -116,7 +116,8 @@ class ScRRAMBLeCapsNetWithReconstruction(nnx.Module):
             shape_x = x.shape
             # x = x.flatten()
             # x = jax.vmap(self.activation_function, in_axes=(0, None, None))(x, 8, 1.0) # 8 bits, 1.0 is the max clipping threshold.
-            x = self.activation_function(x)  # Apply the activation function.
+            # x = self.activation_function(x)  # Apply the activation function.
+            x = jax.vmap(self.activation_function, in_axes=(0,))(x)  # Apply the activation function.
             x = jnp.reshape(x, shape_x)
 
         # add the reconstruction network
