@@ -23,6 +23,8 @@ from tqdm import tqdm
 from datetime import date
 
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 from models import ScRRAMBLeCapsLayer
 
@@ -35,8 +37,28 @@ from models import ScRRAMBLeCapsNetWithReconstruction
 import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
 
+today = date.today().isoformat()
+
 model_path = f"/local_disk/vikrant/scrramble/models/sscamble_mnist_capsnet_recon_capsules60_acc_99_2025-07-28.pkl"
 training_metrics_path = f" /local_disk/vikrant/scrramble/logs/sscamble_mnist_capsnet_recon_capsules60_acc_99_2025-07-28.pkl"
+
+def save_metrics(metrics_dict, filename):
+    """
+    Save the metrics to a file.
+    Args:
+        metrics_dict: dict, metrics to save.
+        filename: str, name of the file to save the metrics to.
+    """
+
+    metrics_dir = "/local_disk/vikrant/scrramble/logs"
+    filename = os.path.join(metrics_dir, filename)
+
+    os.makedirs(os.path.dirname(filename), exist_ok=True)  # Ensure the directory exists.
+
+    with open(filename, 'wb') as f:
+        pickle.dump(metrics_dict, f)
+
+    print(f"Metrics saved to {filename}")
 
 # -------------------------------------------------------
 # Quantization function
@@ -133,23 +155,23 @@ metrics = nnx.MultiMetric(
 # -------------------------------------------------------
 # Load pretrained model
 # -------------------------------------------------------
-key = jax.random.key(10)
-key1, key2, key3, key4 = jax.random.split(key, 4)
-rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
+# key = jax.random.key(10)
+# key1, key2, key3, key4 = jax.random.split(key, 4)
+# rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
 
-model = ScRRAMBLeCapsNetWithReconstruction(
-    input_vector_size=1024,
-    capsule_size=256,
-    receptive_field_size=64,
-    connection_probability=0.2,
-    rngs=rngs,
-    layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
-    activation_function=qrelu_ptq
-)
+# model = ScRRAMBLeCapsNetWithReconstruction(
+#     input_vector_size=1024,
+#     capsule_size=256,
+#     receptive_field_size=64,
+#     connection_probability=0.2,
+#     rngs=rngs,
+#     layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+#     activation_function=qrelu_ptq
+# )
 
-loaded_state = pickle.load(open(model_path, "rb"))
-graphdef, old_state = nnx.split(model)
-model = nnx.merge(graphdef, loaded_state)
+# loaded_state = pickle.load(open(model_path, "rb"))
+# graphdef, old_state = nnx.split(model)
+# model = nnx.merge(graphdef, loaded_state)
 
 # -------------------------------------------------------
 # Load the data
@@ -180,10 +202,11 @@ train_ds, valid_ds, test_ds = load_and_augment_mnist(
 # -------------------------------------------------------
 # Looping over 
 # -------------------------------------------------------
-bits_list = jnp.arange(1, 9).tolist()
+bits_list = jnp.arange(1, 33).tolist()
 logs = defaultdict(list)
 
-key = jax.random.key(10)
+key1 = jax.random.key(10)
+
 
 for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep"):
     print("--"*40)
@@ -192,10 +215,19 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
 
     logs['bits'].append(int(bits))
 
-    activation_fn = partial(qrelu_ptq, bits=bits, max_value=1.0)
+    # loading the dataset
+    train_ds, valid_ds, test_ds = load_and_augment_mnist(
+        batch_size=dataset_dict['batch_size'],
+        train_steps=dataset_dict['train_steps'],
+        data_dir=dataset_dict['data_dir'],
+        seed=dataset_dict['seed'],
+        shuffle_buffer=dataset_dict['shuffle_buffer'],
+    )
+
+    activation_fn = partial(qrelu_ptq, bits=bits, max_value=2.0)
 
     # loading the model
-    key1, key2, key3, key4 = jax.random.split(key, 4)
+    key1, key2, key3, key4 = jax.random.split(key1, 4)
     rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
 
     model = ScRRAMBLeCapsNetWithReconstruction(
@@ -204,7 +236,7 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
         receptive_field_size=64,
         connection_probability=0.2,
         rngs=rngs,
-        layer_sizes=[50, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+        layer_sizes=[50, 10], 
         activation_function=activation_fn
     )
 
@@ -220,21 +252,31 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
 
     logs['test_accuracy'].append(float(jnp.mean(jnp.array(accuracy_per_batch))))
 
-    # # evaluate the model
-    # for test_batch in test_ds.as_numpy_iterator():
-    #     eval(model, metrics, test_batch)
+        # # evaluate the model
+        # for test_batch in test_ds.as_numpy_iterator():
+        #     eval(model, metrics, test_batch)
 
-    # # metrics
-    # for metric, value in metrics.compute().items():
-    #     logs[f'test_{metric}'].append(float(value))
-    # metrics.reset()  # Reset the metrics for the next training epoch.
+        # # metrics
+        # for metric, value in metrics.compute().items():
+        #     logs[f'test_{metric}'].append(float(value))
+        # metrics.reset()  # Reset the metrics for the next training epoch.
 
     print(f"Test accuracy for {bits} bits: {logs['test_accuracy'][-1]}")
 
-    ## TODO: Add a save script
+## TODO: Add a save script
+save_metrics(logs, f"ptq_relu_cores{sum(model.layer_sizes)-model.input_eff_capsules}_{today}.pkl")
+
+print("++"*50)
+print(f"Saved at {os.path.join('/local_disk/vikrant/scrramble/logs', f'ptq_relu_cores{sum(model.layer_sizes)-model.input_eff_capsules}_{today}.pkl')}")
+print("++"*50)
+
+
+
+    
 
 fig, ax = plt.subplots(figsize=(5, 5))
-ax.plot(logs['bits'], logs['test_accuracy'], marker='o')
+# ax.plot(logs['bits'], logs['test_accuracy'], marker='o')
+ax.plot(logs['bits'], logs['test_accuracy'], marker='o', linestyle='-', color='b')
 ax.set_xlabel('Number of Bits')
 ax.set_ylabel('Test Accuracy')
 ax.set_title('Test Accuracy vs Number of Bits')
