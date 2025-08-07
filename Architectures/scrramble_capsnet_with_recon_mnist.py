@@ -336,7 +336,7 @@ model = ScRRAMBLeCapsNetWithReconstruction(
     receptive_field_size=64,
     connection_probability=0.2,
     rngs=rngs,
-    layer_sizes=[20, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+    layer_sizes=[10, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
     activation_function=nnx.relu
 )
 

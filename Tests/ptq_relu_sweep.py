@@ -39,7 +39,7 @@ import tensorflow as tf  # TensorFlow / `tf.data` operations.
 
 today = date.today().isoformat()
 
-model_path = f"/local_disk/vikrant/scrramble/models/sscamble_mnist_capsnet_recon_capsules60_acc_99_2025-07-28.pkl"
+model_path = f"/local_disk/vikrant/scrramble/models/sscamble_mnist_capsnet_recon_capsules20_acc_98_2025-08-04.pkl"
 training_metrics_path = f" /local_disk/vikrant/scrramble/logs/sscamble_mnist_capsnet_recon_capsules60_acc_99_2025-07-28.pkl"
 
 def save_metrics(metrics_dict, filename):
@@ -64,7 +64,7 @@ def save_metrics(metrics_dict, filename):
 # Quantization function
 # -------------------------------------------------------
 def qrelu_ptq(x: jax.Array,
-              bits: int = 3,
+              bits: int = 8,
               max_value:float = 2.0):
     """
     Quantized ReLU with quantization
@@ -234,9 +234,9 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
         input_vector_size=1024,
         capsule_size=256,
         receptive_field_size=64,
-        connection_probability=0.2,
+        connection_probability=0.5,
         rngs=rngs,
-        layer_sizes=[50, 10], 
+        layer_sizes=[10, 10], 
         activation_function=activation_fn
     )
 
