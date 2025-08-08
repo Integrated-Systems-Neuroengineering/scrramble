@@ -280,7 +280,7 @@ def margin_loss(
 
     return loss, caps_output_magnitude
 
-def loss_fn(model, batch, num_classes=10, m_plus=0.9, m_minus=0.1, lambda_=0.5, regularizer=5e-4):
+def loss_fn(model, batch, num_classes=10, m_plus=0.9, m_minus=0.1, lambda_=0.5, regularizer=1e-4):
     """
     Combine margin loss and reconstruction loss.
     Args:
@@ -336,7 +336,7 @@ model = ScRRAMBLeCapsNetWithReconstruction(
     receptive_field_size=64,
     connection_probability=0.2,
     rngs=rngs,
-    layer_sizes=[10, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+    layer_sizes=[40, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
     activation_function=nnx.relu
 )
 
@@ -445,8 +445,8 @@ if __name__ == "__main__":
         train_ds=train_ds,
         valid_ds=valid_ds,
         dataset_dict=dataset_dict,
-        save_model_flag=True,
-        save_metrics_flag=True,
+        save_model_flag=False,
+        save_metrics_flag=False,
 
     )
 

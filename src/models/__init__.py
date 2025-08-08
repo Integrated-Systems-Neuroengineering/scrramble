@@ -9,6 +9,8 @@ from .ScRRAMBLe import ScRRAMBLeLayer, ScRRAMBLeClassifier
 from .ScRRAMBLeCapsLayer import ScRRAMBLeCapsLayer
 from .ScRRAMBLeCapsNet import ScRRAMBLeCapsNet
 from .ScRRAMBLeCapsNetWithReconstruction import ScRRAMBLeCapsNetWithReconstruction
+from .PartialSumsLayer import PartialSumsLayer
+from .PartialSumsNetwork import PartialSumsNetwork
 
 __all__  = ["TestConvNet", 
             "BlockwiseDense", 
@@ -20,4 +22,6 @@ __all__  = ["TestConvNet",
             "ScRRAMBLeClassifier", 
             "ScRRAMBLeCapsLayer", 
             "ScRRAMBLeCapsNet", 
-            "ScRRAMBLeCapsNetWithReconstruction"]
+            "ScRRAMBLeCapsNetWithReconstruction",
+            "PartialSumsLayer",
+            "PartialSumsNetwork"]
