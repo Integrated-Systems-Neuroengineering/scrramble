@@ -113,18 +113,20 @@ train_ds, valid_ds, test_ds = load_and_augment_mnist(
 # -------------------------------------------------------
 # Looping over 
 # -------------------------------------------------------
-bits_list = jnp.arange(1, 33).tolist()
+# bits_list = jnp.arange(1, 33).tolist()
+max_vals_list = jnp.logspace(-6, 5, 30, base=2).tolist()
 scrramble_logs = defaultdict(list)
 ps_logs = defaultdict(list)
 
 key1 = jax.random.key(10)
 
-for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep"):
+# for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep"):
+for i, max_val in tqdm(enumerate(max_vals_list), total=len(max_vals_list), desc="Entropy sweep"):
     print("--"*40)
-    print(f"Running inference for {bits} bits")
+    print(f"Running inference for {max_val} bits")
     print("--"*40)
 
-    activation_fn = partial(qrelu, bits=bits, max_value=2.0)
+    activation_fn = partial(qrelu, bits=8, max_value=max_val)
 
     # loading the model
     key1, key2, key3, key4 = jax.random.split(key1, 4)
@@ -160,9 +162,9 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
         accuracy_per_batch.append(float(jnp.mean(out == test_batch['label'])))
 
     scrramble_logs['test_accuracy'].append(float(jnp.mean(jnp.array(accuracy_per_batch))))
-    scrramble_logs['bits'].append(int(bits))
+    scrramble_logs['max_val'].append(float(max_val))
 
-    print(f"ScrRAMBLE model accuracy for {bits} bits: {scrramble_logs['test_accuracy'][-1]}")
+    print(f"ScrRAMBLE model accuracy for {max_val} bits: {scrramble_logs['test_accuracy'][-1]}")
 
     # evaluate partial sums model
     accuracy_per_batch = []
@@ -172,17 +174,17 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
         accuracy_per_batch.append(float(jnp.mean(out == test_batch['label'])))
 
     ps_logs['test_accuracy'].append(float(jnp.mean(jnp.array(accuracy_per_batch))))
-    ps_logs['bits'].append(int(bits))
-    
-    print(f"Partial Sums model accuracy for {bits} bits: {ps_logs['test_accuracy'][-1]}")
+    ps_logs['max_val'].append(float(max_val))
+
+    print(f"Partial Sums model accuracy for {max_val} bits: {ps_logs['test_accuracy'][-1]}")
 
 # save the logs
-save_metrics(scrramble_logs, f"scrramble_ptq_sweep_cores_50_{today}.pkl")
-save_metrics(ps_logs, f"partial_sums_ptq_sweep_cores_50_{today}.pkl")
+save_metrics(scrramble_logs, f"scrramble_ptq_entropy_sweep_cores_50_bits_8_{today}.pkl")
+save_metrics(ps_logs, f"partial_sums_ptq_entropy_sweep_cores_50_bits_8_{today}.pkl")
 
 print("++"*50)
-print(f"ScRRAMBLe Logs Saved at: {os.path.join('/local_disk/vikrant/scrramble/logs', f'scrramble_ptq_sweep_cores_50_{today}.pkl')}")
-print(f"Partial Sums Logs Saved at: {os.path.join('/local_disk/vikrant/scrramble/logs', f'partial_sums_ptq_sweep_cores_50_{today}.pkl')}")
+print(f"ScRRAMBLe Logs Saved at: {os.path.join('/local_disk/vikrant/scrramble/logs', f'scrramble_ptq_entropy_sweep_cores_50_bits_8_{today}.pkl')}")
+print(f"Partial Sums Logs Saved at: {os.path.join('/local_disk/vikrant/scrramble/logs', f'partial_sums_ptq_entropy_sweep_cores_50_bits_8_{today}.pkl')}")
 print("++"*50)
 
 
