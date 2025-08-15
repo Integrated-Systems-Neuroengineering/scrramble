@@ -8,8 +8,6 @@ import flax
 from flax import nnx
 import optax
 from functools import partial
-from models.ScRRAMBLeCapsLayer import ScRRAMBLeCapsLayer
-from models import ScRRAMBLeCapsNet
 from utils.activation_functions import quantized_relu_ste, squash
 
 
