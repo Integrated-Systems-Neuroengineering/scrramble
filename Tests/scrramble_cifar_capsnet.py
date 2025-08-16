@@ -145,6 +145,7 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         x: jax.Array. flattened input, No batch dimension. Shape should be (input_vector_size,). e.g. (1000,)
         """
 
+
         # # pad the input with zeros if the length is not a multiple of capsule size
         # if x.shape[0]%self.capsule_size != 0:
         #     x_padded = jnp.pad(x, (0, self.input_eff_capsules*self.capsule_size - x.shape[0]), mode='constant', constant_values=0)
@@ -246,7 +247,7 @@ class ScRRAMBLeCIFAR(nnx.Module):
                 capsule_sizes: list,
                 rngs: nnx.Rngs,
                 connection_probability: float = 0.2,
-                receptive_field_size: int = 128,
+                receptive_field_size: int = 64,
                 kernel_size: tuple = (9, 9),
                 channels: int = 64,
                 strides: int = 3,
@@ -312,8 +313,8 @@ class ScRRAMBLeCIFAR(nnx.Module):
         # conv block
         x = jax.vmap(self.conv_preprocessing, in_axes=(0,))(x)  # (B, 8, 8, 64)
 
-        # apply gelu 
-        x = nnx.gelu(x)
+        # apply gelu/relu 
+        x = nnx.relu(x)
 
         # flatten the input an pass through ScRRAMBLe
         x = x.reshape(x.shape[0], -1)  # (B, 8*8*64)
@@ -379,8 +380,8 @@ class ScRRAMBLeCIFAR(nnx.Module):
 
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 100, # 64 is a good batch size for CIFAR-10
-    'train_steps': 5000, # run for longer, 30000 is good for CIFAR-10
+    'batch_size': 64, # 64 is a good batch size for CIFAR-10
+    'train_steps': 10000, # run for longer, 30000 is good for CIFAR-10
     'eval_every': 1000, # evaluate every 1000 steps
     'binarize': False,  # CIFAR-10 is usually kept as RGB
     'greyscale': False,  # CIFAR-10 is RGB by default
@@ -458,17 +459,17 @@ hyperparameters = {
 
 # model
 model_parameters = {
-    'capsule_sizes': [90, 10],
+    'capsule_sizes': [50, 10],
     'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
     'connection_probability': 0.2,
-    'receptive_field_size': 64,
+    'receptive_field_size': 64, 
     'kernel_size': (9, 9),
-    'channels': 64,
+    'channels': 256,
     'strides': 3,
     'padding': 'VALID',
     'mask': None,
     'capsule_size': 256,
-    'activation_function': nnx.gelu,
+    'activation_function': nnx.relu,
 }
 
 model = ScRRAMBLeCIFAR(**model_parameters)
@@ -587,7 +588,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(2, 5, figsize=(15, 6))
     for i, axs in enumerate(ax.ravel()):
         axs.imshow(test_batch['image'][i])
-        axs.set_title(f"Predicted: {labels_dict[predictions[i]]}\nTrue: {labels_dict[test_batch['label'][i]]}")
+        axs.set_title(f"Predicted: {labels_dict[int(predictions[i])]}\nTrue: {labels_dict[int(test_batch['label'][i])]}")
         axs.axis('off')
 
     plt.tight_layout()
