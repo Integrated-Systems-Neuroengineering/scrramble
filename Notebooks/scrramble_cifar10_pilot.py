@@ -8,6 +8,8 @@ Reconstruction error regularizer
 Created on: 07/15/2025
 
 Author: Vikrant Jaltare
+
+Test Accuracy: ~30%
 """
 import jax
 import math

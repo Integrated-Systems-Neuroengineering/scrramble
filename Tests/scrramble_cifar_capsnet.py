@@ -5,6 +5,8 @@ This script sets up the model, loads the dataset, and runs training and evaluati
 
 Created on: 08/14/2025
 Author: Vikrant Jaltare
+
+Test Accuracy: ~53% (as of 08/18/2025)
 """
 
 import jax
