@@ -73,7 +73,7 @@ data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
     'batch_size': 100, # 64 is a good batch size for MNIST
     'train_steps': int(2e4), # run for longer, 20000 is good!
-    'binarize': True, 
+    'binarize': False, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
@@ -183,8 +183,7 @@ def eval_step(model: ScRRAMBLeCapsNetWithReconstruction, metrics: nnx.MultiMetri
 # -------------------------------------------------------------------
 
 # receptive field sizes
-rf_sizes = jnp.logspace(2, 8, 6, base=2).tolist()
-rf_sizes = [int(r) for r in rf_sizes]  # Convert to integers for receptive field sizes.
+rf_sizes = jnp.logspace(0, 8, 9, base=2).astype(int).tolist()
 
 # core budgets
 conn_probabilities = jnp.arange(0.1, 1.1, 0.1).tolist()
@@ -323,7 +322,8 @@ def sweep_rf_size():
                 best_train_loss = metrics_history['train_loss'][best_valid_index]
 
                 print("=="*20)
-                print(f"Num cores: {sum(model.layer_sizes) - model.input_eff_capsules}")
+                # print(f"Num cores: {sum(model.layer_sizes) - model.input_eff_capsules}")
+                print(f"RF size: {rf_size}, Connection probability: {p}, Repeat: {(n+1)}/{num_repeats}")
                 print(f"Test accuracy: {test_accuracy}")
                 print(f"Test loss: {test_loss}")
                 print("=="*20)
@@ -345,7 +345,7 @@ def sweep_rf_size():
     # save the metrics
     # save the architecture dict
     today = date.today().isoformat()
-    logs_path = "/local_disk/vikrant/scrramble/logs" # saving in the local_disk
+    logs_path = "/Volumes/export/isn/vikrant/Data/scrramble/logs" # saving in the local_disk
 
     # create the logs directory if it doesn't exist
     os.makedirs(logs_path, exist_ok=True)

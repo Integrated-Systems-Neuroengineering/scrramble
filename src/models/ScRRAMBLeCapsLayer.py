@@ -11,7 +11,7 @@ import math
 from flax.nnx.nn import initializers
 from collections import defaultdict
 from typing import Callable
-from utils import intercore_connectivity, ScRRAMBLe_routing
+from utils import intercore_connectivity, ScRRAMBLe_routing, fast_scrramble
 from utils.loss_functions import margin_loss
 from utils.activation_functions import quantized_relu_ste
 
@@ -60,13 +60,23 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         #     key=self.rngs.params()
         # ) 
 
-        Ci = ScRRAMBLe_routing(
-            input_cores=self.input_eff_capsules,
-            output_cores=self.num_capsules,
-            receptive_fields_per_capsule= self.receptive_fields_per_capsule,
-            connection_probability=self.connection_probability,
+        # Ci = ScRRAMBLe_routing(
+        #     input_cores=self.input_eff_capsules,
+        #     output_cores=self.num_capsules,
+        #     receptive_fields_per_capsule= self.receptive_fields_per_capsule,
+        #     connection_probability=self.connection_probability,
+        #     key=self.rngs.params(),
+        #     with_replacement=True
+        # )
+
+        Ci = fast_scrramble(
+            num_destination_cores=self.num_capsules,
+            num_source_cores=self.input_eff_capsules,
+            core_size=self.capsule_size,
+            slot_size=self.receptive_field_size,
             key=self.rngs.params(),
-            with_replacement=True
+            proba=self.connection_probability,
+            verify_balanced_flag=False
         )
 
         self.Ci = nnx.Variable(Ci)
@@ -92,9 +102,9 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         x_reshaped = x_padded.reshape(self.input_eff_capsules, self.receptive_fields_per_capsule, self.receptive_field_size)
 
         # ScRRAMBLe Routing to the cores
-        x_routed = jnp.einsum('ijkl,ijm->klm', self.Ci, x_reshaped)
+        x_routed = jnp.einsum('ijkl,ijm->klm', self.Ci.value, x_reshaped)
 
-        y = jnp.einsum('ijklm,ikm->ijl', self.Wi, x_routed)
+        y = jnp.einsum('ijklm,ikm->ijl', self.Wi.value, x_routed)
 
         return y
 
