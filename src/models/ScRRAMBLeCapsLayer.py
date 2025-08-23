@@ -92,14 +92,14 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         x: jax.Array. flattened input, No batch dimension. Shape should be (input_vector_size,). e.g. (1000,)
         """
 
-        # pad the input with zeros if the length is not a multiple of capsule size
-        if x.shape[0]%self.capsule_size != 0:
-            x_padded = jnp.pad(x, (0, self.input_eff_capsules*self.capsule_size - x.shape[0]), mode='constant', constant_values=0)
-        else:
-            x_padded = x
+        # # pad the input with zeros if the length is not a multiple of capsule size
+        # if x.shape[0]%self.capsule_size != 0:
+        #     x_padded = jnp.pad(x, (0, self.input_eff_capsules*self.capsule_size - x.shape[0]), mode='constant', constant_values=0)
+        # else:
+        #     x_padded = x
         
         # reshape input into (input_eff_capsules, receptive_fields_per_capsule, receptive_field_size)
-        x_reshaped = x_padded.reshape(self.input_eff_capsules, self.receptive_fields_per_capsule, self.receptive_field_size)
+        x_reshaped = x.reshape(self.input_eff_capsules, self.receptive_fields_per_capsule, self.receptive_field_size)
 
         # ScRRAMBLe Routing to the cores
         x_routed = jnp.einsum('ijkl,ijm->klm', self.Ci.value, x_reshaped)

@@ -473,8 +473,8 @@ hyperparameters = {
 model_parameters = {
     'capsule_sizes': [50, 10],
     'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
-    'connection_probability': 0.2,
-    'receptive_field_size': 64, 
+    'connection_probability': 0.6,
+    'receptive_field_size': 4, 
     'kernel_size': (9, 9),
     'channels': 256,
     'strides': 3,

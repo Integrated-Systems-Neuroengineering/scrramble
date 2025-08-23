@@ -24,14 +24,43 @@ from functools import partial
 from tqdm import tqdm
 from datetime import date
 
-from models import ScRRAMBLeCapsLayer, ScRRAMBLeCapsNetWithReconstruction
+import signal
+import sys
+import traceback
+
+from models import ScRRAMBLeCapsLayer
 
 from utils.activation_functions import quantized_relu_ste, squash
 from utils import ScRRAMBLe_routing, intercore_connectivity, load_and_augment_mnist
+from utils.loss_functions import margin_loss
 
 
 import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
+
+# -------------------------------------------------------------------
+# Exception Handling
+# -------------------------------------------------------------------
+# global_arch_dict = None
+# global_logs_path = None
+# global_current_state = {
+#     'rf_size' : None,
+#     'connection_probability' : None,
+#     'repeat' : None
+# }
+
+
+# def setup_exception_handling():
+#     """
+#     Setup signal handlers for global variables
+
+#     """
+
+#     global global_logs_path
+
+#     # set up paths
+#     today = date.today().isoformat()
+#     global_
 
 # -------------------------------------------------------------------
 # Auxiliary functions
@@ -67,19 +96,90 @@ def save_model(state, filename):
     print(f"Model saved to {filename_}")
 
 # -------------------------------------------------------------------
+# Define the MNIST CapsNet Model
+# -------------------------------------------------------------------
+
+class ScRRAMBLeCapsNet(nnx.Module):
+    """
+    ScRRAMBLe CapsNet model for MNIST classification.
+
+    Notes:
+    - Currently assumes that the connection probability is the same for all the layers.
+    """
+
+    def __init__(
+            self,
+            input_vector_size: int, # size of flattened input vector
+            capsule_size: int, # size of each capsule e.g. 256 (number of columns/rows of a core)
+            receptive_field_size: int, # size of each receptive field e.g. 64 (number of columns/rows of a slot)
+            connection_probability: float, # fraction of total receptive fields on sender side that each receiving slot/receptive field takes input from
+            rngs: nnx.Rngs,
+            layer_sizes: list = [20, 10, 10], # number of capsules in each layer of the capsnet. e.g. [20, 10] means 20 capsules in layer 1 and 10 capsules in layer 2
+            activation_function: Callable = nnx.relu, # activation function to use in the network
+    ):
+        
+        self.input_vector_size = input_vector_size
+        self.capsule_size = capsule_size 
+        self.receptive_field_size = receptive_field_size
+        self.rngs = rngs
+        self.connection_probability = connection_probability
+        self.layer_sizes = layer_sizes
+        self.activation_function = activation_function
+
+        # calculate the effective capsules in input vector rouded to the nearest integral multiple of capsule size
+        self.input_eff_capsules = math.ceil(self.input_vector_size/self.capsule_size)
+
+        # add this element as the first element of layer_sizes
+        self.layer_sizes.insert(0, self.input_eff_capsules)
+
+        # define ScRRAMBLe capsules
+        self.scrramble_caps_layers = [ScRRAMBLeCapsLayer(
+            input_vector_size=self.capsule_size * Nci,
+            num_capsules=Nco,
+            capsule_size=self.capsule_size,
+            receptive_field_size=self.receptive_field_size,
+            connection_probability=self.connection_probability,
+            rngs=self.rngs
+        ) for Nci, Nco in zip(self.layer_sizes[:-1], self.layer_sizes[1:])]
+
+
+    def __call__(self, x:jax.Array) -> jax.Array:
+        """
+        Forward pass through the ScRRAMBLe CapsNet
+        """
+
+        # resize the image to be (32, 32) for MNIST
+        x = jax.image.resize(x, (x.shape[0], 32, 32, 1), method='nearest')
+
+        # flatten the first two dimensions
+        x = jnp.reshape(x, (x.shape[0], -1))
+
+        # pass the input through the layers
+        for layer in self.scrramble_caps_layers:
+            x = jax.vmap(layer, in_axes=(0,))(x)
+            x = jnp.reshape(x, (x.shape[0], -1))
+            shape_x = x.shape
+            x = x.flatten()
+            # x = jax.vmap(self.activation_function, in_axes=(0, None, None))(x, 8, 1.0) # 8 bits, 1.0 is the max clipping threshold.
+            x = self.activation_function(x)  # Apply the activation function.
+            x = jnp.reshape(x, shape_x)
+
+        return x
+
+# -------------------------------------------------------------------
 # Loading the dataset
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
     'batch_size': 100, # 64 is a good batch size for MNIST
-    'train_steps': int(2e4), # run for longer, 20000 is good!
+    'train_steps': int(1000), # run for longer, 20000 is good!
     'binarize': False, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 1000,
+    'eval_every': 200, # Change to 1000
 }
 
 # loading the dataset
@@ -91,82 +191,82 @@ train_ds, valid_ds, test_ds = load_and_augment_mnist(
     shuffle_buffer=dataset_dict['shuffle_buffer'],
 )
 
-# -------------------------------------------
-# Margin Loss from Capsule Networks
-# -------------------------------------------
+# # -------------------------------------------
+# # Margin Loss from Capsule Networks
+# # -------------------------------------------
 
-def margin_loss(
-    logits,
-    labels,
-    num_classes: int = 10,
-    m_plus: float = 0.9,
-    m_minus: float = 0.1,
-    lambda_: float = 0.5
-    ):
+# def margin_loss(
+#     logits,
+#     labels,
+#     num_classes: int = 10,
+#     m_plus: float = 0.9,
+#     m_minus: float = 0.1,
+#     lambda_: float = 0.5
+#     ):
 
-    """
-    Margin loss redefined for ScRRAMBLe-CIFAR model. Takes in logits and labels directly.
-    """
+#     """
+#     Margin loss redefined for ScRRAMBLe-CIFAR model. Takes in logits and labels directly.
+#     """
 
-    caps_output = logits # this output will be in shape (batch_size, num_output_cores (10), slots/receptive fields per core, slot/receptive_field_length)
-    # print(f"Caps output shape: {caps_output.shape}")
+#     caps_output = logits # this output will be in shape (batch_size, num_output_cores (10), slots/receptive fields per core, slot/receptive_field_length)
+#     # print(f"Caps output shape: {caps_output.shape}")
 
-    # the length of the vector encodes probability of a class
-    caps_output = caps_output.reshape(caps_output.shape[0], num_classes, -1)
-    # print(f"Caps output reshaped: {caps_output.shape}") # at this point this should be (batch_size, num_output_cores, 256) for the default core length of 256
+#     # the length of the vector encodes probability of a class
+#     caps_output = caps_output.reshape(caps_output.shape[0], num_classes, -1)
+#     # print(f"Caps output reshaped: {caps_output.shape}") # at this point this should be (batch_size, num_output_cores, 256) for the default core length of 256
 
-    # apply squash function along the last axis
-    caps_output = squash(caps_output, axis=-1, eps=1e-8)
+#     # apply squash function along the last axis
+#     caps_output = squash(caps_output, axis=-1, eps=1e-8)
 
-    caps_output_magnitude = jnp.linalg.norm(caps_output, axis=-1)
-    # print(f"Caps output magnitude: {caps_output_magnitude}") # this should be (batch_size, num_output_cores (10))
-    # print(f"Caps output magnitude shape: {caps_output_magnitude.shape}") # this should be (batch_size, num_output_cores (10))
+#     caps_output_magnitude = jnp.linalg.norm(caps_output, axis=-1)
+#     # print(f"Caps output magnitude: {caps_output_magnitude}") # this should be (batch_size, num_output_cores (10))
+#     # print(f"Caps output magnitude shape: {caps_output_magnitude.shape}") # this should be (batch_size, num_output_cores (10))
 
-    # create one-hot-encoded labels
-    # labels = labels
-    labels = jax.nn.one_hot(labels, num_classes=caps_output_magnitude.shape[1])
-    # print(f"Labels shape: {labels.shape}") # this should be (batch_size, num_output_cores)
+#     # create one-hot-encoded labels
+#     # labels = labels
+#     labels = jax.nn.one_hot(labels, num_classes=caps_output_magnitude.shape[1])
+#     # print(f"Labels shape: {labels.shape}") # this should be (batch_size, num_output_cores)
 
-    # compute the margin loss
-    loss_per_sample = jnp.sum(labels * jax.nn.relu(m_plus - caps_output_magnitude)**2 + lambda_ * (1 - labels) * jax.nn.relu(caps_output_magnitude - m_minus)**2, axis=1)
-    loss = jnp.mean(loss_per_sample)
+#     # compute the margin loss
+#     loss_per_sample = jnp.sum(labels * jax.nn.relu(m_plus - caps_output_magnitude)**2 + lambda_ * (1 - labels) * jax.nn.relu(caps_output_magnitude - m_minus)**2, axis=1)
+#     loss = jnp.mean(loss_per_sample)
 
-    # print(f"Loss: {loss}")
+#     # print(f"Loss: {loss}")
 
-    return loss, caps_output_magnitude
+#     return loss, caps_output_magnitude
 
-def loss_fn(model, batch, num_classes=10, m_plus=0.9, m_minus=0.1, lambda_=0.5, regularizer=1e-4):
-    """
-    Combine margin loss and reconstruction loss.
-    Args:
-        model: ScRRAMBLeCIFAR model.
-        batch: dict, batch of data.
-        num_classes: int, number of classes.
-        m_plus: float, margin for positive classes.
-        m_minus: float, margin for negative classes.
-        lambda_: float, regularization parameter.
-        regularizer: float, regularization strength.
-    """
+# def loss_fn(model, batch, num_classes=10, m_plus=0.9, m_minus=0.1, lambda_=0.5, regularizer=1e-4):
+#     """
+#     Combine margin loss and reconstruction loss.
+#     Args:
+#         model: ScRRAMBLeCIFAR model.
+#         batch: dict, batch of data.
+#         num_classes: int, number of classes.
+#         m_plus: float, margin for positive classes.
+#         m_minus: float, margin for negative classes.
+#         lambda_: float, regularization parameter.
+#         regularizer: float, regularization strength.
+#     """
 
-    # compute the forward pass 
-    recon, caps_out = model(batch['image'])
-    labels = batch['label']
+#     # compute the forward pass 
+#     recon, caps_out = model(batch['image'])
+#     labels = batch['label']
 
-    # compute margin loss
-    margin_loss_val, caps_out_magnitude  = margin_loss(caps_out, labels, num_classes=num_classes, m_plus=m_plus, m_minus=m_minus, lambda_=lambda_)
+#     # compute margin loss
+#     margin_loss_val, caps_out_magnitude  = margin_loss(caps_out, labels, num_classes=num_classes, m_plus=m_plus, m_minus=m_minus, lambda_=lambda_)
 
-    # compute the reconstruction error
-    batch_ = batch['image']
-    reshaped_input = jnp.reshape(batch_, (batch_.shape[0], -1))
-    reconstruction_loss = jnp.mean(jnp.square(reshaped_input - recon))
+#     # compute the reconstruction error
+#     batch_ = batch['image']
+#     reshaped_input = jnp.reshape(batch_, (batch_.shape[0], -1))
+#     reconstruction_loss = jnp.mean(jnp.square(reshaped_input - recon))
 
-    # compute total loss
-    total_loss = margin_loss_val + regularizer*reconstruction_loss
+#     # compute total loss
+#     total_loss = margin_loss_val + regularizer*reconstruction_loss
 
-    return total_loss, caps_out_magnitude
+#     return total_loss, caps_out_magnitude
 
 @nnx.jit
-def train_step(model: ScRRAMBLeCapsNetWithReconstruction, optimizer: nnx.Optimizer, metrics: nnx.MultiMetric, batch, loss_fn: Callable = loss_fn):
+def train_step(model: ScRRAMBLeCapsNet, optimizer: nnx.Optimizer, metrics: nnx.MultiMetric, batch, loss_fn: Callable = margin_loss):
   """Train for a single step."""
   grad_fn = nnx.value_and_grad(loss_fn, has_aux=True)
   (loss, logits), grads = grad_fn(model, batch)
@@ -174,7 +274,7 @@ def train_step(model: ScRRAMBLeCapsNetWithReconstruction, optimizer: nnx.Optimiz
   optimizer.update(grads)  # In-place updates.
 
 @nnx.jit
-def eval_step(model: ScRRAMBLeCapsNetWithReconstruction, metrics: nnx.MultiMetric, batch, loss_fn: Callable = loss_fn):
+def eval_step(model: ScRRAMBLeCapsNet, metrics: nnx.MultiMetric, batch, loss_fn: Callable = margin_loss):
   loss, logits = loss_fn(model, batch)
   metrics.update(loss=loss, logits=logits, labels=batch['label'])  # In-place updates.
 
@@ -186,8 +286,10 @@ def eval_step(model: ScRRAMBLeCapsNetWithReconstruction, metrics: nnx.MultiMetri
 rf_sizes = jnp.logspace(0, 8, 9, base=2).astype(int).tolist()
 
 # core budgets
-conn_probabilities = jnp.arange(0.1, 1.1, 0.1).tolist()
-conn_probabilities.insert(0, 0.05)  # add 0.05 to the list
+# conn_probabilities = jnp.arange(0.1, 1.1, 0.1).tolist()
+# conn_probabilities.insert(0, 0.05)  # add 0.05 to the list
+conn_probabilities = jnp.arange(0.2, 1.2, 0.2).tolist()
+conn_probabilities.insert(0, 0.1)  # add 0.1
 
 
 # rngs = nnx.Rngs(default=0, permute=1, activation=2)
@@ -223,7 +325,7 @@ hyperparameters = {
 # storing the results
 arch_dict = defaultdict(list)
 
-num_repeats = 30
+num_repeats = 3
 
 def sweep_rf_size():
     key1 = jax.random.key(235)
@@ -241,13 +343,13 @@ def sweep_rf_size():
                 key1, key2, key3, key4 = jax.random.split(key1, 4)
                 rngs = nnx.Rngs(params=key1, activations=key2, default=key3, permute=key4)
 
-                model = ScRRAMBLeCapsNetWithReconstruction(
+                model = ScRRAMBLeCapsNet(
                             input_vector_size=1024,
                             capsule_size=256,
                             receptive_field_size=rf_size,
                             connection_probability=p,
                             rngs=rngs,
-                            layer_sizes=[50, 10],  # 60 capsules total
+                            layer_sizes=[10, 10],  # 60 capsules total
                             activation_function=nnx.relu
                             )
                 
@@ -309,6 +411,10 @@ def sweep_rf_size():
                             metrics_history[f"test_{metric}"].append(float(value))
                         metrics.reset()
 
+                del model
+                del optimizer
+                del metrics
+
                 # pick the index for the best validation accuracy
                 best_valid_index = int(jnp.argmax(jnp.array(metrics_history['valid_accuracy'])))
                 best_step = metrics_history['step'][best_valid_index]
@@ -320,6 +426,8 @@ def sweep_rf_size():
                 best_valid_loss = metrics_history['valid_loss'][best_valid_index]
                 best_train_accuracy = metrics_history['train_accuracy'][best_valid_index]
                 best_train_loss = metrics_history['train_loss'][best_valid_index]
+
+                del metrics_history
 
                 print("=="*20)
                 # print(f"Num cores: {sum(model.layer_sizes) - model.input_eff_capsules}")
@@ -339,7 +447,7 @@ def sweep_rf_size():
                 arch_dict['rf_size'].append(int(rf_size))
                 arch_dict['step'].append(int(best_step))
                 arch_dict['resamples'].append(int(n + 1))  # n is the current repeat, starting from 0
-                arch_dict['num_cores'].append(60)
+                arch_dict['num_cores'].append(20)
 
                     
     # save the metrics

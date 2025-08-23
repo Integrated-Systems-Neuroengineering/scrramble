@@ -17,13 +17,13 @@ import seaborn as sns
 
 ## ScRRAMBLe with JAX. Construct from the perspective of source slots -> destination slots.
 def fast_scrramble(
-    num_destination_cores = 10,
-    num_source_cores = 20,
-    core_size = 256,
-    slot_size = 1,
-    key = jax.random.key(0),
-    proba = 0.2,
-    verify_balanced_flag=True,
+    num_destination_cores: int,
+    num_source_cores: int,
+    core_size: int,
+    slot_size: int,
+    key: jax.random.key,
+    proba: float,
+    verify_balanced_flag: bool = False,
 ):
     """
     ScRRAMBLe Routing.
@@ -90,7 +90,7 @@ def fast_scrramble(
 
     # generate random destination slots for all negative connections
     key, subkey = jax.random.split(key)
-    sj_neg_all = jax.random.choice(key=key, a=slots_per_core, shape=(int(total_neg_connections), ), replace=True)
+    sj_neg_all = jax.random.choice(key=key, a=slots_per_core, shape=cj_neg_all.shape, replace=True) # shape=(int(total_neg_connections), )
 
     C = C.at[ci_neg_all, si_neg_all, cj_neg_all, sj_neg_all].add(-1)
 
