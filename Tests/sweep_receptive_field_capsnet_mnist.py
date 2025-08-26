@@ -23,6 +23,7 @@ from collections import defaultdict
 from functools import partial
 from tqdm import tqdm
 from datetime import date
+import csv
 
 import signal
 import sys
@@ -37,6 +38,51 @@ from utils.loss_functions import margin_loss
 
 import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
+
+# -------------------------------------------------------------------
+# Data Logging
+# -------------------------------------------------------------------
+
+def setup_csv_logging(num_repeats: int):
+    """Setup CSV file with headers"""
+    today = date.today().isoformat()
+    logs_path = "/Volumes/export/isn/vikrant/Data/scrramble/logs"
+    os.makedirs(logs_path, exist_ok=True)
+
+    csv_filename = os.path.join(logs_path, f'sweep_rf_size_connection_proba_capsnet_repeats_{num_repeats}_{today}.csv')
+
+    # Write headers
+    headers = [
+        'rf_size', 'connection_probability', 'repeat_num',
+        'test_accuracy', 'test_loss', 
+        'valid_accuracy', 'valid_loss',
+        'train_accuracy', 'train_loss',
+        'best_step', 'num_cores'
+    ]
+    
+    with open(csv_filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(headers)
+    
+    print(f"CSV logging setup at: {csv_filename}")
+    return csv_filename
+
+def log_result_to_csv(csv_filename, rf_size, conn_prob, repeat_num, 
+                     test_acc, test_loss, valid_acc, valid_loss, 
+                     train_acc, train_loss, best_step, num_cores):
+    """Append a single result to CSV file"""
+    
+    row = [
+        int(rf_size), float(conn_prob), int(repeat_num),
+        float(test_acc), float(test_loss),
+        float(valid_acc), float(valid_loss), 
+        float(train_acc), float(train_loss),
+        int(best_step), int(num_cores)
+    ]
+    
+    with open(csv_filename, 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(row)
 
 # -------------------------------------------------------------------
 # Exception Handling
@@ -171,15 +217,15 @@ class ScRRAMBLeCapsNet(nnx.Module):
 # ------------------------------------------------------------------
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 100, # 64 is a good batch size for MNIST
-    'train_steps': int(1000), # run for longer, 20000 is good!
+    'batch_size': 64, # 64 is a good batch size for MNIST
+    'train_steps': int(1e2), # run for longer, 20000 is good!
     'binarize': False, 
     'greyscale': True,
     'data_dir': data_dir,
     'seed': 101,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 200, # Change to 1000
+    'eval_every': 20, # Change to 1000
 }
 
 # loading the dataset
@@ -325,10 +371,19 @@ hyperparameters = {
 # storing the results
 arch_dict = defaultdict(list)
 
-num_repeats = 3
+num_repeats = 30
 
-def sweep_rf_size():
+def sweep_rf_size(csv_logging: bool = True):
+    
+    # set up folder for logging
+    if csv_logging:
+        logs_filename = setup_csv_logging(num_repeats=num_repeats)
+
+    
     key1 = jax.random.key(235)
+    layers = [10, 10]
+    num_cores = sum(layers)
+    print(f"# Cores = {num_cores}")
 
     for i_rf, rf_size in enumerate(rf_sizes):
         print("--"*40)
@@ -349,7 +404,7 @@ def sweep_rf_size():
                             receptive_field_size=rf_size,
                             connection_probability=p,
                             rngs=rngs,
-                            layer_sizes=[10, 10],  # 60 capsules total
+                            layer_sizes=layers,  # 60 capsules total
                             activation_function=nnx.relu
                             )
                 
@@ -411,10 +466,6 @@ def sweep_rf_size():
                             metrics_history[f"test_{metric}"].append(float(value))
                         metrics.reset()
 
-                del model
-                del optimizer
-                del metrics
-
                 # pick the index for the best validation accuracy
                 best_valid_index = int(jnp.argmax(jnp.array(metrics_history['valid_accuracy'])))
                 best_step = metrics_history['step'][best_valid_index]
@@ -427,8 +478,6 @@ def sweep_rf_size():
                 best_train_accuracy = metrics_history['train_accuracy'][best_valid_index]
                 best_train_loss = metrics_history['train_loss'][best_valid_index]
 
-                del metrics_history
-
                 print("=="*20)
                 # print(f"Num cores: {sum(model.layer_sizes) - model.input_eff_capsules}")
                 print(f"RF size: {rf_size}, Connection probability: {p}, Repeat: {(n+1)}/{num_repeats}")
@@ -436,31 +485,47 @@ def sweep_rf_size():
                 print(f"Test loss: {test_loss}")
                 print("=="*20)
 
+                # del metrics_history
+                # del model
+                # del optimizer
+                # del metrics
+
+
                 # append to the arch_dict
-                arch_dict['test_accuracy'].append(float(test_accuracy))
-                arch_dict['valid_accuracy'].append(float(best_valid_accuracy))
-                arch_dict['train_accuracy'].append(float(best_train_accuracy))
-                arch_dict['test_loss'].append(float(test_loss))
-                arch_dict['valid_loss'].append(float(best_valid_loss))
-                arch_dict['train_loss'].append(float(best_train_loss))
-                arch_dict['connection_probability'].append(float(p))
-                arch_dict['rf_size'].append(int(rf_size))
-                arch_dict['step'].append(int(best_step))
-                arch_dict['resamples'].append(int(n + 1))  # n is the current repeat, starting from 0
-                arch_dict['num_cores'].append(20)
+                # arch_dict['test_accuracy'].append(float(test_accuracy))
+                # arch_dict['valid_accuracy'].append(float(best_valid_accuracy))
+                # arch_dict['train_accuracy'].append(float(best_train_accuracy))
+                # arch_dict['test_loss'].append(float(test_loss))
+                # arch_dict['valid_loss'].append(float(best_valid_loss))
+                # arch_dict['train_loss'].append(float(best_train_loss))
+                # arch_dict['connection_probability'].append(float(p))
+                # arch_dict['rf_size'].append(int(rf_size))
+                # arch_dict['step'].append(int(best_step))
+                # arch_dict['resamples'].append(int(n + 1))  # n is the current repeat, starting from 0
+                # arch_dict['num_cores'].append(20)
+
+                # log results in csv
+                if csv_logging:
+                    log_result_to_csv(
+                        logs_filename, rf_size, p, n + 1,
+                        test_accuracy, test_loss,
+                        best_valid_accuracy, best_valid_loss,
+                        best_train_accuracy, best_train_loss,
+                        best_step, num_cores
+                    )
 
                     
     # save the metrics
     # save the architecture dict
-    today = date.today().isoformat()
-    logs_path = "/Volumes/export/isn/vikrant/Data/scrramble/logs" # saving in the local_disk
+    # today = date.today().isoformat()
+    # logs_path = "/Volumes/export/isn/vikrant/Data/scrramble/logs" # saving in the local_disk
 
-    # create the logs directory if it doesn't exist
-    os.makedirs(logs_path, exist_ok=True)
+    # # create the logs directory if it doesn't exist
+    # os.makedirs(logs_path, exist_ok=True)
     
-    filename_ = os.path.join(logs_path, f'sweep_rf_size_connection_proba_capsnet_w_recon_{today}.pkl')
-    with open(filename_, 'wb') as f:
-        pickle.dump(arch_dict, f)
+    # filename_ = os.path.join(logs_path, f'sweep_rf_size_connection_proba_capsnet_w_recon_{today}.pkl')
+    # with open(filename_, 'wb') as f:
+    #     pickle.dump(arch_dict, f)
 
 
             
