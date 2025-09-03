@@ -371,7 +371,7 @@ hyperparameters = {
 # storing the results
 arch_dict = defaultdict(list)
 
-num_repeats = 30
+num_repeats = 1
 
 def sweep_rf_size(csv_logging: bool = True):
     
