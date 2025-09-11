@@ -59,7 +59,7 @@ class PartialSumsLayer(nnx.Module):
         x_reshape = x.reshape(self.in_blocks, self.columns_per_core)
 
         # compute the partial sums
-        y = jnp.einsum('ijkl,jl->ik', self.W, x_reshape)
+        y = jnp.einsum('ijkl,jl->ik', self.W.value, x_reshape)
 
         # apply activation function
         y = jax.vmap(self.activation_function, in_axes=(0,))(y)

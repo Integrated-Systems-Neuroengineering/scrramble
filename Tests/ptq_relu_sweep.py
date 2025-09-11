@@ -39,8 +39,10 @@ import tensorflow as tf  # TensorFlow / `tf.data` operations.
 
 today = date.today().isoformat()
 
-model_path = f"/local_disk/vikrant/scrramble/models/sscamble_mnist_capsnet_recon_capsules20_acc_98_2025-08-04.pkl"
-training_metrics_path = f" /local_disk/vikrant/scrramble/logs/sscamble_mnist_capsnet_recon_capsules60_acc_99_2025-07-28.pkl"
+# CAUTION: model and metrics path updates! Change for the latest version of the models!
+
+model_path = f"/local_disk/vikrant/scrramble/models/sscamble_mnist_capsnet_recon_capsules50_acc_99_2025-09-10.pkl"
+training_metrics_path = f" /local_disk/vikrant/scrramble/logs/sscamble_mnist_capsnet_recon_capsules50_acc_99_2025-09-10.pkl"
 
 def save_metrics(metrics_dict, filename):
     """
@@ -51,6 +53,7 @@ def save_metrics(metrics_dict, filename):
     """
 
     metrics_dir = "/local_disk/vikrant/scrramble/logs"
+    os.makedirs(metrics_dir, exist_ok=True)  # Ensure the directory exists.
     filename = os.path.join(metrics_dir, filename)
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)  # Ensure the directory exists.
@@ -224,7 +227,7 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
         shuffle_buffer=dataset_dict['shuffle_buffer'],
     )
 
-    activation_fn = partial(qrelu_ptq, bits=bits, max_value=2.0)
+    activation_fn = partial(qrelu_ptq, bits=bits, max_value=2.0) # changing to 10.0 and sweeping over number of bits.
 
     # loading the model
     key1, key2, key3, key4 = jax.random.split(key1, 4)
@@ -236,7 +239,7 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
         receptive_field_size=64,
         connection_probability=0.5,
         rngs=rngs,
-        layer_sizes=[10, 10], 
+        layer_sizes=[40, 10], 
         activation_function=activation_fn
     )
 

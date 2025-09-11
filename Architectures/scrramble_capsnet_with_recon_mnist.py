@@ -445,8 +445,8 @@ if __name__ == "__main__":
         train_ds=train_ds,
         valid_ds=valid_ds,
         dataset_dict=dataset_dict,
-        save_model_flag=False,
-        save_metrics_flag=False,
+        save_model_flag=True,
+        save_metrics_flag=True,
 
     )
 
