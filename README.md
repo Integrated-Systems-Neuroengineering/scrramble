@@ -2,4 +2,4 @@ SCRRAMBLE: BLOCK-SPARSE DEEP LEARNING ARCHITECTURE FOR ANALOG IN-MEMORY COMPUTIN
 
 ---
 
-Documentation under construction
+Documentation under construction. More information about installation and usage coming soon!
