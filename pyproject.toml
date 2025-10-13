@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "trident"
+name = "scrramble"
 version = "0.1.0"
-description = "A package for ternary stochastic neural networks"
+description = "Package for ScRRAMBLe: Block-sparse neural network architecture for analog in memory computing accelerators"
 authors = [{ name = "Vikrant Jaltare", email = "vjaltare@ucsd.edu" }]
 license = { text = "MIT" }
 readme = "README.md"
