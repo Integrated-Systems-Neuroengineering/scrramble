@@ -1,12 +1,8 @@
-
 """
-Testing script for ScRRAMBLe CapsNet on CIFAR-10 dataset.
-This script sets up the model, loads the dataset, and runs training and evaluation.
+Conv + ScRRAMBLe for CIFAR-10 Dataset
 
-Created on: 08/14/2025
+Created on 11/18/2025
 Author: Vikrant Jaltare
-
-Test Accuracy: ~53% (as of 08/18/2025)
 """
 
 import jax
@@ -43,7 +39,7 @@ import tensorflow as tf  # TensorFlow / `tf.data` operations.
 
 # -------------------------------------------------------------------
 # Auxiliary functions
-# ------------------------------------------------------------------
+# -------------------------------------------------------------------
 def save_metrics(metrics_dict, filename):
     """
     Save the metrics to a file.
@@ -78,8 +74,63 @@ def save_model(state, filename):
     
     print(f"Model saved to {filename_}")
 
+
+# -------------------------------------------------------------------
+# Convolutional Block: outputs shape 2048
+# -------------------------------------------------------------------
+## optional convolutional preprocessing block
+class ConvPreprocess(nnx.Module):
+    """
+    Convolutional block as a first stage preprocessing before ScRRAMBLe
+    Logic:
+    - Add conv + batch norm + relu + maxpooling
+    - Flatten the output at the final stage.
+    - Project to required number of features using a fixed random matrix.
+    """
+
+    def __init__(self,
+                 rngs: nnx.Rngs,
+                 output_dim: int, # dimension of output. For ScRRAMBLe, typically multiples of num_cores are used.
+                 ):
+        self.conv1 = nnx.Conv(in_features=3, out_features=64, kernel_size=(3,3), rngs=rngs)
+        self.batch_norm1 = nnx.BatchNorm(64, rngs=rngs)
+        self.dropout1 = nnx.Dropout(rate=0.1, rngs=rngs)
+        self.maxpool1 = partial(nnx.max_pool, window_shape=(2,2), strides=(2,2))
+
+        self.conv2 = nnx.Conv(in_features=64, out_features=128, kernel_size=(3,3), rngs=rngs)
+        self.dropout2 = nnx.Dropout(rate=0.1, rngs=rngs)
+        self.batch_norm2 = nnx.BatchNorm(128, rngs=rngs)
+        
+        initializer = initializers.glorot_normal()
+        self.M = nnx.Variable(
+            initializer(rngs.params(), (output_dim, 32768))
+        )
+
+
+    def __call__(self, x):
+        """
+        x: shape (B, 32, 32, 3)
+        returns: shape (B, output_dim)
+        """
+        x = self.conv1(x)
+        x = self.batch_norm1(x)
+        x = nnx.relu(x)
+        x = self.dropout1(x)
+        x = self.maxpool1(x)
+
+        x = self.conv2(x)
+        x = self.batch_norm2(x)
+        x = nnx.relu(x)
+        x = self.dropout2(x)
+
+        x = x.reshape(x.shape[0], -1)  # flatten
+
+        # transform
+        x = jnp.einsum('ij, bj -> bi', self.M, x)
+        return x
+    
 # ---------------------------------------------------------------
-# ScRRAMBLeCAPSLayer without padding: To be modified in ScRRAMBLeCapsLayer
+# ScRRAMBLeCAPSLayer
 # ---------------------------------------------------------------
 class ScRRAMBLeCapsLayer(nnx.Module):
     """
@@ -173,114 +224,24 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         y = jnp.einsum('ijklm,ikm->ijl', self.Wi.value, x_routed)
 
         return y
-
-    # visualizing connectivity
-    def visualize_connectivity(self) -> jax.Array:
-        """
-        Function returns a jax.Array Wc describing connectivity between neurons in one layer of the network.
-        Args:
-        1. learned_capsule_weights: jax.Array: Make sure that the shape is (self.Wi.shape[0], self.receptive_fields_per_capsule, self.receptive_fields_per_capsule, self.receptive_field_size, self.receptive_field_size) (5D tensor)
-        2. Routing matrix: taken from the intercore_connectivity function. The shape should be (output cores, output slots, input cores, input slots)
-
-        Returns:
-        Wc: jax.Array of shape (num output neurons, num input neurons) where Wc[i, j] is the weight from input neuron j to output neuron i.
-        """
-
-        # find number of neurons
-        num_output_neurons = self.num_capsules * self.capsule_size
-        num_input_neurons = self.input_eff_capsules * self.capsule_size
-
-        # initialize the giant connectivity matrix
-        Wc = jnp.zeros((num_output_neurons, num_input_neurons))
-
-        # set up for loops
-        for co in range(self.num_capsules):
-            for so in range(self.receptive_fields_per_capsule):
-                for ci in range(self.input_eff_capsules):
-                    for si in range(self.receptive_fields_per_capsule):
-                        # print(f"co = {co}, so = {so}, ci = {ci}, si = {si}")
-                        # get routing weight
-                        r = float(self.Ci[co, so, ci, si])
-
-                        if r == 0:
-                            continue
-                        else:
-                            W_dense = r*self.Wi[co, so , si, :, :]
-                            # print(W_dense.shape)
-                            # print(co*self.capsule_size + so*self.receptive_field_size)
-                            # print(co*self.capsule_size + (so+1)*self.receptive_field_size)
-                            # print(self.capsule_size*ci + self.receptive_field_size*si)
-                            # print(self.capsule_size*ci + (si+1)*self.receptive_field_size)
-                            # print(Wc[(co*self.capsule_size + so*self.receptive_field_size):(co*self.capsule_size + (so+1)*self.receptive_field_size), (self.capsule_size*ci + self.receptive_field_size*si):(self.capsule_size*ci + (si+1)*self.receptive_field_size)].shape)
-
-                            Wc = Wc.at[(co*self.capsule_size + so*self.receptive_field_size):(co*self.capsule_size + (so+1)*self.receptive_field_size), (self.capsule_size*ci + self.receptive_field_size*si):(self.capsule_size*ci + (si+1)*self.receptive_field_size)].set(W_dense)
-
-        return Wc
-
+    
 # ---------------------------------------------------------------
-# CIFAR10 calssifier
+# ScRRAMBLeCAPSLayer
 # ---------------------------------------------------------------
-class ConvPreprocessing(nnx.Module):
-    """
-    Convolutional preprocessing layer for CIFAR10
-    """
-
-    def __init__(self,
-                 rngs: nnx.Rngs,
-                 channels: int,
-                 kernel_size: tuple,
-                 strides: int,
-                 padding: str = 'VALID',
-                 mask = None,
-                #  activation: Callable = nnx.relu,
-                 **kwargs
-                 ):
-
-        
-        self.conv_block = nnx.Conv(
-            in_features=3,
-            out_features=channels,
-            kernel_size=kernel_size,
-            padding=padding,
-            strides=strides,
-            mask=mask,
-            rngs=rngs
-
-        )
-
-    def __call__(self, x:jax.Array) -> jax.Array:
-        x = self.conv_block(x)
-
-        return x
-
-class ScRRAMBLeCIFAR(nnx.Module):
+class ScRRAMBLeCIFAR10(nnx.Module):
 
     def __init__(self,
                 capsule_sizes: list,
                 rngs: nnx.Rngs,
-                connection_probability: float = 0.2,
+                connection_probabilities: list,
                 receptive_field_size: int = 64,
-                kernel_size: tuple = (9, 9),
-                channels: int = 64,
-                strides: int = 3,
-                padding: str = 'VALID',
-                mask = None,
                 capsule_size: int = 256,
                 activation_function: Callable = nnx.gelu,
                 **kwargs):
         
-        # add conv preprocessing layer
-        self.conv_preprocessing = ConvPreprocessing(
-            rngs=rngs,
-            channels=channels,
-            kernel_size=kernel_size,
-            strides=strides,
-            padding=padding,
-            mask=mask
-        )
 
         # output for conv preprocessing should be (B, 8, 8, 64)
-        input_vector_size = 8 * 8 * channels
+        input_vector_size = 2048 # hard coded from the conv block output
         input_eff_capsules = math.ceil(input_vector_size / capsule_size)
         capsule_sizes.insert(0, input_eff_capsules)
 
@@ -311,10 +272,12 @@ class ScRRAMBLeCIFAR(nnx.Module):
             num_capsules=Nco,
             capsule_size=self.capsule_size,
             receptive_field_size=self.receptive_field_size,
-            connection_probability=connection_probability,
+            connection_probability=pi,
             rngs=rngs
-        ) for Nci, Nco in zip(capsule_sizes[:-1], capsule_sizes[1:])]
+        ) for Nci, Nco, pi in zip(capsule_sizes[:-1], capsule_sizes[1:], connection_probabilities)]
         )
+
+        self.conv_block = ConvPreprocess(rngs=rngs, output_dim=input_vector_size)
 
     def __call__(self, x: jax.Array) -> jax.Array:
         """
@@ -322,71 +285,19 @@ class ScRRAMBLeCIFAR(nnx.Module):
         Args:
         x: jax.Array/np.array, shape (B, 32, 32, 3) for CIFAR10 images.
         """
+        # pass through conv block
+        x = self.conv_block(x)  # (B, 2048)
 
-        # conv block
-        x = jax.vmap(self.conv_preprocessing, in_axes=(0,))(x)  # (B, 8, 8, 64)
-
-        # apply gelu/relu 
-        x = nnx.relu(x)
-
-        # flatten the input an pass through ScRRAMBLe
-        x = x.reshape(x.shape[0], -1)  # (B, 8*8*64)
-        # print(x.shape)
+        # # flatten the input an pass through ScRRAMBLe
+        # x = x.reshape(x.shape[0], -1)  # (B, 8*8*64)
+        # # print(x.shape)
 
         for layer in self.scrramble_caps_layers:
             x = jax.vmap(layer, in_axes=(0,))(x)
             x = self.activation_function(x)
 
         return x
-
-
-
-    @staticmethod
-    def spatial_block_reshape(x: jax.Array) -> jax.Array:
-        """
-        Reshape the input image to a 1-D vector, preserving the spatial relationships. 
-        """
-
-        x_blocks = x.reshape(8, 8, 4, 4, 3).reshape(64, 48)
-        x_flat = x_blocks.reshape(-1) # 3072
-
-        return x_flat
     
-    def skip_connection(self, x:jax.Array) -> jax.Array:
-        """
-        Skip connection from input to parent capsules
-        """
-        # reshape x into (input capsules, receptive fields per capsule, receptive field size])
-        x_reshaped = x.reshape(self.input_eff_capsules, self.receptive_field_per_capsule, self.receptive_field_size)
-
-        # perform ScrRAMBLe routing
-        x_routed = jnp.einsum('ijkl,ijm->klm', self.C_input_to_parent, x_reshaped)
-
-        # flatten it before returning
-        x_routed_flat = x_routed.reshape(-1)
-        return x_routed_flat
-    
-    def get_active_capsule(self, x:jax.Array) -> jax.Array:
-
-        """
-        Assumes the input arrives from the parent capsule layer in form (parent capsules, receptive fields per capsule, receptive field size)
-        """
-
-        x_reshape = x.reshape(x.shape[0], -1)
-
-        # take norm along the last dimension
-        norms = jnp.linalg.norm(x_reshape, axis=-1)
-
-        # pick the argmax
-        active_capsule = jnp.argmax(norms, axis=-1)
-
-        # construct the mask
-        mask = jnp.zeros(self.capsule_size*self.num_parent_capsules)
-        mask = mask.at[active_capsule:(active_capsule+1)*self.capsule_size-1].set(1.0)
-        # mask = nnx.Variable(mask)
-
-        return mask
-
 # ---------------------------------------------------------------
 # Loading the CIFAR-10 dataset
 # ---------------------------------------------------------------
@@ -397,7 +308,6 @@ dataset_dict = {
     'train_steps': 10000, # run for longer, 30000 is good for CIFAR-10
     'eval_every': 1000, # evaluate every 1000 steps
     'binarize': False,  # CIFAR-10 is usually kept as RGB
-    'greyscale': False,  # CIFAR-10 is RGB by default
     'data_dir': data_dir,
     'seed': 101,
     'quantize_flag': False,  # whether to quantize the images
@@ -413,7 +323,6 @@ train_ds, valid_ds, test_ds = load_cifar10(
         seed=dataset_dict['seed'],
         shuffle_buffer=dataset_dict['shuffle_buffer'],
         augmentation=True,
-        greyscale=dataset_dict['greyscale'],
         quantize_flag=dataset_dict['quantize_flag'],
         quantize_bits=dataset_dict['quantize_bits'],
         num_rotations=dataset_dict['num_rotations'],
@@ -423,7 +332,7 @@ train_ds, valid_ds, test_ds = load_cifar10(
 # Training functions
 # ---------------------------------------------------------------
 @nnx.jit
-def train_step(model: ScRRAMBLeCIFAR,
+def train_step(model: ScRRAMBLeCIFAR10,
                optimizer: nnx.Optimizer,
                metrics: nnx.MultiMetric,
                batch,
@@ -436,12 +345,12 @@ def train_step(model: ScRRAMBLeCIFAR,
     optimizer.update(model, grads)  # In-place updates.
 
 @nnx.jit
-def eval_step(model: ScRRAMBLeCIFAR, metrics: nnx.MultiMetric, batch, loss_fn: Callable = margin_loss):
+def eval_step(model: ScRRAMBLeCIFAR10, metrics: nnx.MultiMetric, batch, loss_fn: Callable = margin_loss):
   loss, logits = loss_fn(model, batch)
   metrics.update(loss=loss, logits=logits, labels=batch['label'])  # In-place updates.
 
 @nnx.jit
-def pred_step(model: ScRRAMBLeCIFAR, batch):
+def pred_step(model: ScRRAMBLeCIFAR10, batch):
     """
     Prediction step
     """
@@ -465,27 +374,23 @@ def pred_step(model: ScRRAMBLeCIFAR, batch):
 # ---------------------------------------------------------------
 # hyperparameters
 hyperparameters = {
-    'learning_rate': 1e-4, # 1e-3 seems to work well
+    'learning_rate': 3e-4, # 1e-3 seems to work well
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }
 
 # model
 model_parameters = {
-    'capsule_sizes': [100, 50, 50, 50, 10],
+    'capsule_sizes': [50, 30, 10],
     'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
-    'connection_probability': 0.2,
-    'receptive_field_size': 4, 
-    'kernel_size': (9, 9),
-    'channels': 256,
-    'strides': 3,
-    'padding': 'VALID',
-    'mask': None,
+    'connection_probabilities': [0.1, 0.2, 0.5],
+    'receptive_field_size': 64, 
     'capsule_size': 256,
     'activation_function': nnx.relu,
 }
 
-model = ScRRAMBLeCIFAR(**model_parameters)
+model = ScRRAMBLeCIFAR10(**model_parameters)
+nnx.display(model)
 
 optimizer = nnx.Optimizer(
     model,
@@ -504,7 +409,7 @@ metrics_history = defaultdict(list)
 # Training function
 # -------------------------------------------------------------------
 def train_scrramble_capsnet_mnist(
-        model: ScRRAMBLeCIFAR = model,
+        model: ScRRAMBLeCIFAR10 = model,
         optimizer: nnx.Optimizer = optimizer,
         train_ds: tf.data.Dataset = train_ds,
         valid_ds: tf.data.Dataset = valid_ds,
@@ -583,30 +488,30 @@ if __name__ == "__main__":
         save_metrics_flag=False
     )
 
-    labels_dict = {
-        0: "airplane",
-        1: "automobile",
-        2: "bird",
-        3: "cat",
-        4: "deer",
-        5: "dog",
-        6: "frog",
-        7: "horse",
-        8: "ship",
-        9: "truck"
-        }
+    # labels_dict = {
+    #     0: "airplane",
+    #     1: "automobile",
+    #     2: "bird",
+    #     3: "cat",
+    #     4: "deer",
+    #     5: "dog",
+    #     6: "frog",
+    #     7: "horse",
+    #     8: "ship",
+    #     9: "truck"
+    #     }
     
-    test_batch = next(iter(test_ds.as_numpy_iterator()))
-    predictions = pred_step(model, test_batch)
+    # test_batch = next(iter(test_ds.as_numpy_iterator()))
+    # predictions = pred_step(model, test_batch)
  
-    fig, ax = plt.subplots(2, 5, figsize=(15, 6))
-    for i, axs in enumerate(ax.ravel()):
-        axs.imshow(test_batch['image'][i])
-        axs.set_title(f"Predicted: {labels_dict[int(predictions[i])]}\nTrue: {labels_dict[int(test_batch['label'][i])]}")
-        axs.axis('off')
+    # fig, ax = plt.subplots(2, 5, figsize=(15, 6))
+    # for i, axs in enumerate(ax.ravel()):
+    #     axs.imshow(test_batch['image'][i])
+    #     axs.set_title(f"Predicted: {labels_dict[int(predictions[i])]}\nTrue: {labels_dict[int(test_batch['label'][i])]}")
+    #     axs.axis('off')
 
-    plt.tight_layout()
-    plt.show()
+    # plt.tight_layout()
+    # plt.show()
     
 
 
