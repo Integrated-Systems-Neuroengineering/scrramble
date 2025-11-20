@@ -3,6 +3,8 @@ Conv + ScRRAMBLe for CIFAR-10 Dataset
 
 Created on 11/18/2025
 Author: Vikrant Jaltare
+
+Best accuracy recorded so far: 70%
 """
 
 import jax
@@ -98,12 +100,19 @@ class ConvPreprocess(nnx.Module):
         self.maxpool1 = partial(nnx.max_pool, window_shape=(2,2), strides=(2,2))
 
         self.conv2 = nnx.Conv(in_features=64, out_features=128, kernel_size=(3,3), rngs=rngs)
-        self.dropout2 = nnx.Dropout(rate=0.1, rngs=rngs)
+        self.dropout2 = nnx.Dropout(rate=0.2, rngs=rngs)
         self.batch_norm2 = nnx.BatchNorm(128, rngs=rngs)
+        self.maxpool2 = partial(nnx.max_pool, window_shape=(2,2), strides=(2,2))
+
+        self.conv3 = nnx.Conv(in_features=128, out_features=256, kernel_size=(3,3), rngs=rngs)
+        self.batch_norm3 = nnx.BatchNorm(256, rngs=rngs)
+        self.dropout3 = nnx.Dropout(rate=0.3, rngs=rngs)
+        self.maxpool3 = partial(nnx.max_pool, window_shape=(2,2), strides=(2,2))
+
         
         initializer = initializers.glorot_normal()
         self.M = nnx.Variable(
-            initializer(rngs.params(), (output_dim, 32768))
+            initializer(rngs.params(), (output_dim, 16384))
         )
 
 
@@ -122,6 +131,13 @@ class ConvPreprocess(nnx.Module):
         x = self.batch_norm2(x)
         x = nnx.relu(x)
         x = self.dropout2(x)
+        x = self.maxpool2(x)
+
+        x = self.conv3(x)
+        x = self.batch_norm3(x)
+        x = nnx.relu(x)
+        x = self.dropout3(x)
+        # x = self.maxpool3(x)
 
         x = x.reshape(x.shape[0], -1)  # flatten
 
@@ -304,8 +320,8 @@ class ScRRAMBLeCIFAR10(nnx.Module):
 
 data_dir = "/local_disk/vikrant/datasets"
 dataset_dict = {
-    'batch_size': 64, # 64 is a good batch size for CIFAR-10
-    'train_steps': 10000, # run for longer, 30000 is good for CIFAR-10
+    'batch_size': 128, # 64 is a good batch size for CIFAR-10
+    'train_steps': 30000, # run for longer, 30000 is good for CIFAR-10
     'eval_every': 1000, # evaluate every 1000 steps
     'binarize': False,  # CIFAR-10 is usually kept as RGB
     'data_dir': data_dir,
@@ -374,16 +390,16 @@ def pred_step(model: ScRRAMBLeCIFAR10, batch):
 # ---------------------------------------------------------------
 # hyperparameters
 hyperparameters = {
-    'learning_rate': 3e-4, # 1e-3 seems to work well
+    'learning_rate': 1e-3, # 1e-3 seems to work well
     'momentum': 0.9, 
     'weight_decay': 1e-4
 }
 
 # model
 model_parameters = {
-    'capsule_sizes': [50, 30, 10],
+    'capsule_sizes': [30, 20, 10],
     'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
-    'connection_probabilities': [0.1, 0.2, 0.5],
+    'connection_probabilities': [0.2, 0.2, 0.1],
     'receptive_field_size': 64, 
     'capsule_size': 256,
     'activation_function': nnx.relu,
