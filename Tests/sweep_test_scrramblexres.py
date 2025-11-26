@@ -1,10 +1,13 @@
 """
-ScRRAMBLe + Residual Blocks for CIFAR-10 Dataset
+TEST: Sweeping connection density and/or Slot slizes for ScRRaMBLe-ResNet on CIFAR-10
 
-Created on 11/19/2025
+Created on: 11/25/2025
 Author: Vikrant Jaltare
 
-Best accuracy so far: Res 64x2->128x2->256x6 and gelu	50-10	0.08-0.1	3.00E-04	81.60%	0.153	5.00E+04	64	64
+Description of test:
+- Sweep over different connection density configurations.
+- Seep over different slot sizes.
+- Record test set performance for each configuration.
 """
 import jax
 import math
@@ -340,6 +343,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
 
         return x
     
+    
 # ---------------------------------------------------------------
 # Loading the CIFAR-10 dataset
 # ---------------------------------------------------------------
@@ -517,6 +521,11 @@ def train_scrramble_capsnet_mnist(
 
     return model, metrics_history
 
+# ----------------------------------------------------------------------
+# TODO: Write a script to sweep over connection densities and slot sizes
+# ----------------------------------------------------------------------
+def sweep_params():
+    return
 
 if __name__ == "__main__":
     # train the model
