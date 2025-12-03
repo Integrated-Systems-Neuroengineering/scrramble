@@ -4,8 +4,9 @@ ScRRAMBLe + Residual Blocks for CIFAR-10 Dataset
 Created on 11/19/2025
 Author: Vikrant Jaltare
 
-Best accuracy so far: Res 64x2->128x2->256x6 and gelu	50-10	0.08-0.1	3.00E-04	81.60%	0.153	5.00E+04	64	64
+Best accuracy so far: Res 64x2->128x2->256x6 and gelu	50-10 (Layer norm)	0.08-0.1	3.00E-04	83.75%	0.153	5.00E+04	64	64
 """
+
 import jax
 import math
 import jax.numpy as jnp
@@ -255,7 +256,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # add the second stage of 3 res blocks with filter sizes 128
         self.res2 = nnx.List([
             ResidualBlock(in_features=128, out_features=128, kernel_size=(3, 3), padding=padding, rngs=rngs, activation_fn=activation_function)
-            for _ in range(2)
+            for _ in range(3)
         ])
 
         # add projection block 3 with 128 -> 256 channels
@@ -274,6 +275,9 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         self.avg_pool = partial(nnx.avg_pool, window_shape=(2,2), strides=(2,2))
 
         # TODO: add an rms norm layer
+        self.rms_norms = nnx.List(
+            [nnx.LayerNorm(capsule_size*c, rngs=rngs) for c in capsule_sizes[:-1]]
+        )
 
         # add a random-fixed projection matrix as a preprocessing for ScRRAMBLe Layers
         output_dim = 2048
@@ -334,11 +338,25 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # project using fixed random matrix M
         x = jnp.einsum('ij, bj -> bi', self.M, x) # shape: (batch_size, output_dim)
 
-        for layer in self.scrramble_caps_layers:
+        # for layer in self.scrramble_caps_layers:
+        #     x = jax.vmap(layer, in_axes=(0,))(x)
+        #     x = self.activation_function(x)
+
+        # comment this part when not using norms
+        for layer, rms_norm in zip(self.scrramble_caps_layers[:-1], self.rms_norms):
             x = jax.vmap(layer, in_axes=(0,))(x)
             x = self.activation_function(x)
+            x_shape = x.shape
+            x = x.reshape((x_shape[0], -1))  # flatten before passing to next layer
+            x = rms_norm(x)
+            x = x.reshape(x_shape)  # reshape back to original shape
+
+        # final layer without norm
+        layer = self.scrramble_caps_layers[-1]
+        x = jax.vmap(layer, in_axes=(0,))(x)
 
         return x
+    
     
 # ---------------------------------------------------------------
 # Loading the CIFAR-10 dataset
@@ -517,6 +535,11 @@ def train_scrramble_capsnet_mnist(
 
     return model, metrics_history
 
+# ----------------------------------------------------------------------
+# TODO: Write a script to sweep over connection densities and slot sizes
+# ----------------------------------------------------------------------
+def sweep_params():
+    return
 
 if __name__ == "__main__":
     # train the model

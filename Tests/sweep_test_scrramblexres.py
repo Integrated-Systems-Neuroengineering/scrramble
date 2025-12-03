@@ -258,7 +258,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # add the second stage of 3 res blocks with filter sizes 128
         self.res2 = nnx.List([
             ResidualBlock(in_features=128, out_features=128, kernel_size=(3, 3), padding=padding, rngs=rngs, activation_fn=activation_function)
-            for _ in range(2)
+            for _ in range(3)
         ])
 
         # add projection block 3 with 128 -> 256 channels
@@ -277,6 +277,9 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         self.avg_pool = partial(nnx.avg_pool, window_shape=(2,2), strides=(2,2))
 
         # TODO: add an rms norm layer
+        self.rms_norms = nnx.List(
+            [nnx.RMSNorm(capsule_size*c, rngs=rngs) for c in capsule_sizes[:-1]]
+        )
 
         # add a random-fixed projection matrix as a preprocessing for ScRRAMBLe Layers
         output_dim = 2048
@@ -337,9 +340,24 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # project using fixed random matrix M
         x = jnp.einsum('ij, bj -> bi', self.M, x) # shape: (batch_size, output_dim)
 
-        for layer in self.scrramble_caps_layers:
-            x = jax.vmap(layer, in_axes=(0,))(x)
+        # for layer in self.scrramble_caps_layers:
+        #     x = jax.vmap(layer, in_axes=(0,))(x)
+        #     x = self.activation_function(x)
+
+        # comment this part when not using norms
+        for layer, rms_norm in zip(self.scrramble_caps_layers[:-1], self.rms_norms):
+            x = jax.vmap(rms_norm, in_axes=(0,))(x)
             x = self.activation_function(x)
+            x_shape = x.shape
+            x = x.reshape((x_shape[0], -1))  # flatten before passing to next layer
+            x = rms_norm(x)
+            x = x.reshape(x_shape)  # reshape back to original shape
+
+        # final layer without norm
+        layer = self.scrramble_caps_layers[-1]
+        x = jax.vmap(layer, in_axes=(0,))(x)
+        
+
 
         return x
     

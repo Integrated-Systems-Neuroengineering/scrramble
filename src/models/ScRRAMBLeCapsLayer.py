@@ -60,24 +60,24 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         #     key=self.rngs.params()
         # ) 
 
-        Ci = ScRRAMBLe_routing(
-            input_cores=self.input_eff_capsules,
-            output_cores=self.num_capsules,
-            receptive_fields_per_capsule= self.receptive_fields_per_capsule,
-            connection_probability=self.connection_probability,
-            key=self.rngs.params(),
-            with_replacement=True
-        )
-
-        # Ci = fast_scrramble(
-        #     num_destination_cores=self.num_capsules,
-        #     num_source_cores=self.input_eff_capsules,
-        #     core_size=self.capsule_size,
-        #     slot_size=self.receptive_field_size,
+        # Ci = ScRRAMBLe_routing(
+        #     input_cores=self.input_eff_capsules,
+        #     output_cores=self.num_capsules,
+        #     receptive_fields_per_capsule= self.receptive_fields_per_capsule,
+        #     connection_probability=self.connection_probability,
         #     key=self.rngs.params(),
-        #     proba=self.connection_probability,
-        #     verify_balanced_flag=True
+        #     with_replacement=True
         # )
+
+        Ci = fast_scrramble(
+            num_destination_cores=self.num_capsules,
+            num_source_cores=self.input_eff_capsules,
+            core_size=self.capsule_size,
+            slot_size=self.receptive_field_size,
+            key=self.rngs.params(),
+            proba=self.connection_probability,
+            # verify_balanced_flag=True
+        )
 
         self.Ci = nnx.Variable(Ci)
 
