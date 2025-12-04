@@ -44,6 +44,7 @@ from utils import ScRRAMBLe_routing, intercore_connectivity, load_cifar10, fast_
 import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
 
+today = date.today().isoformat()
 # -------------------------------------------------------------------
 # Argument parsing for parameters
 # -------------------------------------------------------------------
@@ -66,7 +67,7 @@ def parse_args():
     parser.add_argument("--eval_every", type=int, default=1000)
 
     # output file
-    parser.add_argument("--results.csv", type=str, default="/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar10_sweep_results_12032025.csv")
+    parser.add_argument("--results", type=str, default=f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar10_sweep_results_{today}.csv")
 
     return parser.parse_args()
 
@@ -300,6 +301,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
                 **kwargs):
         
         self.activation_function = activation_function
+        self.capsule_sizes = capsule_sizes
         
 
         # add the projection block
@@ -347,7 +349,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
             initializer(rngs.params(), (output_dim, 4096)) # output dim can be changed! prefer a multiple of 256
         )
 
-        capsule_sizes.insert(0, math.ceil(output_dim/capsule_size))  # insert input capsule size at the beginning
+        self.capsule_sizes.insert(0, math.ceil(output_dim/capsule_size))  # insert input capsule size at the beginning
 
         # adding the ScRRAMBLe layers
         self.scrramble_caps_layers = nnx.List([ScRRAMBLeCapsLayer(
@@ -357,7 +359,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
             receptive_field_size=receptive_field_size,
             connection_probability=pi,
             rngs=rngs
-        ) for Nci, Nco, pi in zip(capsule_sizes[:-1], capsule_sizes[1:], connection_probabilities)]
+        ) for Nci, Nco, pi in zip(self.capsule_sizes[:-1], self.capsule_sizes[1:], connection_probabilities)]
         )
 
     def __call__(self, x: jax.Array) -> jax.Array:
@@ -538,6 +540,7 @@ def main():
     print(f"Connection Density: {args.connection_density} ")
     print(f"Slot Size: {args.slot_size} ")
     print(f"Resample: {args.resample} ")
+    print(f"Batch Size: {args.batch_size} ")
 
     seed = args.resample + 2542
 
@@ -620,7 +623,7 @@ def main():
     # Saving the model...
     results_dict = {
         'connection_density': args.connection_density,
-        'slot_size': args.receptive_field_size,
+        'slot_size': args.slot_size,
         'resample': args.resample,
         'test_accuracy': metrics_history['test_accuracy'][-1],
         'test_loss': metrics_history['test_loss'][-1],
@@ -629,8 +632,8 @@ def main():
         'batch_size': args.batch_size,
     }
 
-    save_result_to_csv(results_dict, args.results_csv)
-    print(f"Results saved to {args.results_csv}")
+    save_result_to_csv(results_dict, args.results)
+    print(f"Results saved to {args.results}")
     print("--"*50)
 
     del model, optimizer, train_ds, valid_ds, test_ds, metrics, metrics_history
