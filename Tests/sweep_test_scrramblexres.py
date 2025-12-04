@@ -9,6 +9,9 @@ Description of test:
 - Seep over different slot sizes.
 - Record test set performance for each configuration.
 """
+import argparse
+import csv
+
 import jax
 import math
 import jax.numpy as jnp
@@ -42,41 +45,97 @@ import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
 
 # -------------------------------------------------------------------
+# Argument parsing for parameters
+# -------------------------------------------------------------------
+def parse_args():
+    parser = argparse.ArgumentParser(description="ScRRAMBLe-ResNet20 CIFAR10 Sweeping Parameters")
+
+    # parameters to sweep
+    parser.add_argument("--connection_density", type=float, required=True)
+    parser.add_argument("--slot_size", type=int, required=True)
+    parser.add_argument("--resample", type=int, required=True)
+
+    # model parameters
+    parser.add_argument("--capsule_sizes", nargs="+", type=int, default=[50, 10])
+    parser.add_argument("--capsule_size", type=int, default=256)
+
+    # hyperparameters
+    parser.add_argument("--learning_rate", type=float, default=3e-4)
+    parser.add_argument("--batch_size", type=int, default=64)
+    parser.add_argument("--train_steps", type=int, default=int(5e4))
+    parser.add_argument("--eval_every", type=int, default=1000)
+
+    # output file
+    parser.add_argument("--results.csv", type=str, default="/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar10_sweep_results_12032025.csv")
+
+    return parser.parse_args()
+
+
+
+
+# -------------------------------------------------------------------
 # Auxiliary functions
 # -------------------------------------------------------------------
-def save_metrics(metrics_dict, filename):
-    """
-    Save the metrics to a file.
-    Args:
-        metrics_dict: dict, metrics to save.
-        filename: str, name of the file to save the metrics to.
-    """
+def save_result_to_csv(result, csv_path):
+    """Thread-safe CSV writing with file locking"""
+    import fcntl
+    import os
+    
+    # Create directory if needed
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+    
+    # Check if file exists to write headers
+    file_exists = os.path.isfile(csv_path)
+    
+    with open(csv_path, 'a', newline='') as f:
+        # Lock file for thread-safe writing
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+        
+        try:
+            writer = csv.DictWriter(f, fieldnames=result.keys())
+            
+            # Write header if new file
+            if not file_exists:
+                writer.writeheader()
+            
+            writer.writerow(result)
+            f.flush()
+        finally:
+            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
-    metrics_dir = "/local_disk/vikrant/scrramble/logs"
-    filename = os.path.join(metrics_dir, filename)
+# def save_metrics(metrics_dict, filename):
+#     """
+#     Save the metrics to a file.
+#     Args:
+#         metrics_dict: dict, metrics to save.
+#         filename: str, name of the file to save the metrics to.
+#     """
 
-    os.makedirs(os.path.dirname(filename), exist_ok=True)  # Ensure the directory exists.
+#     metrics_dir = "/local_disk/vikrant/scrramble/logs"
+#     filename = os.path.join(metrics_dir, filename)
 
-    with open(filename, 'wb') as f:
-        pickle.dump(metrics_dict, f)
+#     os.makedirs(os.path.dirname(filename), exist_ok=True)  # Ensure the directory exists.
 
-    print(f"Metrics saved to {filename}")
+#     with open(filename, 'wb') as f:
+#         pickle.dump(metrics_dict, f)
+
+#     print(f"Metrics saved to {filename}")
 
     
-def save_model(state, filename):
-    """
-    Save the model state in a specified file
-    """
+# def save_model(state, filename):
+#     """
+#     Save the model state in a specified file
+#     """
 
-    checkpoint_dir = "/local_disk/vikrant/scrramble/models"
-    filename_ = os.path.join(checkpoint_dir, filename)
+#     checkpoint_dir = "/local_disk/vikrant/scrramble/models"
+#     filename_ = os.path.join(checkpoint_dir, filename)
 
-    os.makedirs(os.path.dirname(filename_), exist_ok=True)  # Ensure the directory exists.
+#     os.makedirs(os.path.dirname(filename_), exist_ok=True)  # Ensure the directory exists.
 
-    with open(filename_, 'wb') as f:
-        pickle.dump(state, f)
+#     with open(filename_, 'wb') as f:
+#         pickle.dump(state, f)
     
-    print(f"Model saved to {filename_}")
+#     print(f"Model saved to {filename_}")
 
 # -------------------------------------------------------------------
 # Residual Block: outputs shape 2048
@@ -278,7 +337,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
 
         # TODO: add an rms norm layer
         self.rms_norms = nnx.List(
-            [nnx.RMSNorm(capsule_size*c, rngs=rngs) for c in capsule_sizes[:-1]]
+            [nnx.LayerNorm(capsule_size*c, rngs=rngs) for c in capsule_sizes[:-1]]
         )
 
         # add a random-fixed projection matrix as a preprocessing for ScRRAMBLe Layers
@@ -346,7 +405,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
 
         # comment this part when not using norms
         for layer, rms_norm in zip(self.scrramble_caps_layers[:-1], self.rms_norms):
-            x = jax.vmap(rms_norm, in_axes=(0,))(x)
+            x = jax.vmap(layer, in_axes=(0,))(x)
             x = self.activation_function(x)
             x_shape = x.shape
             x = x.reshape((x_shape[0], -1))  # flatten before passing to next layer
@@ -356,41 +415,11 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # final layer without norm
         layer = self.scrramble_caps_layers[-1]
         x = jax.vmap(layer, in_axes=(0,))(x)
-        
-
 
         return x
     
     
-# ---------------------------------------------------------------
-# Loading the CIFAR-10 dataset
-# ---------------------------------------------------------------
 
-data_dir = "/local_disk/vikrant/datasets"
-dataset_dict = {
-    'batch_size': 64, # 64 is a good batch size for CIFAR-10
-    'train_steps': 50000, # run for longer, 30000 is good for CIFAR-10
-    'eval_every': 1000, # evaluate every 1000 steps
-    'binarize': False,  # CIFAR-10 is usually kept as RGB
-    'data_dir': data_dir,
-    'seed': 101,
-    'quantize_flag': False,  # whether to quantize the images
-    'quantize_bits': False,  # number of bits to quantize the images
-    'num_rotations': 4,  # for every image, rotate it by
-    'shuffle_buffer': 1024,  # shuffle buffer size
-    }
-
-train_ds, valid_ds, test_ds = load_cifar10(
-        batch_size=dataset_dict['batch_size'],
-        train_steps=dataset_dict['train_steps'],
-        data_dir=dataset_dict['data_dir'],
-        seed=dataset_dict['seed'],
-        shuffle_buffer=dataset_dict['shuffle_buffer'],
-        augmentation=True,
-        quantize_flag=dataset_dict['quantize_flag'],
-        quantize_bits=dataset_dict['quantize_bits'],
-        num_rotations=dataset_dict['num_rotations'],
-    )
 
 # ---------------------------------------------------------------
 # Training functions
@@ -433,54 +462,21 @@ def pred_step(model: ScRRAMBLeResCIFAR10, batch):
 
     return out
 
-# ---------------------------------------------------------------
-# Model and hyperparameters
-# ---------------------------------------------------------------
-# hyperparameters
-hyperparameters = {
-    'learning_rate': 3e-4, # 1e-3 seems to work well
-    'momentum': 0.9, 
-    'weight_decay': 1e-4
-}
-
-# model
-model_parameters = {
-    'capsule_sizes': [50, 10],
-    'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
-    'connection_probabilities': [0.08, 0.1],
-    'receptive_field_size': 64, 
-    'capsule_size': 256,
-    'activation_function': nnx.gelu,
-}
-
-model = ScRRAMBLeResCIFAR10(**model_parameters)
-nnx.display(model)
-
-optimizer = nnx.Optimizer(
-    model,
-    optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']),
-    wrt=nnx.Param
-)
-
-metrics = nnx.MultiMetric(
-    accuracy=nnx.metrics.Accuracy(),
-    loss=nnx.metrics.Average('loss')
-)
-
-metrics_history = defaultdict(list)
 
 # -------------------------------------------------------------------
 # Training function
 # -------------------------------------------------------------------
 def train_scrramble_capsnet_mnist(
-        model: ScRRAMBLeResCIFAR10 = model,
-        optimizer: nnx.Optimizer = optimizer,
-        train_ds: tf.data.Dataset = train_ds,
-        valid_ds: tf.data.Dataset = valid_ds,
-        dataset_dict: dict = dataset_dict,
-        save_model_flag: bool = False,
-        save_metrics_flag: bool = False,
+        model: ScRRAMBLeResCIFAR10,
+        optimizer: nnx.Optimizer,
+        train_ds: tf.data.Dataset,
+        valid_ds: tf.data.Dataset,
+        test_ds: tf.data.Dataset,
+        metrics_history: dict,
+        metrics: nnx.MultiMetric,
+        dataset_dict: dict,
 ):
+    print(f"TRAINING THE MODEL \n")
     
     eval_every = dataset_dict['eval_every']
     train_steps = dataset_dict['train_steps']
@@ -526,36 +522,136 @@ def train_scrramble_capsnet_mnist(
     print(f"Test loss: {metrics_history['test_loss'][-1]}, Test accuracy: {metrics_history['test_accuracy'][-1]}")
     print("="*50)
 
-    if save_model_flag:
-        today = date.today().isoformat()
-        filename = f"sscamble_mnist_capsnet_recon_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
-        graphdef, state = nnx.split(model)
-        save_model(state, filename)
-
-    if save_metrics_flag:
-        today = date.today().isoformat()
-        filename = f"sscamble_mnist_capsnet_recon_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
-        save_metrics(metrics_history, filename)
 
     return model, metrics_history
 
-# ----------------------------------------------------------------------
-# TODO: Write a script to sweep over connection densities and slot sizes
-# ----------------------------------------------------------------------
-def sweep_params():
-    return
+# ---------------------------------------------------------------
+# Sweeping...
+# ---------------------------------------------------------------
 
-if __name__ == "__main__":
+def main():
+    args = parse_args()
+
+    # print out the simulation parameters
+    print("--"*50)
+    print(f"TRAINING CONFIGURATION: \n")
+    print(f"Connection Density: {args.connection_density} ")
+    print(f"Slot Size: {args.slot_size} ")
+    print(f"Resample: {args.resample} ")
+
+    seed = args.resample + 2542
+
+
+    data_dir = "/local_disk/vikrant/datasets"
+    dataset_dict = {
+        'batch_size': args.batch_size, # 64 is a good batch size for CIFAR-10
+        'train_steps': args.train_steps, # run for longer, 30000 is good for CIFAR-10
+        'eval_every': args.eval_every, # evaluate every 1000 steps
+        'binarize': False,  # CIFAR-10 is usually kept as RGB
+        'data_dir': data_dir,
+        'seed': seed,
+        'quantize_flag': False,  # whether to quantize the images
+        'quantize_bits': False,  # number of bits to quantize the images
+        'num_rotations': 4,  # for every image, rotate it by
+        'shuffle_buffer': 1024,  # shuffle buffer size  
+        }
+
+    train_ds, valid_ds, test_ds = load_cifar10(
+            batch_size=dataset_dict['batch_size'],
+            train_steps=dataset_dict['train_steps'],
+            data_dir=dataset_dict['data_dir'],
+            seed=dataset_dict['seed'],
+            shuffle_buffer=dataset_dict['shuffle_buffer'],
+            augmentation=True,
+            quantize_flag=dataset_dict['quantize_flag'],
+            quantize_bits=dataset_dict['quantize_bits'],
+            num_rotations=dataset_dict['num_rotations'],
+        )
+
+    # ---------------------------------------------------------------
+    # Model and hyperparameters
+    # ---------------------------------------------------------------
+    # hyperparameters
+    hyperparameters = {
+        'learning_rate': args.learning_rate, # 1e-3 seems to work well
+        'momentum': 0.9, 
+        'weight_decay': 1e-4
+    }
+
+    # model
+    connection_probabilities = [args.connection_density, args.connection_density]
+    model_parameters = {
+        'capsule_sizes': args.capsule_sizes,
+        'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
+        'connection_probabilities': connection_probabilities,
+        'receptive_field_size': args.slot_size,
+        'capsule_size': args.capsule_size,
+        'activation_function': nnx.gelu,
+    }
+
+    model = ScRRAMBLeResCIFAR10(**model_parameters)
+    nnx.display(model)
+
+    optimizer = nnx.Optimizer(
+        model,
+        optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']),
+        wrt=nnx.Param
+    )
+
+    metrics = nnx.MultiMetric(
+        accuracy=nnx.metrics.Accuracy(),
+        loss=nnx.metrics.Average('loss')
+    )
+
+    metrics_history = defaultdict(list)
+
     # train the model
     model, metrics_history = train_scrramble_capsnet_mnist(
         model=model,
         optimizer=optimizer,
         train_ds=train_ds,
         valid_ds=valid_ds,
+        test_ds=test_ds,
+        metrics_history=metrics_history,
+        metrics=metrics,
         dataset_dict=dataset_dict,
-        save_model_flag=False,
-        save_metrics_flag=False
     )
+
+    # Saving the model...
+    results_dict = {
+        'connection_density': args.connection_density,
+        'slot_size': args.receptive_field_size,
+        'resample': args.resample,
+        'test_accuracy': metrics_history['test_accuracy'][-1],
+        'test_loss': metrics_history['test_loss'][-1],
+        'core_budget': sum(model.capsule_sizes[1:]),
+        'learning_rate': args.learning_rate,
+        'batch_size': args.batch_size,
+    }
+
+    save_result_to_csv(results_dict, args.results_csv)
+    print(f"Results saved to {args.results_csv}")
+    print("--"*50)
+
+    del model, optimizer, train_ds, valid_ds, test_ds, metrics, metrics_history
+    jax.clear_caches()
+
+
+if __name__ == "__main__":
+    main()
+
+
+# if __name__ == "__main__":
+#     # train the model
+#     model, metrics_history = train_scrramble_capsnet_mnist(
+#         model=model,
+#         optimizer=optimizer,
+#         train_ds=train_ds,
+#         valid_ds=valid_ds,
+#         dataset_dict=dataset_dict,
+#         save_model_flag=False,
+#         save_metrics_flag=False
+#     )
 
     # labels_dict = {
     #     0: "airplane",
@@ -572,7 +668,7 @@ if __name__ == "__main__":
     
     # test_batch = next(iter(test_ds.as_numpy_iterator()))
     # predictions = pred_step(model, test_batch)
- 
+
     # fig, ax = plt.subplots(2, 5, figsize=(15, 6))
     # for i, axs in enumerate(ax.ravel()):
     #     axs.imshow(test_batch['image'][i])

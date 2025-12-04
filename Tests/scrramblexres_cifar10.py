@@ -443,7 +443,7 @@ hyperparameters = {
 model_parameters = {
     'capsule_sizes': [50, 10],
     'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
-    'connection_probabilities': [0.08, 0.1],
+    'connection_probabilities': [0.1, 0.1],
     'receptive_field_size': 64, 
     'capsule_size': 256,
     'activation_function': nnx.gelu,
