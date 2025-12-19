@@ -102,9 +102,9 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         x_reshaped = x.reshape(self.input_eff_capsules, self.receptive_fields_per_capsule, self.receptive_field_size)
 
         # ScRRAMBLe Routing to the cores
-        x_routed = jnp.einsum('ijkl,ijm->klm', self.Ci.value, x_reshaped)
+        x_routed = jnp.einsum('ijkl,ijm->klm', self.Ci, x_reshaped) #.value is deprecated
 
-        y = jnp.einsum('ijklm,ikm->ijl', self.Wi.value, x_routed)
+        y = jnp.einsum('ijklm,ikm->ijl', self.Wi, x_routed) #.value is deprecated
 
         return y
 

@@ -13,13 +13,13 @@ import pandas as pd
 today = date.today().isoformat()
 
 ## Define Sweep parameters
-CONNECTION_DENSITIES = [0.01, 0.05, 0.1, 0.15, 0.5, 0.9, 1.0]
-SLOT_SIZES = [64, 16, 8]
+CONNECTION_DENSITIES = [0.01, 0.05, 0.07, 0.1, 0.3, 0.6, 1.0]
+SLOT_SIZES = [64, 16, 4]
 NUM_RESAMPLES = 3
 
 ## Fixed Parameters
 CAPSULE_SIZE = 256
-CAPSULE_LAYERS = [50, 10]
+CAPSULE_SIZES = [[20, 10], [50, 10]]
 BATCH_SIZE = 64
 LEARNING_RATE = 3e-4
 TRAIN_STEPS = int(5e4)
@@ -33,32 +33,39 @@ LOG_DIR = Path(f"/local_disk/vikrant/scrramble/scrramblexres_sweep_logs/logs_scr
 LOG_DIR.mkdir(parents=True, exist_ok=True)  # create log directory if not exists
 
 ## Check if the config was already run
-def check_if_already_run(conn_density, slot_size, repeat):
+def check_if_already_run(capsule_sizes, conn_density, slot_size, resample):
     """Check if this configuration was already completed"""
     if not os.path.exists(RESULTS_CSV):
         return False
     
     try:
         df = pd.read_csv(RESULTS_CSV)
+
+        # Convert capsule_sizes list to a comparable format
+        # Store as string in CSV for easier comparison
+        capsule_str = '_'.join(map(str, capsule_sizes))
+
         mask = (
+            (df['capsule_sizes'] == capsule_str) &
             (df['connection_density'] == conn_density) &
             (df['slot_size'] == slot_size) &
-            (df['repeat'] == repeat)
+            (df['repeat'] == resample)
         )
         return mask.any()
     except:
+        print(f"Warning: Could not check existing results: {e}")
         return False
     
 
 
 ## run a single config
-def run_single_config(connection_density, slot_size, resample_idx, config_idx, total_configs):
+def run_single_config(capsule_sizes, connection_density, slot_size, resample_idx, config_idx, total_configs):
     """
     Runs a single config of ScRRAMBLE-RES on CIFAR10.
     """
 
     # check if already completed
-    if check_if_already_run(connection_density, slot_size, resample_idx):
+    if check_if_already_run(capsule_sizes, connection_density, slot_size, resample_idx):
         print(f"Config {config_idx+1}/{total_configs} already completed. Skipping.")
         return True
     
@@ -71,10 +78,15 @@ def run_single_config(connection_density, slot_size, resample_idx, config_idx, t
         "--resample", str(resample_idx),
         "--train_steps", str(TRAIN_STEPS),
         "--eval_every", str(EVAL_EVERY),
+        "--capsule_sizes",
     ]
 
-    # set up the log file
-    log_file = LOG_DIR / f"conn{connection_density}_slot{slot_size}_rep{resample_idx}.log"
+    # add capsule sizes as separate string arguments
+    cmd.extend([str(x) for x in capsule_sizes])
+
+    # set up the log file - include capsule_sizes in filename
+    capsule_str = '_'.join(map(str, capsule_sizes))
+    log_file = LOG_DIR / f"caps{capsule_str}_conn{connection_density}_slot{slot_size}_rep{resample_idx}.log"
 
     # Run subprocess
     start_time = time.time()
@@ -110,7 +122,7 @@ def run_single_config(connection_density, slot_size, resample_idx, config_idx, t
 
 # main function to run all configs
 def main():
-    configs = list(itertools.product(CONNECTION_DENSITIES, SLOT_SIZES, range(NUM_RESAMPLES)))
+    configs = list(itertools.product(CAPSULE_SIZES, CONNECTION_DENSITIES, SLOT_SIZES, range(NUM_RESAMPLES)))
     total_configs = len(configs)
 
     print(f"\n{'='*80}")
@@ -118,6 +130,7 @@ def main():
     print(f"{'='*80}")
     print(f"Total configurations: {total_configs}")
     print(f"Connection densities: {CONNECTION_DENSITIES}")
+    print(f"Capsule layers: {CAPSULE_SIZES}")
     print(f"Slot sizes: {SLOT_SIZES}")
     print(f"Resamples per config: {NUM_RESAMPLES}")
     print(f"Results will be saved to: {RESULTS_CSV}")
@@ -131,9 +144,14 @@ def main():
 
     start_time = time.time()
 
-    for i, (p, ls, r) in enumerate(configs, 1):
+    for i, (c_size, p, ls, r) in enumerate(configs, 1):
 
-        successful_run = run_single_config(connection_density=p, slot_size=ls, resample_idx=r, config_idx=i-1, total_configs=total_configs)
+        successful_run = run_single_config(capsule_sizes=c_size, 
+                                           connection_density=p, 
+                                           slot_size=ls, 
+                                           resample_idx=r, 
+                                           config_idx=i-1, 
+                                           total_configs=total_configs)
 
         if successful_run:
             successful += 1

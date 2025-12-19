@@ -27,7 +27,7 @@ import numpy as np
 from collections import defaultdict
 from functools import partial
 from tqdm import tqdm
-from datetime import date
+from datetime import date, datetime
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -37,7 +37,7 @@ import seaborn as sns
 
 from utils.activation_functions import quantized_relu_ste, squash
 from utils.loss_functions import margin_loss
-from utils import ScRRAMBLe_routing, intercore_connectivity, load_cifar10, fast_scrramble
+from utils import ScRRAMBLe_routing, intercore_connectivity, load_cifar10, fast_scrramble, load_cifar10_augment
 
 
 
@@ -170,7 +170,7 @@ class ResidualBlock(nnx.Module):
 
     def __call__(self, x):
         x_res = x
-        
+        x = self.batch_norm(x)
         # # Project residual connection if dimensions don't match
         # if self.use_projection:
         #     x_res = self.projection(x_res)
@@ -273,9 +273,9 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         x_reshaped = x.reshape(self.input_eff_capsules, self.receptive_fields_per_capsule, self.receptive_field_size)
 
         # ScRRAMBLe Routing to the cores
-        x_routed = jnp.einsum('ijkl,ijm->klm', self.Ci.value, x_reshaped)
+        x_routed = jnp.einsum('ijkl,ijm->klm', self.Ci, x_reshaped) #.value is deprecated
 
-        y = jnp.einsum('ijklm,ikm->ijl', self.Wi.value, x_routed)
+        y = jnp.einsum('ijklm,ikm->ijl', self.Wi, x_routed) #.value is deprecated
 
         return y
 
@@ -310,7 +310,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # add first stage of 3 res blocks with filter sizes 64
         self.res1 = nnx.List([
             ResidualBlock(in_features=64, out_features=64, kernel_size=(3, 3), padding=padding, rngs=rngs, activation_fn=activation_function)
-            for _ in range(2)
+            for _ in range(3)
         ])
 
         # add projection block 2 with 64 -> 128 channels
@@ -319,7 +319,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # add the second stage of 3 res blocks with filter sizes 128
         self.res2 = nnx.List([
             ResidualBlock(in_features=128, out_features=128, kernel_size=(3, 3), padding=padding, rngs=rngs, activation_fn=activation_function)
-            for _ in range(3)
+            for _ in range(4)
         ])
 
         # add projection block 3 with 128 -> 256 channels
@@ -537,6 +537,8 @@ def main():
     # print out the simulation parameters
     print("--"*50)
     print(f"TRAINING CONFIGURATION: \n")
+    print(f"Core Sizes: {args.capsule_sizes} ")
+    # print(f"Model Core sizes: {model.capsule_sizes} ")
     print(f"Connection Density: {args.connection_density} ")
     print(f"Slot Size: {args.slot_size} ")
     print(f"Resample: {args.resample} ")
@@ -559,17 +561,27 @@ def main():
         'shuffle_buffer': 1024,  # shuffle buffer size  
         }
 
-    train_ds, valid_ds, test_ds = load_cifar10(
+    # train_ds, valid_ds, test_ds = load_cifar10(
+    #         batch_size=dataset_dict['batch_size'],
+    #         train_steps=dataset_dict['train_steps'],
+    #         data_dir=dataset_dict['data_dir'],
+    #         seed=dataset_dict['seed'],
+    #         shuffle_buffer=dataset_dict['shuffle_buffer'],
+    #         augmentation=True,
+    #         quantize_flag=dataset_dict['quantize_flag'],
+    #         quantize_bits=dataset_dict['quantize_bits'],
+    #         num_rotations=dataset_dict['num_rotations'],
+    #     )
+
+    train_ds, valid_ds, test_ds = load_cifar10_augment(
             batch_size=dataset_dict['batch_size'],
             train_steps=dataset_dict['train_steps'],
             data_dir=dataset_dict['data_dir'],
             seed=dataset_dict['seed'],
             shuffle_buffer=dataset_dict['shuffle_buffer'],
             augmentation=True,
-            quantize_flag=dataset_dict['quantize_flag'],
-            quantize_bits=dataset_dict['quantize_bits'],
-            num_rotations=dataset_dict['num_rotations'],
-        )
+            training=False,
+    )
 
     # ---------------------------------------------------------------
     # Model and hyperparameters
@@ -585,7 +597,7 @@ def main():
     connection_probabilities = [args.connection_density, args.connection_density]
     model_parameters = {
         'capsule_sizes': args.capsule_sizes,
-        'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
+        'rngs': nnx.Rngs(default=int(seed + 0), permute=int(seed + 1), params=int(seed + 2), activation=int(seed + 3)),
         'connection_probabilities': connection_probabilities,
         'receptive_field_size': args.slot_size,
         'capsule_size': args.capsule_size,
@@ -594,10 +606,20 @@ def main():
 
     model = ScRRAMBLeResCIFAR10(**model_parameters)
     nnx.display(model)
+    # print(f"Model core sizes: {model.capsule_sizes} ")
+
+    # learning rate schedule
+    schedule = optax.warmup_cosine_decay_schedule(
+        init_value=hyperparameters['learning_rate'] / 10,
+        peak_value=hyperparameters['learning_rate']*1.3,
+        warmup_steps=int(1e3),
+        decay_steps=dataset_dict['train_steps'] - int(1e3),
+        end_value=1e-6
+    )
 
     optimizer = nnx.Optimizer(
         model,
-        optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']),
+        optax.adamw(learning_rate=schedule, weight_decay=hyperparameters['weight_decay']),
         wrt=nnx.Param
     )
 
@@ -621,15 +643,17 @@ def main():
     )
 
     # Saving the model...
+    timestamp = datetime.now().isoformat()
     results_dict = {
         'connection_density': args.connection_density,
         'slot_size': args.slot_size,
         'resample': args.resample,
         'test_accuracy': metrics_history['test_accuracy'][-1],
         'test_loss': metrics_history['test_loss'][-1],
-        'core_budget': sum(model.capsule_sizes[1:]),
+        'core_budget': sum(args.capsule_sizes),
         'learning_rate': args.learning_rate,
         'batch_size': args.batch_size,
+        'timestamp': timestamp
     }
 
     save_result_to_csv(results_dict, args.results)

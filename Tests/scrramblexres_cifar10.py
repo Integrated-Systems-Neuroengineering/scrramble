@@ -256,7 +256,7 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # add the second stage of 3 res blocks with filter sizes 128
         self.res2 = nnx.List([
             ResidualBlock(in_features=128, out_features=128, kernel_size=(3, 3), padding=padding, rngs=rngs, activation_fn=activation_function)
-            for _ in range(3)
+            for _ in range(10)
         ])
 
         # add projection block 3 with 128 -> 256 channels
@@ -280,9 +280,9 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         )
 
         # add a random-fixed projection matrix as a preprocessing for ScRRAMBLe Layers
-        output_dim = 2048
+        output_dim = 4096
         initializer = initializers.glorot_normal()
-        self.M = nnx.Variable(
+        self.M = nnx.Param(
             initializer(rngs.params(), (output_dim, 4096)) # output dim can be changed! prefer a multiple of 256
         )
 
@@ -452,6 +452,7 @@ model_parameters = {
 model = ScRRAMBLeResCIFAR10(**model_parameters)
 nnx.display(model)
 
+# optimizer
 optimizer = nnx.Optimizer(
     model,
     optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']),
