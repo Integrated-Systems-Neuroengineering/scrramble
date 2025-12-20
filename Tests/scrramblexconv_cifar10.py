@@ -5,6 +5,7 @@ Created on 11/18/2025
 Author: Vikrant Jaltare
 
 Best accuracy recorded so far: 70%
+Update 12/19/2025: Added cosine learning rate schedule.
 """
 
 import jax
@@ -397,7 +398,7 @@ hyperparameters = {
 
 # model
 model_parameters = {
-    'capsule_sizes': [30, 20, 10],
+    'capsule_sizes': [20, 10],
     'rngs': nnx.Rngs(default=0, permute=1, params=2, activation=3),
     'connection_probabilities': [0.2, 0.2, 0.1],
     'receptive_field_size': 64, 
@@ -408,9 +409,18 @@ model_parameters = {
 model = ScRRAMBLeCIFAR10(**model_parameters)
 nnx.display(model)
 
+# learning rate schedule
+schedule = optax.warmup_cosine_decay_schedule(
+    init_value=hyperparameters['learning_rate'] / 10,
+    peak_value=hyperparameters['learning_rate']*1.3,
+    warmup_steps=int(1e3),
+    decay_steps=dataset_dict['train_steps'] - int(1e3),
+    end_value=1e-6
+)
+
 optimizer = nnx.Optimizer(
     model,
-    optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']),
+    optax.adamw(learning_rate=schedule, weight_decay=hyperparameters['weight_decay']),
     wrt=nnx.Param
 )
 

@@ -13,8 +13,8 @@ import pandas as pd
 today = date.today().isoformat()
 
 ## Define Sweep parameters
-CONNECTION_DENSITIES = [0.01, 0.05, 0.07, 0.1, 0.3, 0.6, 1.0]
-SLOT_SIZES = [64, 16, 4]
+CONNECTION_DENSITIES = [0.1, 0.25, 0.50, 0.75, 1.0]
+SLOT_SIZES = [8, 4] # varying the slot sizes!
 NUM_RESAMPLES = 3
 
 ## Fixed Parameters
@@ -52,7 +52,7 @@ def check_if_already_run(capsule_sizes, conn_density, slot_size, resample):
             (df['repeat'] == resample)
         )
         return mask.any()
-    except:
+    except Exception as e:
         print(f"Warning: Could not check existing results: {e}")
         return False
     
@@ -151,7 +151,8 @@ def main():
                                            slot_size=ls, 
                                            resample_idx=r, 
                                            config_idx=i-1, 
-                                           total_configs=total_configs)
+                                           total_configs=total_configs
+                                           )
 
         if successful_run:
             successful += 1

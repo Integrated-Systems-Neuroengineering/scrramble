@@ -644,7 +644,9 @@ def main():
 
     # Saving the model...
     timestamp = datetime.now().isoformat()
+    capsule_str = '_'.join(map(str, args.capsule_sizes))
     results_dict = {
+        'capsule_sizes': capsule_str,  # Add this line!
         'connection_density': args.connection_density,
         'slot_size': args.slot_size,
         'resample': args.resample,
