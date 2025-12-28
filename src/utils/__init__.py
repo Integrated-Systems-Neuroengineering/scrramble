@@ -11,6 +11,7 @@ from .load_augmented_mnist import load_and_augment_mnist
 from .load_cifar10 import load_cifar10
 from .fast_scrramble import fast_scrramble
 from .load_cifar10_augment import load_cifar10_augment
+from .load_cifar100_augment import load_cifar100_augment
 
 
 __all__  = ["clipping_ste", 
@@ -26,4 +27,5 @@ __all__  = ["clipping_ste",
             "load_and_augment_mnist", 
             "load_cifar10", 
             "fast_scrramble",
-            "load_cifar10_augment"]
+            "load_cifar10_augment",
+            "load_cifar100_augment"]
