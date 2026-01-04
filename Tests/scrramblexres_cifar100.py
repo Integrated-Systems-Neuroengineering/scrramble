@@ -71,6 +71,11 @@ def parse_args():
     parser.add_argument("--results", type=str, default=f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar100_performance_results_{today}.csv")
     parser.add_argument("--save_metrics", action="store_true", help="Save metrics to JSON") # whether to save the metrics history
     parser.add_argument("--metrics_file", type=str, default=f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar100_metrics_{today}.json")
+    parser.add_argument("--save_model", action="store_true", help="Save Model to pickle") # whether to save the model
+    parser.add_argument("--model_file", type=str, default=f"/Volumes/export/isn/vikrant/Data/scrramble/models/scrramble_resnet20_cifar100_model_{today}.pkl")
+
+    return parser.parse_args()
+
 
     return parser.parse_args()
 
@@ -100,6 +105,28 @@ def save_result_to_csv(result, csv_path):
             f.flush()
         finally:
             fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+
+def save_payload(state, configs, filename):
+    """
+    Save model and parameters to a pickle.
+    state: nnx.Model state
+    configs: dict, configuration parameters
+    """
+
+    payload = {
+        'configs' : configs,
+        'state': state
+    }
+
+    checkpoint_dir = "/local_disk/vikrant/scrramble/models"
+    filename_ = os.path.join(checkpoint_dir, filename)
+
+    os.makedirs(os.path.dirname(filename_), exist_ok=True)  # Ensure the directory exists.
+
+    with open(filename_, 'wb') as f:
+        pickle.dump(payload, f)
+    
+    print(f"Model saved to {filename_}")
 
 # def save_metrics(metrics_dict, filename):
 #     """
@@ -673,6 +700,15 @@ def main():
         save_result_to_csv(results_dict, args.results)
         print(f"Results saved to {args.results}")
         print("--"*50)
+
+    if args.save_model:
+        configs = {'capsule_sizes': args.capsule_sizes[1:],  # exclude input capsule size
+        'connection_probabilities': connection_probabilities,
+        'receptive_field_size': args.slot_size,
+        'capsule_size': args.capsule_size,
+        }
+        _, state = nnx.split(model)
+        save_payload(state, configs, args.model_file)
 
     del model, optimizer, train_ds, valid_ds, test_ds, metrics, metrics_history
     jax.clear_caches()
