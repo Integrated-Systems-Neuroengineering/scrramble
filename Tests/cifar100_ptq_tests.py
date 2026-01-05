@@ -34,7 +34,7 @@ import seaborn as sns
 
 from utils.activation_functions import quantized_relu_ste, squash
 from utils.loss_functions import margin_loss
-from utils import ScRRAMBLe_routing, intercore_connectivity, load_cifar10, fast_scrramble, load_cifar10_augment
+from utils import ScRRAMBLe_routing, intercore_connectivity, load_cifar10, fast_scrramble, load_cifar10_augment, load_cifar100_augment
 
 
 
@@ -101,9 +101,6 @@ def save_result_to_csv(result, csv_path):
 # print(f"MODEL LOADED FROM: {MODEL_PATH}/scrramble_resnet20_cifar10_model_2026-01-03.pkl")
 # print("---------------------------------------------------")
 
-# --------------------------------------
-# Model Definitions
-# --------------------------------------
 # -------------------------------------------------------------------
 # Residual Block: outputs shape 2048
 # -------------------------------------------------------------------
@@ -249,7 +246,7 @@ class ScRRAMBLeCapsLayer(nnx.Module):
 # -------------------------------------------------------------------
 # ScRRAMBLE + Res Network
 # -------------------------------------------------------------------
-class ScRRAMBLeResCIFAR10(nnx.Module):
+class ScRRAMBLeResCIFAR100(nnx.Module):
     """
     ScRRAMBLe + Residual Network for CIFAR-10 classification.
     """
@@ -328,6 +325,9 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         ) for Nci, Nco, pi in zip(self.capsule_sizes[:-1], self.capsule_sizes[1:], connection_probabilities)]
         )
 
+        # add a final classifier layer
+        self.classifier = nnx.Linear(in_features=capsule_size * capsule_sizes[-1], out_features=100, rngs=rngs)  # 100 classes for CIFAR-100
+
     def __call__(self, x: jax.Array) -> jax.Array:
         """
         Forward pass through the ScRRAMBLe + ResNet model.
@@ -384,17 +384,30 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         layer = self.scrramble_caps_layers[-1]
         x = jax.vmap(layer, in_axes=(0,))(x)
 
+        x = x.reshape((x.shape[0], -1))  # flatten before classifier
+        x = self.classifier(x)
+
         return x
 
 # ---------------------------------------------------------------
 # Training functions
 # ---------------------------------------------------------------
+# add ths loss function
+def loss_fn(model: ScRRAMBLeResCIFAR100, batch: dict):
+    logits = model(batch['image'])
+    # print(f"logits.shape: {logits.shape}")
+    # print(f"batch['label'].shape: {batch['label'].shape}")
+    loss = optax.softmax_cross_entropy_with_integer_labels(logits, labels=batch['label']).mean(
+    )
+
+    return loss, logits
+
 @nnx.jit
-def train_step(model: ScRRAMBLeResCIFAR10,
+def train_step(model: ScRRAMBLeResCIFAR100,
                optimizer: nnx.Optimizer,
                metrics: nnx.MultiMetric,
                batch,
-               loss_fn: Callable = margin_loss,
+               loss_fn: Callable = loss_fn,
                ):
     
     grad_fn = nnx.value_and_grad(loss_fn, has_aux=True)
@@ -403,27 +416,22 @@ def train_step(model: ScRRAMBLeResCIFAR10,
     optimizer.update(model, grads)  # In-place updates.
 
 @nnx.jit
-def eval_step(model: ScRRAMBLeResCIFAR10, metrics: nnx.MultiMetric, batch, loss_fn: Callable = margin_loss):
+def eval_step(model: ScRRAMBLeResCIFAR100, metrics: nnx.MultiMetric, batch, loss_fn: Callable = loss_fn):
   loss, logits = loss_fn(model, batch)
   metrics.update(loss=loss, logits=logits, labels=batch['label'])  # In-place updates.
 
 @nnx.jit
-def pred_step(model: ScRRAMBLeResCIFAR10, batch):
+def pred_step(model: ScRRAMBLeResCIFAR100, batch):
     """
     Prediction step
     """
 
-    caps_out = model(batch['image'])
+    logits = model(batch['image'])
 
-    # reshape
-    out = jnp.reshape(caps_out, (caps_out.shape[0], 10, -1))
-
-    # take vector sizes along the final dimension
-    out = jnp.linalg.norm(out, axis=-1)
+    logits = nnx.softmax(logits, axis=-1)
 
     # take argmax along the second dimension to get the predicted class
-
-    out = jnp.argmax(out, axis=-1)
+    out = jnp.argmax(logits, axis=-1)
 
     return out
 
@@ -451,16 +459,37 @@ def qrelu_ptq(x: jax.Array,
 
     return x
 
+def qgelu_ptq(x: jax.Array,
+              bits: int = 8,
+              max_value:float = 2.0):
+    """
+    Quantized GELU with quantization
+    """
+
+    num_levels = 2**bits - 1
+    resolution = max_value/num_levels
+
+    # apply ReLU to the input
+    x = nnx.gelu(x)
+
+    # multiplier
+    m = jnp.floor(x/resolution)
+
+    # quantize the input
+    x = jnp.clip(m * resolution, 0, max_value)
+
+    return x
+
 
 # -------------------------------------------------------
 # Looping over 
 # -------------------------------------------------------
-bits_list = jnp.arange(1, 22).astype(int)
+bits_list = jnp.arange(1, 31).astype(int)
 results_dict = defaultdict(list)
 
 key1 = jax.random.key(10)
 
-max_val=15.0
+max_val=100.0
 
 for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep"):
     print("--"*40)
@@ -495,7 +524,7 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
     #         num_rotations=dataset_dict['num_rotations'],
     #     )
 
-    train_ds, valid_ds, test_ds = load_cifar10_augment(
+    train_ds, valid_ds, test_ds = load_cifar100_augment(
             batch_size=dataset_dict['batch_size'],
             train_steps=dataset_dict['train_steps'],
             data_dir=dataset_dict['data_dir'],
@@ -505,11 +534,11 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
             training=False,
     )
 
-    activation_function = partial(qrelu_ptq, bits=bits, max_value=max_val)
+    activation_function = partial(qgelu_ptq, bits=bits, max_value=max_val)
 
     results_dict['max_value'].append(max_val)
 
-    payload = pickle.load(open(os.path.join(MODEL_PATH, "scrramble_resnet20_cifar10_model_2026-01-03.pkl"), "rb"))
+    payload = pickle.load(open(os.path.join(MODEL_PATH, "scrramble_resnet20_cifar100_model_2026-01-03.pkl"), "rb"))
     configs = payload['configs']
     trained_state = payload['state']
 
@@ -521,7 +550,7 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
     rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
 
 
-    model = ScRRAMBLeResCIFAR10(
+    model = ScRRAMBLeResCIFAR100(
         capsule_sizes=configs['capsule_sizes'],
         connection_probabilities=configs['connection_probabilities'],
         receptive_field_size=configs['receptive_field_size'],
@@ -552,7 +581,7 @@ for i, bits in tqdm(enumerate(bits_list), total=len(bits_list), desc="Bits sweep
     print(f"Test Accuracy at {bits} bits: {mean_acc*100:.2f}%")
 
     # save results to csv
-    filepath = f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramblexres_cifar10_ptq_relu_sweep_results_{today}.csv"
+    filepath = f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramblexres_cifar100_ptq_gelu_sweep_results_{today}.csv"
     results_dict_single = {
         'bits': bits.item(),
         'max_value': max_val,
