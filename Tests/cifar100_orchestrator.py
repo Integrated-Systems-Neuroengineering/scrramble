@@ -13,8 +13,8 @@ import pandas as pd
 today = date.today().isoformat()
 
 ## Define Sweep parameters
-CONNECTION_DENSITIES = [1.0, 0.75, 0.5, 0.25]
-SLOT_SIZES = [8, 4]
+CONNECTION_DENSITIES = [0.1, 0.25, 0.50, 0.75, 1.0]
+SLOT_SIZES = [2, 4, 16, 64, 1]
 NUM_RESAMPLES = 5
 
 ## Fixed Parameters

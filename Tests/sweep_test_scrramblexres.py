@@ -70,7 +70,7 @@ def parse_args():
 
     # output file
     parser.add_argument("--save_results", action='store_true', help="Save results to CSV")
-    parser.add_argument("--results", type=str, default=f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar10_performance_results_{today}.csv")
+    parser.add_argument("--results", type=str, default=f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar10_sweep_results_{today}.csv")
     parser.add_argument("--save_metrics", action="store_true", help="Save metrics to JSON") # whether to save the metrics history
     parser.add_argument("--metrics_file", type=str, default=f"/Volumes/export/isn/vikrant/Data/scrramble/logs/scrramble_resnet20_cifar10_metrics_{today}.json")
     parser.add_argument("--save_model", action="store_true", help="Save Model to pickle") # whether to save the model
@@ -668,7 +668,7 @@ def main():
 
     # Saving the model...
     timestamp = datetime.now().isoformat()
-    capsule_str = '_'.join(map(str, args.capsule_sizes))
+    capsule_str = '_'.join(map(str, args.capsule_sizes[1:]))
     results_dict = {
         'capsule_sizes': capsule_str,  # Add this line!
         'connection_density': args.connection_density,
@@ -676,15 +676,17 @@ def main():
         'resample': args.resample,
         'test_accuracy': metrics_history['test_accuracy'][-1],
         'test_loss': metrics_history['test_loss'][-1],
-        'core_budget': sum(args.capsule_sizes),
+        'core_budget': sum(args.capsule_sizes[1:]),
         'learning_rate': args.learning_rate,
         'batch_size': args.batch_size,
         'timestamp': timestamp
     }
 
-    # save_result_to_csv(results_dict, args.results)
-    # print(f"Results saved to {args.results}")
-    # print("--"*50)
+    if args.save_results:
+        print("--"*50)
+        save_result_to_csv(results_dict, args.results)
+        print(f"Results saved to {args.results}")
+        print("--"*50)
 
     # check if the model needs to be saved
     if args.save_model:
@@ -704,52 +706,16 @@ def main():
     del model, optimizer, train_ds, valid_ds, test_ds, metrics, metrics_history
     jax.clear_caches()
 
-    if args.save_metrics:
-        print("--"*50)
-        save_result_to_csv(metrics_history, args.results)
-        print("--"*50)
+    # if args.save_metrics:
+    #     print("--"*50)
+    #     save_result_to_csv(metrics_history, args.results)
+    #     print("--"*50)
 
 
 if __name__ == "__main__":
     main()
 
 
-# if __name__ == "__main__":
-#     # train the model
-#     model, metrics_history = train_scrramble_capsnet_mnist(
-#         model=model,
-#         optimizer=optimizer,
-#         train_ds=train_ds,
-#         valid_ds=valid_ds,
-#         dataset_dict=dataset_dict,
-#         save_model_flag=False,
-#         save_metrics_flag=False
-#     )
-
-    # labels_dict = {
-    #     0: "airplane",
-    #     1: "automobile",
-    #     2: "bird",
-    #     3: "cat",
-    #     4: "deer",
-    #     5: "dog",
-    #     6: "frog",
-    #     7: "horse",
-    #     8: "ship",
-    #     9: "truck"
-    #     }
-    
-    # test_batch = next(iter(test_ds.as_numpy_iterator()))
-    # predictions = pred_step(model, test_batch)
-
-    # fig, ax = plt.subplots(2, 5, figsize=(15, 6))
-    # for i, axs in enumerate(ax.ravel()):
-    #     axs.imshow(test_batch['image'][i])
-    #     axs.set_title(f"Predicted: {labels_dict[int(predictions[i])]}\nTrue: {labels_dict[int(test_batch['label'][i])]}")
-    #     axs.axis('off')
-
-    # plt.tight_layout()
-    # plt.show()
     
 
 

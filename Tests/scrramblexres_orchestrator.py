@@ -14,12 +14,12 @@ today = date.today().isoformat()
 
 ## Define Sweep parameters
 CONNECTION_DENSITIES = [0.1, 0.25, 0.50, 0.75, 1.0]
-SLOT_SIZES = [8, 4] # varying the slot sizes!
-NUM_RESAMPLES = 3
+SLOT_SIZES = [4, 2, 1] # varying the slot sizes!
+NUM_RESAMPLES = 5
 
 ## Fixed Parameters
 CAPSULE_SIZE = 256
-CAPSULE_SIZES = [[20, 10], [50, 10]]
+CAPSULE_SIZES = [20, 10] #[[20, 10], [50, 10]]
 BATCH_SIZE = 64
 LEARNING_RATE = 3e-4
 TRAIN_STEPS = int(5e4)
@@ -49,7 +49,7 @@ def check_if_already_run(capsule_sizes, conn_density, slot_size, resample):
             (df['capsule_sizes'] == capsule_str) &
             (df['connection_density'] == conn_density) &
             (df['slot_size'] == slot_size) &
-            (df['repeat'] == resample)
+            (df['resample'] == resample)
         )
         return mask.any()
     except Exception as e:
@@ -78,6 +78,8 @@ def run_single_config(capsule_sizes, connection_density, slot_size, resample_idx
         "--resample", str(resample_idx),
         "--train_steps", str(TRAIN_STEPS),
         "--eval_every", str(EVAL_EVERY),
+        "--save_results",
+        "--results", str(RESULTS_CSV),  # same file as above
         "--capsule_sizes",
     ]
 
@@ -122,7 +124,8 @@ def run_single_config(capsule_sizes, connection_density, slot_size, resample_idx
 
 # main function to run all configs
 def main():
-    configs = list(itertools.product(CAPSULE_SIZES, CONNECTION_DENSITIES, SLOT_SIZES, range(NUM_RESAMPLES)))
+    # configs = list(itertools.product(CAPSULE_SIZES, CONNECTION_DENSITIES, SLOT_SIZES, range(NUM_RESAMPLES)))
+    configs = list(itertools.product(CONNECTION_DENSITIES, SLOT_SIZES, range(NUM_RESAMPLES)))
     total_configs = len(configs)
 
     print(f"\n{'='*80}")
@@ -144,9 +147,9 @@ def main():
 
     start_time = time.time()
 
-    for i, (c_size, p, ls, r) in enumerate(configs, 1):
+    for i, (p, ls, r) in enumerate(configs, 1):
 
-        successful_run = run_single_config(capsule_sizes=c_size, 
+        successful_run = run_single_config(capsule_sizes=CAPSULE_SIZES, 
                                            connection_density=p, 
                                            slot_size=ls, 
                                            resample_idx=r, 
