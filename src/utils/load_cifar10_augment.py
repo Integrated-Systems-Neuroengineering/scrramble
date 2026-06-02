@@ -18,7 +18,7 @@ import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
 from tensorflow.keras import layers
 
-DATA_PATH = "/local_disk/vikrant/datasets"
+DATA_PATH = None
 
 def load_cifar10_augment(
         batch_size: int,

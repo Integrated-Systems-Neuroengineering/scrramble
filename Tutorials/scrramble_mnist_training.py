@@ -3,8 +3,12 @@ ScRRAMBLe-CapsNet fromework with a feedforward reconstruction network for MNIST 
 
 """
 import os
+# os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
+
 import sys
 import argparse
+import fcntl
+import csv
 
 import jax
 import math
@@ -35,6 +39,7 @@ from utils import ScRRAMBLe_routing, intercore_connectivity, load_and_augment_mn
 
 import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
+# tf.config.set_visible_devices([], 'GPU')
 
 # -------------------------------------------------------------------
 # Parsing arguments
@@ -43,22 +48,28 @@ def parse_args():
     parser = argparse.ArgumentParser(description="ScRRAMBLe-CapsNet on MNIST with reconstruction")
 
     # parameters to sweep
-    parser.add_argument("--connection_density", type=float, required=True)
-    parser.add_argument("--slot_size", type=int, required=True)
-    parser.add_argument("--resample", type=int, required=True)
+    parser.add_argument("--connection_density", type=float, required=True) # e.g. 0.2
+    parser.add_argument("--slot_size", type=int, required=True) # e.g. 64
+    parser.add_argument("--resample", type=int, required=True) # e.g. 30
+    parser.add_argument("--seed", type=int, default=101, help="Random seed for reproducibility")
 
     # model parameters
     parser.add_argument("--capsule_sizes", nargs="+", type=int, default=[50, 10])
     parser.add_argument("--capsule_size", type=int, default=256)
 
     # hyperparameters
-    parser.add_argument("--learning_rate", type=float, default=3e-4)
+    parser.add_argument("--learning_rate", type=float, default=1e-4)
+    parser.add_argument("--momentum", type=float, default=0.9)
+    parser.add_argument("--weight_decay", type=float, default=1e-4)
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--train_steps", type=int, default=int(5e4))
     parser.add_argument("--eval_every", type=int, default=1000)
 
+    # dataset parameters
+    parser.add_argument("--augmentation", action='store_true', help="Whether to apply data augmentation") # whether to apply data augmentation
+
     # output files
-    parser.add_argument("--data_dir", type=str, default="/local_disk/vikrant/datasets")
+    parser.add_argument("--data_dir", type=str, default="/local_disk/vikrant/datasets") # change this as needed
     parser.add_argument("--results_dir", type=str, default="../results/")
     parser.add_argument("--save_results", action='store_true', help="Save results to CSV")
     parser.add_argument("--results", type=str)
@@ -106,7 +117,7 @@ def save_payload(state, configs, filename):
         'state': state
     }
 
-    checkpoint_dir = "/local_disk/vikrant/scrramble/models"
+    checkpoint_dir = "../checkpoint" #"/local_disk/vikrant/scrramble/models"
     filename_ = os.path.join(checkpoint_dir, filename)
 
     os.makedirs(os.path.dirname(filename_), exist_ok=True)  # Ensure the directory exists.
@@ -115,33 +126,6 @@ def save_payload(state, configs, filename):
         pickle.dump(payload, f)
     
     print(f"Model saved to {filename_}")
-# -------------------------------------------------------------------
-
-# @partial(jax.custom_vjp, nondiff_argnums=(1, 2))
-# def qrelu(x: float, bits: int = 8, max_value: float = 2.0):
-#     # Forward pass: quantize
-#     x_relu = jnp.maximum(x, 0.0)  # ReLU
-#     x_clipped = jnp.minimum(x_relu, max_value)  # Clip to max_value
-    
-#     # Quantize
-#     num_levels = 2**bits - 1
-#     scale = num_levels / max_value
-#     quantized = jnp.round(x_clipped * scale) / scale
-    
-#     return quantized
-
-# def qrelu_fwd(x: float, bits: int = 8, max_value: float = 2.0):
-#     result = qrelu(x, bits, max_value)
-#     return result, x
-
-# def qrelu_bwd(bits, max_value, residuals, gradients):
-#     x = residuals
-#     # Straight-through: pass gradient if input would be in valid range
-#     mask = (x > 0) & (x <= max_value)
-#     grad = jnp.where(mask, 1.0, 0.0)
-#     return (grad * gradients,)
-
-# qrelu.defvjp(qrelu_fwd, qrelu_bwd)
 
 # -------------------------------------------------------------------
 # Define the Reconstruction network
@@ -202,7 +186,8 @@ class ScRRAMBLeCapsNetWithReconstruction(nnx.Module):
         self.layer_sizes.insert(0, self.input_eff_capsules)
 
         # define ScRRAMBLe capsules
-        self.scrramble_caps_layers = [ScRRAMBLeCapsLayer(
+        self.scrramble_caps_layers = nnx.List(
+            [ScRRAMBLeCapsLayer(
             input_vector_size=self.capsule_size * Nci,
             num_capsules=Nco,
             capsule_size=self.capsule_size,
@@ -210,6 +195,7 @@ class ScRRAMBLeCapsNetWithReconstruction(nnx.Module):
             connection_probability=self.connection_probability,
             rngs=self.rngs
         ) for Nci, Nco in zip(self.layer_sizes[:-1], self.layer_sizes[1:])]
+        )
 
         # define the reconstruction network
         self.reconstruction_nw = ReconstructionNetwork(
@@ -250,26 +236,26 @@ class ScRRAMBLeCapsNetWithReconstruction(nnx.Module):
 # Loading the dataset
 # ------------------------------------------------------------------
 # data_dir = "/local_disk/vikrant/datasets"
-dataset_dict = {
-    'batch_size': 100, # 64 is a good batch size for MNIST
-    'train_steps': int(2e4), # run for longer, 20000 is good!
-    'binarize': True, 
-    'greyscale': True,
-    'data_dir': data_dir,
-    'seed': 101,
-    'shuffle_buffer': 1024,
-    'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-    'eval_every': 1000,
-}
+# dataset_dict = {
+#     'batch_size': 100, # 64 is a good batch size for MNIST
+#     'train_steps': int(2e4), # run for longer, 20000 is good!
+#     'binarize': True, 
+#     'greyscale': True,
+#     'data_dir': data_dir,
+#     'seed': 101,
+#     'shuffle_buffer': 1024,
+#     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
+#     'eval_every': 1000,
+# }
 
-# loading the dataset
-train_ds, valid_ds, test_ds = load_and_augment_mnist(
-    batch_size=dataset_dict['batch_size'],
-    train_steps=dataset_dict['train_steps'],
-    data_dir=dataset_dict['data_dir'],
-    seed=dataset_dict['seed'],
-    shuffle_buffer=dataset_dict['shuffle_buffer'],
-)
+# # loading the dataset
+# train_ds, valid_ds, test_ds = load_and_augment_mnist(
+#     batch_size=dataset_dict['batch_size'],
+#     train_steps=dataset_dict['train_steps'],
+#     data_dir=dataset_dict['data_dir'],
+#     seed=dataset_dict['seed'],
+#     shuffle_buffer=dataset_dict['shuffle_buffer'],
+# )
 
 # test if the dataset is loaded correctly by checking the shapes of the datasets
 # print(f"Train dataset shape: {train_ds.element_spec['image'].shape}, {train_ds.element_spec['label'].shape}")
@@ -359,7 +345,7 @@ def train_step(model: ScRRAMBLeCapsNetWithReconstruction, optimizer: nnx.Optimiz
   grad_fn = nnx.value_and_grad(loss_fn, has_aux=True)
   (loss, logits), grads = grad_fn(model, batch)
   metrics.update(loss=loss, logits=logits, labels=batch['label'])  # In-place updates.
-  optimizer.update(grads)  # In-place updates.
+  optimizer.update(model, grads)  # In-place updates.
 
 @nnx.jit
 def eval_step(model: ScRRAMBLeCapsNetWithReconstruction, metrics: nnx.MultiMetric, batch, loss_fn: Callable = loss_fn):
@@ -369,48 +355,92 @@ def eval_step(model: ScRRAMBLeCapsNetWithReconstruction, metrics: nnx.MultiMetri
 # -------------------------------------------------------------------
 # Pipeline
 # -------------------------------------------------------------------
-key1 = jax.random.key(10)
-key1, key2, key3, key4 = jax.random.split(key1, 4)
-rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
+# key1 = jax.random.key(10)
+# key1, key2, key3, key4 = jax.random.split(key1, 4)
+# rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
 
-model = ScRRAMBLeCapsNetWithReconstruction(
-    input_vector_size=1024,
-    capsule_size=256,
-    receptive_field_size=64,
-    connection_probability=0.2,
-    rngs=rngs,
-    layer_sizes=[40, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
-    activation_function=nnx.relu
-)
-
-# optimizers
-hyperparameters = {
-    'learning_rate': 0.8e-4, # 1e-3 seems to work well
-    'momentum': 0.9, 
-    'weight_decay': 1e-4
-}
-
-optimizer = nnx.Optimizer(
-    model,
-    optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay'])
-)
-
-metrics = nnx.MultiMetric(
-    accuracy=nnx.metrics.Accuracy(),
-    loss=nnx.metrics.Average('loss')
-)
+# model = ScRRAMBLeCapsNetWithReconstruction(
+#     input_vector_size=1024,
+#     capsule_size=256,
+#     receptive_field_size=64,
+#     connection_probability=0.2,
+#     rngs=rngs,
+#     layer_sizes=[40, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
+#     activation_function=nnx.relu
+# )
 
 
-metrics_history = {
-'train_loss': [],
-'train_accuracy': [],
-'test_loss': [],
-'valid_loss': [],
-'valid_accuracy': [],
-'test_accuracy': [],
-'step': [],
-'resample': []
-}
+
+
+
+def train_scrramble_capsnet_mnist(
+        model: ScRRAMBLeCapsNetWithReconstruction,
+        optimizer: nnx.Optimizer,
+        metrics: nnx.MultiMetric,
+        train_ds: tf.data.Dataset,
+        valid_ds: tf.data.Dataset,
+        test_ds: tf.data.Dataset,
+        dataset_dict: dict,
+        resample: int,
+        metrics_history: dict,
+        save_model_flag: bool = False, # as needed to save model
+        save_metrics_flag: bool = False, # as needed to save metrics history
+):
+    
+    eval_every = dataset_dict['eval_every']
+    train_steps = dataset_dict['train_steps']
+
+    key1 = jax.random.key(10)
+
+    for step, batch in enumerate(train_ds.as_numpy_iterator()):
+
+        metrics_history['step'].append(step)  # Record the step.
+
+        train_step(model, optimizer, metrics, batch)
+
+        if step > 0 and (step % eval_every == 0 or step == train_steps - 1):
+            metrics_history['step'].append(step)  # Record the step.
+            # Log the training metrics.
+            for metric, value in metrics.compute().items():  # Compute the metrics.
+                metrics_history[f'train_{metric}'].append(float(value))  # Record the metrics.
+            metrics.reset()  # Reset the metrics for the test set.
+
+            # Compute the metrics on the validation set after each training epoch.
+            for valid_batch in valid_ds.as_numpy_iterator():
+                eval_step(model, metrics, valid_batch)
+
+            # Log the validation metrics.
+            for metric, value in metrics.compute().items():
+                metrics_history[f'valid_{metric}'].append(float(value))
+            metrics.reset()  # Reset the metrics for the next training epoch.
+
+            print(f"Step {step}: Valid loss: {metrics_history['valid_loss'][-1]}, Accuracy: {metrics_history['valid_accuracy'][-1]}")
+
+    # find the test set accuracy
+    for test_batch in test_ds.as_numpy_iterator():
+        eval_step(model, metrics, test_batch)
+        # print the metrics
+    for metric, value in metrics.compute().items():
+        metrics_history[f'test_{metric}'].append(float(value))
+    metrics.reset()  # Reset the metrics for the next training epoch.
+
+    print("="*50)
+    print(f"Resample: {resample}, Test loss: {metrics_history['test_loss'][-1]}, Test accuracy: {metrics_history['test_accuracy'][-1]}")
+    print("="*50)
+
+    if save_model_flag:
+        today = date.today().isoformat()
+        filename = f"sscamble_mnist_capsnet_recon_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
+        graphdef, state = nnx.split(model)
+        save_payload(state=state, configs=dataset_dict, filename=filename)
+
+    if save_metrics_flag:
+        today = date.today().isoformat()
+        filename = f"sscamble_mnist_capsnet_recon_perf_metrics_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
+        save_payload(state=metrics_history, configs=dataset_dict, filename=filename)
+        # save_metrics(metrics_history, filename)
+
+    return model
 
 # -------------------------------------------------------------------
 # Training function
@@ -427,19 +457,19 @@ def main():
     print(f"Resample: {args.resample} ")
     print(f"Batch Size: {args.batch_size} ")
 
-    seed = args.resample + 2542
+    seed = args.seed
+    num_resamples = args.resample
 
     dataset_dict = {
     'batch_size': args.batch_size, # 64 is a good batch size for MNIST
     'train_steps': args.train_steps, # run for longer, 20000 is good!
-    'binarize': False, 
-    'greyscale': False,
     'data_dir': args.data_dir,
+    'augmentation': args.augmentation,
     'seed': seed,
     'shuffle_buffer': 1024,
     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
     'eval_every': 1000,
-}
+    }
 
     # loading the dataset
     train_ds, valid_ds, test_ds = load_and_augment_mnist(
@@ -448,207 +478,81 @@ def main():
         data_dir=dataset_dict['data_dir'],
         seed=dataset_dict['seed'],
         shuffle_buffer=dataset_dict['shuffle_buffer'],
+        augmentation=dataset_dict['augmentation'], # keep True
     )
 
-    # ---------------------------------------------------------------
-    # Model and hyperparameters
-    # ---------------------------------------------------------------
-    # hyperparameters
-    hyperparameters = {
-        'learning_rate': args.learning_rate, # 1e-3 seems to work well
-        'momentum': 0.9, 
-        'weight_decay': 1e-4
-    }
-
-    # model
-    # connection_probabilities = [args.connection_density, args.connection_density]
-    model_parameters = {
-        'input_vector_size': 1024,
-        'capsule_sizes': args.capsule_sizes,
-        'rngs': nnx.Rngs(default=int(seed + 0), permute=int(seed + 1), params=int(seed + 2), activation=int(seed + 3)),
-        'connection_probability': args.connection_density,
-        'receptive_field_size': args.slot_size,
-        'layer_sizes': args.capsule_sizes,
-        'capsule_size': args.capsule_size,
-        'activation_function': nnx.relu,
-    }
-
-    model = ScRRAMBLeCapsNetWithReconstruction(
-        input_vector_size=model_parameters['input_vector_size'],
-        capsule_size=model_parameters['capsule_size'],
-        receptive_field_size=model_parameters['receptive_field_size'],
-        connection_probability=model_parameters['connection_probability'],
-        rngs=model_parameters['rngs'],
-        layer_sizes=model_parameters['layer_sizes'],
-        activation_function=model_parameters['activation_function'],
-    )
-
-    ## add optimizer etc...
+    metrics_history = {
+        'train_loss': [],
+        'train_accuracy': [],
+        'test_loss': [],
+        'valid_loss': [],
+        'valid_accuracy': [],
+        'test_accuracy': [],
+        'step': [],
+        'resample': []
+        }
 
 
+    for r in tqdm(range(num_resamples), desc="Resamples"):
 
-
-def train_scrramble_capsnet_mnist(
-        model: ScRRAMBLeCapsNetWithReconstruction = model,
-        optimizer: nnx.Optimizer = optimizer,
-        train_ds: tf.data.Dataset = train_ds,
-        valid_ds: tf.data.Dataset = valid_ds,
-        dataset_dict: dict = dataset_dict,
-        num_repeats: int = 30,
-        save_model_flag: bool = False,
-        save_metrics_flag: bool = False,
-):
-    
-    eval_every = dataset_dict['eval_every']
-    train_steps = dataset_dict['train_steps']
-
-    key1 = jax.random.key(10)
-
-    for r in tqdm(range(num_repeats), total=num_repeats, desc="Training repeats"):
-        metrics_history['resample'].append(r)  # Record the step.
-        key1, key2, key3, key4 = jax.random.split(key1, 4)
-        rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
+        model_parameters = {
+            'input_vector_size': 1024, # MNIST is resized to 32x32 and flattened, so 1024
+            'capsule_sizes': args.capsule_sizes,
+            'rngs': nnx.Rngs(default=int(seed + r), permute=int(seed + r + 1), params=int(seed + r + 2), activation=int(seed + r + 3)),
+            'connection_probability': args.connection_density,
+            'receptive_field_size': args.slot_size,
+            'layer_sizes': args.capsule_sizes,
+            'capsule_size': args.capsule_size,
+            'activation_function': nnx.relu,
+        }
 
         model = ScRRAMBLeCapsNetWithReconstruction(
-            input_vector_size=1024,
-            capsule_size=256,
-            receptive_field_size=64,
-            connection_probability=0.2,
-            rngs=rngs,
-            layer_sizes=[40, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
-            activation_function=nnx.relu
-            )
-        
+            input_vector_size=model_parameters['input_vector_size'],
+            capsule_size=model_parameters['capsule_size'],
+            receptive_field_size=model_parameters['receptive_field_size'],
+            connection_probability=model_parameters['connection_probability'],
+            rngs=model_parameters['rngs'],
+            layer_sizes=model_parameters['layer_sizes'],
+            activation_function=model_parameters['activation_function'],
+        )
+
+        # hyperparameters
+        hyperparameters = {
+            'learning_rate': args.learning_rate, # 1e-3 seems to work well
+            'momentum': args.momentum, 
+            'weight_decay': args.weight_decay
+        }
+
+        # optimizer
         optimizer = nnx.Optimizer(
-                                    model,
-                                    optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay'])
-                                )
+            model,
+            optax.adamw(learning_rate=hyperparameters['learning_rate'], weight_decay=hyperparameters['weight_decay']),
+            wrt=nnx.Param
+        )
 
         metrics = nnx.MultiMetric(
-                                    accuracy=nnx.metrics.Accuracy(),
-                                    loss=nnx.metrics.Average('loss')
-                                )
+            accuracy=nnx.metrics.Accuracy(),
+            loss=nnx.metrics.Average('loss')
+        )
 
+        # call the training function
+        trained_model = train_scrramble_capsnet_mnist(
+            model=model,
+            optimizer=optimizer,
+            metrics=metrics,
+            train_ds=train_ds,
+            valid_ds=valid_ds,
+            test_ds=test_ds,
+            dataset_dict=dataset_dict,
+            resample=r,
+            metrics_history=metrics_history,
+            save_model_flag=args.save_model,
+            save_metrics_flag=args.save_metrics
+        )
 
-        for step, batch in enumerate(train_ds.as_numpy_iterator()):
-            # Run the optimization for one step and make a stateful update to the following:
-            # - The train state's model parameters
-            # - The optimizer state
-            # - The training loss and accuracy batch metrics
-
-            metrics_history['step'].append(step)  # Record the step.
-
-            train_step(model, optimizer, metrics, batch)
-
-            if step > 0 and (step % eval_every == 0 or step == train_steps - 1):  # One training epoch has passed.
-                metrics_history['step'].append(step)  # Record the step.
-                # Log the training metrics.
-                for metric, value in metrics.compute().items():  # Compute the metrics.
-                    metrics_history[f'train_{metric}'].append(float(value))  # Record the metrics.
-                metrics.reset()  # Reset the metrics for the test set.
-
-                # Compute the metrics on the validation set after each training epoch.
-                for valid_batch in valid_ds.as_numpy_iterator():
-                    eval_step(model, metrics, valid_batch)
-
-                # Log the validation metrics.
-                for metric, value in metrics.compute().items():
-                    metrics_history[f'valid_{metric}'].append(float(value))
-                metrics.reset()  # Reset the metrics for the next training epoch.
-
-                # print(f"Step {step}: Valid loss: {metrics_history['valid_loss'][-1]}, Accuracy: {metrics_history['valid_accuracy'][-1]}")
-
-        # best_accuracy = max(metrics_history['valid_accuracy'])
-        # print(f"Resample {r}, Best accuracy: {best_accuracy}")
-
-        # find the test set accuracy
-        for test_batch in test_ds.as_numpy_iterator():
-            eval_step(model, metrics, test_batch)
-            # print the metrics
-        for metric, value in metrics.compute().items():
-            metrics_history[f'test_{metric}'].append(float(value))
-        metrics.reset()  # Reset the metrics for the next training epoch.
-
-        print("="*50)
-        print(f"Resample: {r}, Test loss: {metrics_history['test_loss'][-1]}, Test accuracy: {metrics_history['test_accuracy'][-1]}")
-        print("="*50)
-
-    # if save_model_flag:
-    #     today = date.today().isoformat()
-    #     filename = f"sscamble_mnist_capsnet_recon_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
-    #     graphdef, state = nnx.split(model)
-    #     save_model(state, filename)
-
-    # if save_metrics_flag:
-    #     today = date.today().isoformat()
-    #     filename = f"sscamble_mnist_capsnet_recon_perf_metrics_capsules{(sum(model.layer_sizes)-model.input_eff_capsules):d}_acc_{metrics_history['test_accuracy'][-1]*100:.0f}_{today}.pkl"
-    #     save_metrics(metrics_history, filename)
-
-    return model
-
-if __name__ == "__main__":
-    num_repeats=30
-
-    print("**"*60)
-    print(f"ScRRAMBLe CapsNet with Reconstruction on MNIST Performance Tests, {num_repeats} repeats")
-    print("**"*60)
-    model = train_scrramble_capsnet_mnist(
-        model=model,
-        optimizer=optimizer,
-        train_ds=train_ds,
-        valid_ds=valid_ds,
-        dataset_dict=dataset_dict,
-        num_repeats=num_repeats,
-        save_model_flag=False,
-        save_metrics_flag=True,
-
-    )
-
-    # # see how the reconstruction works
-
-    # # pick a test batch
-    # model.eval()
-    # test_batch = next(iter(test_ds.as_numpy_iterator()))
-    # recon, caps_out = model(test_batch['image'])
-
-    # # plot the reconstructed images and their predicted labels
-    # fig, ax = plt.subplots(8, 8, figsize=(8, 8), dpi=120)
-    # for i, axs in zip(jnp.arange(64), ax.ravel()):
-    #     im = axs.imshow(recon[i, :].reshape(28, 28), cmap='gray')
-    #     axs.axis('off')
-
-    # plt.tight_layout()
-    # plt.show()
 
 
 
-# # testing
-# def __main__():
-#     rngs = nnx.Rngs(params=0, activations=1, permute=2, default=3564132)
-
-#     model = ScRRAMBLeCapsNet(
-#         input_vector_size=1024,
-#         capsule_size=256,
-#         receptive_field_size=64,
-#         connection_probability=0.2,
-#         rngs=rngs,
-#         layer_sizes=[20, 10]  # 20 capsules in the first layer and
-
-#     )
-
-#     print(f"Model number of capsules/effective capsules for input: {model.layer_sizes}")
-
-#     x = jax.random.normal(rngs.default(), (10, 32, 32, 1))
-#     out = model(x)
-
-#     # print the output shape
-#     print(f"Output shape: {out.shape}")
-
-#     out = jnp.reshape(out, (out.shape[0], model.layer_sizes[-1], -1))
-
-#     print(f"Output shape after reshaping: {out.shape}")
-
-#     print(f"Some outputs: {out[0, 0, :10]}")
-
-# if __name__ == "__main__":
-#     __main__()
+if __name__ == "__main__":
+    main()
+    
