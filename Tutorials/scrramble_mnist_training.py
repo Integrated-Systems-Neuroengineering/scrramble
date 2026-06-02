@@ -1,9 +1,15 @@
 """
-ScRRAMBLe-CapsNet fromework with a feedforward reconstruction network for MNIST classification. 
+ScRRAMBLe-CapsNet framework with a feedforward reconstruction network for MNIST classification. 
+- The architecture uses input-balanced intercore routing with CapsNet framework to handle outputs per core.
+- Model can be saved and reshaped into (..., capsule_size, capsule_size) for visualization of the learned connectivity and weights.
+- ScRRAMBLe_routing provdes a way to visualize the routing per layer and visualizing the weights.
+
+Example run commany: python3 scrramble_mnist_training.py --connection_density 0.2 --slot_size 64 --resample 1 --train_steps 50000
+
 
 """
 import os
-# os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
+os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
 
 import sys
 import argparse
@@ -28,18 +34,16 @@ from datetime import date
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-# mpl.use('Agg')  # Use a non-interactive backend for matplotlib.
 
 from models import ScRRAMBLeCapsLayer
 
 from utils.activation_functions import quantized_relu_ste, squash
-# from utils.loss_functions import margin_loss
 from utils import ScRRAMBLe_routing, intercore_connectivity, load_and_augment_mnist
 
 
 import tensorflow_datasets as tfds  # TFDS to download MNIST.
 import tensorflow as tf  # TensorFlow / `tf.data` operations.
-# tf.config.set_visible_devices([], 'GPU')
+tf.config.set_visible_devices([], 'GPU')
 
 # -------------------------------------------------------------------
 # Parsing arguments
@@ -69,8 +73,8 @@ def parse_args():
     parser.add_argument("--augmentation", action='store_true', help="Whether to apply data augmentation") # whether to apply data augmentation
 
     # output files
-    parser.add_argument("--data_dir", type=str, default="/local_disk/vikrant/datasets") # change this as needed
-    parser.add_argument("--results_dir", type=str, default="../results/")
+    parser.add_argument("--data_dir", type=str, default=None) # change this as needed
+    parser.add_argument("--results_dir", type=str, default="../results/") # Change this as needed
     parser.add_argument("--save_results", action='store_true', help="Save results to CSV")
     parser.add_argument("--results", type=str)
     parser.add_argument("--save_metrics", action="store_true", help="Save metrics to JSON") # whether to save the metrics history
@@ -220,8 +224,6 @@ class ScRRAMBLeCapsNetWithReconstruction(nnx.Module):
             x = jax.vmap(layer, in_axes=(0,))(x)
             x = jnp.reshape(x, (x.shape[0], -1))
             shape_x = x.shape
-            # x = x.flatten()
-            # x = jax.vmap(self.activation_function, in_axes=(0, None, None))(x, 8, 1.0) # 8 bits, 1.0 is the max clipping threshold.
             x = self.activation_function(x)  # Apply the activation function.
             x = jnp.reshape(x, shape_x)
 
@@ -232,39 +234,6 @@ class ScRRAMBLeCapsNetWithReconstruction(nnx.Module):
 
         return x_recon, x
     
-# -------------------------------------------------------------------
-# Loading the dataset
-# ------------------------------------------------------------------
-# data_dir = "/local_disk/vikrant/datasets"
-# dataset_dict = {
-#     'batch_size': 100, # 64 is a good batch size for MNIST
-#     'train_steps': int(2e4), # run for longer, 20000 is good!
-#     'binarize': True, 
-#     'greyscale': True,
-#     'data_dir': data_dir,
-#     'seed': 101,
-#     'shuffle_buffer': 1024,
-#     'threshold' : 0.5, # binarization threshold, not to be confused with the threshold in the model
-#     'eval_every': 1000,
-# }
-
-# # loading the dataset
-# train_ds, valid_ds, test_ds = load_and_augment_mnist(
-#     batch_size=dataset_dict['batch_size'],
-#     train_steps=dataset_dict['train_steps'],
-#     data_dir=dataset_dict['data_dir'],
-#     seed=dataset_dict['seed'],
-#     shuffle_buffer=dataset_dict['shuffle_buffer'],
-# )
-
-# test if the dataset is loaded correctly by checking the shapes of the datasets
-# print(f"Train dataset shape: {train_ds.element_spec['image'].shape}, {train_ds.element_spec['label'].shape}")
-# print(f"Valid dataset shape: {valid_ds.element_spec['image'].shape}, {valid_ds.element_spec['label'].shape}")
-# print(f"Test dataset shape: {test_ds.element_spec['image'].shape}, {test_ds.element_spec['label'].shape}")
-
-# -------------------------------------------------------------------
-# Training functions
-# -------------------------------------------------------------------
 
 # -------------------------------------------
 # Margin Loss from Capsule Networks
@@ -283,29 +252,22 @@ def margin_loss(
     """
 
     caps_output = logits # this output will be in shape (batch_size, num_output_cores (10), slots/receptive fields per core, slot/receptive_field_length)
-    # print(f"Caps output shape: {caps_output.shape}")
 
     # the length of the vector encodes probability of a class
     caps_output = caps_output.reshape(caps_output.shape[0], num_classes, -1)
-    # print(f"Caps output reshaped: {caps_output.shape}") # at this point this should be (batch_size, num_output_cores, 256) for the default core length of 256
 
     # apply squash function along the last axis
     caps_output = squash(caps_output, axis=-1, eps=1e-8)
 
     caps_output_magnitude = jnp.linalg.norm(caps_output, axis=-1)
-    # print(f"Caps output magnitude: {caps_output_magnitude}") # this should be (batch_size, num_output_cores (10))
-    # print(f"Caps output magnitude shape: {caps_output_magnitude.shape}") # this should be (batch_size, num_output_cores (10))
 
     # create one-hot-encoded labels
-    # labels = labels
     labels = jax.nn.one_hot(labels, num_classes=caps_output_magnitude.shape[1])
-    # print(f"Labels shape: {labels.shape}") # this should be (batch_size, num_output_cores)
 
     # compute the margin loss
     loss_per_sample = jnp.sum(labels * jax.nn.relu(m_plus - caps_output_magnitude)**2 + lambda_ * (1 - labels) * jax.nn.relu(caps_output_magnitude - m_minus)**2, axis=1)
     loss = jnp.mean(loss_per_sample)
 
-    # print(f"Loss: {loss}")
 
     return loss, caps_output_magnitude
 
@@ -355,24 +317,6 @@ def eval_step(model: ScRRAMBLeCapsNetWithReconstruction, metrics: nnx.MultiMetri
 # -------------------------------------------------------------------
 # Pipeline
 # -------------------------------------------------------------------
-# key1 = jax.random.key(10)
-# key1, key2, key3, key4 = jax.random.split(key1, 4)
-# rngs = nnx.Rngs(params=key1, activations=key2, permute=key3, default=key4)
-
-# model = ScRRAMBLeCapsNetWithReconstruction(
-#     input_vector_size=1024,
-#     capsule_size=256,
-#     receptive_field_size=64,
-#     connection_probability=0.2,
-#     rngs=rngs,
-#     layer_sizes=[40, 10],  # 20 capsules in the first layer and (translates to sum of layer_sizes cores total)
-#     activation_function=nnx.relu
-# )
-
-
-
-
-
 def train_scrramble_capsnet_mnist(
         model: ScRRAMBLeCapsNetWithReconstruction,
         optimizer: nnx.Optimizer,
