@@ -71,6 +71,7 @@ def parse_args():
 
     # dataset parameters
     parser.add_argument("--augmentation", action='store_true', help="Whether to apply data augmentation") # whether to apply data augmentation
+    parser.add_argument("--plot_reconstruction", action='store_true', help="Whether to plot reconstructed images") # whether to plot reconstructed images
 
     # output files
     parser.add_argument("--data_dir", type=str, default=None) # change this as needed
@@ -493,6 +494,40 @@ def main():
             save_model_flag=args.save_model,
             save_metrics_flag=args.save_metrics
         )
+
+    # if reconstruction is enabled, plot reconstructed images
+    if args.plot_reconstruction:
+        timestamp = date.today().isoformat()
+        trained_model.eval()
+
+        # get a batch of test images
+        test_batch = next(test_ds.as_numpy_iterator())
+        recon, _ = trained_model(test_batch['image'])
+        recon = recon.reshape((-1, 28, 28))
+
+        # plot original images on top and reconstructed on bottom for the first 10 images in test dataset
+        fig, axes = plt.subplots(2, 10, figsize=(16, 8))
+        for i in range(10):
+            axes[0, i].imshow(test_batch['image'][i].reshape(28, 28), cmap='gray')
+            axes[0, i].set_title(f"Original: {test_batch['label'][i]}")
+            axes[0, i].axis('off')
+
+            axes[1, i].imshow(recon[i], cmap='gray')
+            axes[1, i].set_title(f"Reconstructed")
+            axes[1, i].axis('off')
+
+        plt.tight_layout()
+        os.makedirs("../plots/", exist_ok=True)
+        fig.savefig(f"../plots/mnist_reconstruction_{timestamp}.png", dpi=300, bbox_inches='tight')
+        plt.show()
+
+        print("--"*50)
+        print(f"Reconstruction plot saved to ../plots/mnist_reconstruction_{timestamp}.png")
+        print("--"*50)
+
+
+
+
 
 
 
