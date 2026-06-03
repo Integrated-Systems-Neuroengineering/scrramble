@@ -67,9 +67,17 @@ OR run the following in a Colab notebook.
 ```
 
 **Cell 2: Install the package in editable mode**
+
+For CPU runtime or Google Colab use 
 ```python
 !pip install -e .
 ```
+
+And for GPU runtimes, use
+```python
+!pip install -e ".[cuda]"
+```
+
 Navigate to the `Tutorials` folder
 ```python
 %cd Tutorials/

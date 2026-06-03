@@ -48,7 +48,10 @@ dependencies = [
     "fsspec",
     "tensorstore",
     "treescope",
-    
+]
+
+[project.optional-dependencies]
+cuda = [
     # NVIDIA/CUDA specific (Usually handled by JAX/TF, but included for exact environment parity)
     "nvidia-cublas-cu12",
     "nvidia-cuda-cupti-cu12",
