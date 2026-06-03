@@ -54,18 +54,21 @@ Any changes made to the source code in `src` will be immediately reflected witho
 
 ### Running in Google Colab
 
-You can run ScRRAMBLe directly in Google Colab without installing anything locally to leverage Google's GPU/TPU acceleration. Add the following cells to your Colab notebook:
 
+You can run ScRRAMBLe directly in Google Colab without installing anything locally to leverage Google's GPU/TPU acceleration. You can access the demoes $\to$ 
 **Cell 1: Clone the repository and install dependencies**
 ```python
 !git clone https://github.com/Integrated-Systems-Neuroengineering/scrramble.git
 %cd scrramble
-!conda env update -f environment.yml
 ```
 
 **Cell 2: Install the package in editable mode**
 ```python
 !pip install -e .
+```
+Navigate to the `Tutorials` folder
+```python
+%cd Tutorials/
 ```
 
 **Cell 3: Run training scripts**
@@ -84,11 +87,11 @@ The `Tutorials` folder contains scripts for a quick setup to train ScRRAMBLe and
 Note: Colab provides GPU/TPU acceleration by default, so no additional setup is needed. For best results, ensure GPU is enabled in Colab runtime settings (Runtime → Change runtime type → GPU).
 
 ### Testing the model on datasets:
-The `Tutorials/` folder contains reference scripts to train the ScRRAMBLe and ScRRAMBLe-ResNet Models. The general structure of these scripts can be used to reproducte figures in the manuscript.
+The `Tutorials/` folder contains reference scripts to train the ScRRAMBLe and ScRRAMBLe-ResNet Models. The general structure of these scripts can be used to reproduce figures in the manuscript.
 Scripts used to generate figures in the manuscript can also be found in the `Tests/` folder.
 
 #### Hardware used for simulations
-These simulations were performed on a server with one _NVIDIA L40S_ GPU. The `jax` backend for code automatically selects the available hardware for running these scripts, so no adjustments to the code are needed. While not necessary, it is recemmended to use GPU acceleration for running these scripts.
+These simulations were performed on a server with one _NVIDIA L40S_ GPU. The `jax` backend for code automatically selects the available hardware for running these scripts, so no adjustments to the code are needed. While not necessary, it is recommended to use GPU acceleration for running these scripts.
 
 #### MNIST Tests
 This code simulates the ScRRAMBLe-CapsNet framework to classify and reconstruct MNIST images. Reconstructed images can be optionally saved using the `plot_reconstructions` argument. Run the following to train the model (you can add more arguments as needed) 
