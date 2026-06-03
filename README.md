@@ -10,13 +10,13 @@ You can clone this repository using either `git` or `gh` (GitHub CLI):
 
 **Using Git:**
 ```bash
-git clone https://github.com/vikrant-github/scrramble.git
+git clone https://github.com/Integrated-Systems-Neuroengineering/scrramble.git
 cd scrramble
 ```
 
 **Using GitHub CLI:**
 ```bash
-gh repo clone vikrant-github/scrramble
+gh repo clone Integrated-Systems-Neuroengineering/scrramble
 cd scrramble
 ```
 
