@@ -1,14 +1,13 @@
 """
-ScRRAMBLe-ResNet architecture on CIFAR-10 dataset.
-- Simulates integrated ResNet + ScRRAMBLe architecture to classify CIFAR-10 images.
-- Script augments the input data. Details can be found in the /src/utils/load_cifar10_augment.py file.
-- The script an be extended to perform statistical analysis using appropriate orchastrator script (ref. /Tests/scrramblexres_orchertrator.py)
+TEST: Sweeping connection density and/or Slot slizes for ScRRaMBLe-ResNet on CIFAR-100
 
-Example run script: python3 scrramblexresnet_cifar10_training.py --connection_density 0.2 --slot_size 16
+
+Description of test:
+ - Check out performance of the model on CIFAR-100 dataset.
+ - Gather statistics over a few repeats.
 """
 import os
-os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
-
+os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false" # don't preallocate memory on GPU, allow it to grow as needed
 import argparse
 import csv
 import fcntl
@@ -38,7 +37,7 @@ import seaborn as sns
 
 from utils.activation_functions import quantized_relu_ste, squash
 from utils.loss_functions import margin_loss
-from utils import ScRRAMBLe_routing, intercore_connectivity, load_cifar10, fast_scrramble, load_cifar10_augment
+from utils import ScRRAMBLe_routing, intercore_connectivity, load_cifar10, fast_scrramble, load_cifar10_augment, load_cifar100_augment
 
 
 
@@ -51,16 +50,20 @@ today = date.today().isoformat()
 # Argument parsing for parameters
 # -------------------------------------------------------------------
 def parse_args():
-    parser = argparse.ArgumentParser(description="ScRRAMBLe-ResNet20 CIFAR10 Sweeping Parameters")
+    parser = argparse.ArgumentParser(description="ScRRAMBLe-ResNetxx CIFAR100 Performance Test")
 
     # parameters to sweep
     parser.add_argument("--connection_density", type=float, required=True)
     parser.add_argument("--slot_size", type=int, required=True)
-    parser.add_argument("--seed", type=int, default=101, help="Random seed for reproducibility")
+    # parser.add_argument("--resample", type=int, required=True)
+    parser.add_argument("--seed", type=int, required=True, default=101)
 
     # model parameters
     parser.add_argument("--capsule_sizes", nargs="+", type=int, default=[50, 10])
     parser.add_argument("--capsule_size", type=int, default=256)
+
+    # dataset parameters
+    parser.add_argument("--augmentation", action='store_true', help="Whether to use data augmentation") # whether to use data augmentation during training
 
     # hyperparameters
     parser.add_argument("--learning_rate", type=float, default=3e-4)
@@ -72,13 +75,15 @@ def parse_args():
 
     # output file
     parser.add_argument("--save_results", action='store_true', help="Save results to CSV")
-    parser.add_argument("--results", type=str, default=f"../results/scrramble_resnet20_cifar10_metrics_{today}.json") # change as necessary
+    parser.add_argument("--results", type=str, default=f"../logs/scrramble_resnet20_cifar100_performance_results_{today}.csv")
     parser.add_argument("--save_metrics", action="store_true", help="Save metrics to JSON") # whether to save the metrics history
-    parser.add_argument("--metrics_file", type=str, default=f"../logs/scrramble_resnet20_cifar10_metrics_{today}.json") # change as necessary
+    parser.add_argument("--metrics_file", type=str, default=f"../logs/scrramble_resnet20_cifar100_metrics_{today}.json")
     parser.add_argument("--save_model", action="store_true", help="Save Model to pickle") # whether to save the model
-    parser.add_argument("--model_file", type=str, default=f"./models/scrramble_resnet20_cifar10_model_{today}.pkl") # change as necessary
+    parser.add_argument("--model_file", type=str, default=f"../models/scrramble_resnet20_cifar100_model_{today}.pkl")
 
     return parser.parse_args()
+
+
 
 # -------------------------------------------------------------------
 # Auxiliary functions
@@ -106,24 +111,6 @@ def save_result_to_csv(result, csv_path):
         finally:
             fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
-
-    
-def save_model(state, filename):
-    """
-    Save the model state in a specified file
-    """
-
-    checkpoint_dir = "/local_disk/vikrant/scrramble/models"
-    filename_ = os.path.join(checkpoint_dir, filename)
-
-    os.makedirs(os.path.dirname(filename_), exist_ok=True)  # Ensure the directory exists.
-
-    with open(filename_, 'wb') as f:
-        pickle.dump(state, f)
-    
-    print(f"Model saved to {filename_}")
-
-    
 def save_payload(state, configs, filename):
     """
     Save model and parameters to a pickle.
@@ -145,6 +132,7 @@ def save_payload(state, configs, filename):
         pickle.dump(payload, f)
     
     print(f"Model saved to {filename_}")
+
 
 # -------------------------------------------------------------------
 # Residual Block: outputs shape 2048
@@ -171,10 +159,18 @@ class ResidualBlock(nnx.Module):
         self.batch_norm = nnx.BatchNorm(out_features, rngs=rngs)
         self.activation_fn = activation_fn
         
+        # # Projection layer: use 1x1 conv when input and output features differ
+        # self.use_projection = (in_features != out_features)
+        # if self.use_projection:
+        #     self.projection = nnx.Conv(in_features=in_features, out_features=out_features, kernel_size=(1, 1), padding=padding, rngs=rngs)
 
     def __call__(self, x):
         x_res = x
         x = self.batch_norm(x)
+        # # Project residual connection if dimensions don't match
+        # if self.use_projection:
+        #     x_res = self.projection(x_res)
+        
         x = self.conv1(x)
         x = self.batch_norm(x)
         x = self.activation_fn(x)
@@ -221,6 +217,7 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         # compute number of effective capsules coming from the input vector
         self.input_eff_capsules = math.ceil(self.input_vector_size / self.capsule_size) # rounded up to the nearest integer
 
+
         Ci = fast_scrramble(
             num_destination_cores=self.num_capsules,
             num_source_cores=self.input_eff_capsules,
@@ -243,6 +240,13 @@ class ScRRAMBLeCapsLayer(nnx.Module):
         Args:
         x: jax.Array. flattened input, No batch dimension. Shape should be (input_vector_size,). e.g. (1000,)
         """
+
+
+        # # pad the input with zeros if the length is not a multiple of capsule size
+        # if x.shape[0]%self.capsule_size != 0:
+        #     x_padded = jnp.pad(x, (0, self.input_eff_capsules*self.capsule_size - x.shape[0]), mode='constant', constant_values=0)
+        # else:
+        #     x_padded = x
         
         # reshape input into (input_eff_capsules, receptive_fields_per_capsule, receptive_field_size)
         x_reshaped = x.reshape(self.input_eff_capsules, self.receptive_fields_per_capsule, self.receptive_field_size)
@@ -258,7 +262,7 @@ class ScRRAMBLeCapsLayer(nnx.Module):
 # -------------------------------------------------------------------
 # ScRRAMBLE + Res Network
 # -------------------------------------------------------------------
-class ScRRAMBLeResCIFAR10(nnx.Module):
+class ScRRAMBLeResCIFAR100(nnx.Module):
     """
     ScRRAMBLe + Residual Network for CIFAR-10 classification.
     """
@@ -337,6 +341,9 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         ) for Nci, Nco, pi in zip(self.capsule_sizes[:-1], self.capsule_sizes[1:], connection_probabilities)]
         )
 
+        # add a final classifier layer
+        self.classifier = nnx.Linear(in_features=capsule_size * capsule_sizes[-1], out_features=100, rngs=rngs)  # 100 classes for CIFAR-100
+
     def __call__(self, x: jax.Array) -> jax.Array:
         """
         Forward pass through the ScRRAMBLe + ResNet model.
@@ -376,6 +383,10 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         # project using fixed random matrix M
         x = jnp.einsum('ij, bj -> bi', self.M, x) # shape: (batch_size, output_dim)
 
+        # for layer in self.scrramble_caps_layers:
+        #     x = jax.vmap(layer, in_axes=(0,))(x)
+        #     x = self.activation_function(x)
+
         # comment this part when not using norms
         for layer, rms_norm in zip(self.scrramble_caps_layers[:-1], self.rms_norms):
             x = jax.vmap(layer, in_axes=(0,))(x)
@@ -389,6 +400,9 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
         layer = self.scrramble_caps_layers[-1]
         x = jax.vmap(layer, in_axes=(0,))(x)
 
+        x = x.reshape((x.shape[0], -1))  # flatten before classifier
+        x = self.classifier(x)
+
         return x
     
     
@@ -397,12 +411,22 @@ class ScRRAMBLeResCIFAR10(nnx.Module):
 # ---------------------------------------------------------------
 # Training functions
 # ---------------------------------------------------------------
+# add ths loss function
+def loss_fn(model: ScRRAMBLeResCIFAR100, batch: dict):
+    logits = model(batch['image'])
+    # print(f"logits.shape: {logits.shape}")
+    # print(f"batch['label'].shape: {batch['label'].shape}")
+    loss = optax.softmax_cross_entropy_with_integer_labels(logits, labels=batch['label']).mean(
+    )
+
+    return loss, logits
+
 @nnx.jit
-def train_step(model: ScRRAMBLeResCIFAR10,
+def train_step(model: ScRRAMBLeResCIFAR100,
                optimizer: nnx.Optimizer,
                metrics: nnx.MultiMetric,
                batch,
-               loss_fn: Callable = margin_loss,
+               loss_fn: Callable = loss_fn,
                ):
     
     grad_fn = nnx.value_and_grad(loss_fn, has_aux=True)
@@ -411,27 +435,22 @@ def train_step(model: ScRRAMBLeResCIFAR10,
     optimizer.update(model, grads)  # In-place updates.
 
 @nnx.jit
-def eval_step(model: ScRRAMBLeResCIFAR10, metrics: nnx.MultiMetric, batch, loss_fn: Callable = margin_loss):
+def eval_step(model: ScRRAMBLeResCIFAR100, metrics: nnx.MultiMetric, batch, loss_fn: Callable = loss_fn):
   loss, logits = loss_fn(model, batch)
   metrics.update(loss=loss, logits=logits, labels=batch['label'])  # In-place updates.
 
 @nnx.jit
-def pred_step(model: ScRRAMBLeResCIFAR10, batch):
+def pred_step(model: ScRRAMBLeResCIFAR100, batch):
     """
     Prediction step
     """
 
-    caps_out = model(batch['image'])
+    logits = model(batch['image'])
 
-    # reshape
-    out = jnp.reshape(caps_out, (caps_out.shape[0], 10, -1))
-
-    # take vector sizes along the final dimension
-    out = jnp.linalg.norm(out, axis=-1)
+    logits = nnx.softmax(logits, axis=-1)
 
     # take argmax along the second dimension to get the predicted class
-
-    out = jnp.argmax(out, axis=-1)
+    out = jnp.argmax(logits, axis=-1)
 
     return out
 
@@ -439,8 +458,8 @@ def pred_step(model: ScRRAMBLeResCIFAR10, batch):
 # -------------------------------------------------------------------
 # Training function
 # -------------------------------------------------------------------
-def train_scrramble_capsnet_mnist(
-        model: ScRRAMBLeResCIFAR10,
+def train_scrramblexres_cifar100(
+        model: ScRRAMBLeResCIFAR100,
         optimizer: nnx.Optimizer,
         train_ds: tf.data.Dataset,
         valid_ds: tf.data.Dataset,
@@ -513,27 +532,25 @@ def main():
     print(f"Slot Size: {args.slot_size} ")
     print(f"Batch Size: {args.batch_size} ")
 
-    data_dir = None # change if you want to specify a data directory for TFDS to download the dataset to
+    data_dir = "/local_disk/vikrant/datasets" # None # change to specify a data directory for TFDS to download the dataset to.
     dataset_dict = {
         'batch_size': args.batch_size, # 64 is a good batch size for CIFAR-10
         'train_steps': args.train_steps, # run for longer, 30000 is good for CIFAR-10
         'eval_every': args.eval_every, # evaluate every 1000 steps
-        'binarize': False,  # CIFAR-10 is usually kept as RGB
         'data_dir': data_dir,
         'seed': args.seed,
-        'quantize_flag': False,  # whether to quantize the images
-        'quantize_bits': False,  # number of bits to quantize the images
-        'num_rotations': 4,  # for every image, rotate it by
+        'num_rotations': 4,  # for every image, rotate it by 90 degrees
         'shuffle_buffer': 1024,  # shuffle buffer size  
         }
 
-    train_ds, valid_ds, test_ds = load_cifar10_augment(
+
+    train_ds, valid_ds, test_ds = load_cifar100_augment(
             batch_size=dataset_dict['batch_size'],
             train_steps=dataset_dict['train_steps'],
             data_dir=dataset_dict['data_dir'],
             seed=dataset_dict['seed'],
             shuffle_buffer=dataset_dict['shuffle_buffer'],
-            augmentation=True,
+            augmentation=args.augmentation,
             training=False,
     )
 
@@ -543,8 +560,8 @@ def main():
     # hyperparameters
     hyperparameters = {
         'learning_rate': args.learning_rate, # 1e-3 seems to work well
-        'momentum': 0.9, 
-        'weight_decay': 1e-4
+        'momentum': args.momentum, 
+        'weight_decay': args.weight_decay
     }
 
     # model
@@ -555,11 +572,10 @@ def main():
         'connection_probabilities': connection_probabilities,
         'receptive_field_size': args.slot_size,
         'capsule_size': args.capsule_size,
-        'activation_function': nnx.relu,
+        'activation_function': nnx.gelu,
     }
 
-    model = ScRRAMBLeResCIFAR10(**model_parameters)
-    nnx.display(model)
+    model = ScRRAMBLeResCIFAR100(**model_parameters)
 
     # learning rate schedule
     schedule = optax.warmup_cosine_decay_schedule(
@@ -570,11 +586,14 @@ def main():
         end_value=1e-6
     )
 
+
     optimizer = nnx.Optimizer(
         model,
         optax.adamw(learning_rate=schedule, weight_decay=hyperparameters['weight_decay']),
         wrt=nnx.Param
+
     )
+    
 
     metrics = nnx.MultiMetric(
         accuracy=nnx.metrics.Accuracy(),
@@ -584,7 +603,7 @@ def main():
     metrics_history = defaultdict(list)
 
     # train the model
-    model, metrics_history = train_scrramble_capsnet_mnist(
+    model, metrics_history = train_scrramblexres_cifar100(
         model=model,
         optimizer=optimizer,
         train_ds=train_ds,
@@ -611,30 +630,25 @@ def main():
     }
 
     if args.save_results:
-        print("--"*50)
         save_result_to_csv(results_dict, args.results)
         print(f"Results saved to {args.results}")
         print("--"*50)
 
-    # check if the model needs to be saved
     if args.save_model:
-        model_filename = args.model_file
-        print("--"*50)
-        graphdef, state = nnx.split(model)
-        configs = model_parameters = {
-        'capsule_sizes': args.capsule_sizes[1:],
+        configs = {'capsule_sizes': args.capsule_sizes[1:],  # exclude input capsule size
         'connection_probabilities': connection_probabilities,
         'receptive_field_size': args.slot_size,
         'capsule_size': args.capsule_size,
-    }
-        save_payload(state, configs, model_filename)
-        print("--"*50)
+        }
+        _, state = nnx.split(model)
+        save_payload(state, configs, args.model_file)
 
     del model, optimizer, train_ds, valid_ds, test_ds, metrics, metrics_history
     jax.clear_caches()
 
 
-
 if __name__ == "__main__":
     main()
+
+
 
