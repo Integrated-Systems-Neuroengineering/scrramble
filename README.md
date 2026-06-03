@@ -55,7 +55,11 @@ Any changes made to the source code in `src` will be immediately reflected witho
 ### Running in Google Colab
 
 
-You can run ScRRAMBLe directly in Google Colab without installing anything locally to leverage Google's GPU/TPU acceleration. You can access the demoes $\to$ 
+You can run ScRRAMBLe directly in Google Colab without installing anything locally to leverage Google's GPU/TPU acceleration. You can access the demoes $\to$ <a target="_blank" href="https://colab.research.google.com/github/Integrated-Systems-Neuroengineering/scrramble/blob/main/Tutorials/consolidated_demos.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+OR run the following in a Colab notebook. 
 **Cell 1: Clone the repository and install dependencies**
 ```python
 !git clone https://github.com/Integrated-Systems-Neuroengineering/scrramble.git
