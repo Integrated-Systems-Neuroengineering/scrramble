@@ -1,6 +1,7 @@
 ScRRAMBLe: BLOCK-SPARSE DEEP LEARNING ARCHITECTURE FOR ANALOG IN-MEMORY COMPUTING ACCELERATORS
 ---
-This repository contains code to reproduce results and train ScRRAMBLe.
+This repository contains code to reproduce results and train ScRRAMBLe. 
+The manuscript is available online at <kbd><a href="https://rdcu.be/fmcT0">npj Unconventional Computing</a></kbd>
 
 ## Getting Started
 
@@ -57,7 +58,7 @@ You can run ScRRAMBLe directly in Google Colab without installing anything local
 
 **Cell 1: Clone the repository and install dependencies**
 ```python
-!git clone https://github.com/vikrant-github/scrramble.git
+!git clone https://github.com/Integrated-Systems-Neuroengineering/scrramble.git
 %cd scrramble
 !conda env update -f environment.yml
 ```
@@ -68,6 +69,7 @@ You can run ScRRAMBLe directly in Google Colab without installing anything local
 ```
 
 **Cell 3: Run training scripts**
+The `Tutorials` folder contains scripts for a quick setup to train ScRRAMBLe and ScRRAMBLe-ResNet architectures on MNIST, CIFAR-10 and CIFAR-100 datasets.
 ```python
 # For MNIST
 !python3 scrramble_mnist_training.py --connection_density 0.2 --slot_size 64 --resample 1 --seed 101 --train_steps 30000
