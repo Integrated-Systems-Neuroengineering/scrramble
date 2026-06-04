@@ -595,6 +595,7 @@ def main():
         dataset_dict=dataset_dict,
     )
 
+
     # Saving the model...
     timestamp = datetime.now().isoformat()
     capsule_str = '_'.join(map(str, args.capsule_sizes[1:]))
@@ -629,6 +630,21 @@ def main():
     }
         save_payload(state, configs, model_filename)
         print("--"*50)
+
+    # plot the results
+    fig, ax = plt.subplots(1, 2, figsize=(7, 3.5), dpi=110)
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['train_loss'], label='Train Loss', ls="--", ax=ax[0])
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['valid_loss'], label='Valid Loss', ax=ax[0])
+    ax[0].set_xlabel('Training Steps')
+    ax[0].set_ylabel('Loss')
+
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['train_accuracy'], label='Train Accuracy', ls="--", ax=ax[1])
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['valid_accuracy'], label='Valid Accuracy', ax=ax[1])
+    ax[1].set_xlabel('Training Steps')
+    ax[1].set_ylabel('Accuracy')
+
+    plt.tight_layout()
+    plt.show()
 
     del model, optimizer, train_ds, valid_ds, test_ds, metrics, metrics_history
     jax.clear_caches()

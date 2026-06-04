@@ -643,6 +643,21 @@ def main():
         _, state = nnx.split(model)
         save_payload(state, configs, args.model_file)
 
+    # plot the results
+    fig, ax = plt.subplots(1, 2, figsize=(7, 3.5), dpi=110)
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['train_loss'], label='Train Loss', ls="--", ax=ax[0])
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['valid_loss'], label='Valid Loss', ax=ax[0])
+    ax[0].set_xlabel('Training Steps')
+    ax[0].set_ylabel('Loss')
+
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['train_accuracy'], label='Train Accuracy', ls="--", ax=ax[1])
+    sns.lineplot(x=metrics_history['step'], y=metrics_history['valid_accuracy'], label='Valid Accuracy', ax=ax[1])
+    ax[1].set_xlabel('Training Steps')
+    ax[1].set_ylabel('Accuracy')
+
+    plt.tight_layout()
+    plt.show()
+
     del model, optimizer, train_ds, valid_ds, test_ds, metrics, metrics_history
     jax.clear_caches()
 
