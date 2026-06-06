@@ -5,6 +5,52 @@ The manuscript is available online at <kbd><a href="https://rdcu.be/fmcT0">npj U
 
 ## Getting Started
 
+### Running in Google Colab
+
+
+You can run ScRRAMBLe directly in Google Colab without installing anything locally to leverage Google's GPU/TPU acceleration. You can access the demoes $\to$ <a target="_blank" href="https://colab.research.google.com/github/Integrated-Systems-Neuroengineering/scrramble/blob/main/Tutorials/consolidated_demos.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+OR run the following in a Colab notebook. 
+**Cell 1: Clone the repository and install dependencies**
+```python
+!git clone https://github.com/Integrated-Systems-Neuroengineering/scrramble.git
+%cd scrramble
+```
+
+**Cell 2: Install the package in editable mode**
+
+For CPU runtime or Google Colab use 
+```python
+!pip install -e .
+```
+
+And for GPU runtimes, use
+```python
+!pip install -e ".[cuda]"
+```
+
+Navigate to the `Tutorials` folder
+```python
+%cd Tutorials/
+```
+
+**Cell 3: Run training scripts**
+The `Tutorials` folder contains scripts for a quick setup to train ScRRAMBLe and ScRRAMBLe-ResNet architectures on MNIST, CIFAR-10 and CIFAR-100 datasets.
+```python
+# For MNIST
+!python3 scrramble_mnist_training.py --connection_density 0.2 --slot_size 64 --resample 1 --seed 101 --train_steps 30000
+
+# For CIFAR-10
+!python3 scrramblexresnet_cifar10_training.py --connection_density 0.2 --slot_size 16
+
+# For CIFAR-100
+!python3 scrramblexresnet_cifar100_training.py --connection_density 0.75 --slot_size 16 --capsule_sizes 20 10 --train_steps 50000
+```
+
+Note: Colab provides GPU/TPU acceleration by default, so no additional setup is needed. For best results, ensure GPU is enabled in Colab runtime settings (Runtime → Change runtime type → GPU).
+
 ### Running Locally
 
 You can clone this repository using either `git` or `gh` (GitHub CLI):
@@ -52,51 +98,6 @@ from src.utils import ...
 
 Any changes made to the source code in `src` will be immediately reflected without reinstalling.
 
-### Running in Google Colab
-
-
-You can run ScRRAMBLe directly in Google Colab without installing anything locally to leverage Google's GPU/TPU acceleration. You can access the demoes $\to$ <a target="_blank" href="https://colab.research.google.com/github/Integrated-Systems-Neuroengineering/scrramble/blob/main/Tutorials/consolidated_demos.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
-
-OR run the following in a Colab notebook. 
-**Cell 1: Clone the repository and install dependencies**
-```python
-!git clone https://github.com/Integrated-Systems-Neuroengineering/scrramble.git
-%cd scrramble
-```
-
-**Cell 2: Install the package in editable mode**
-
-For CPU runtime or Google Colab use 
-```python
-!pip install -e .
-```
-
-And for GPU runtimes, use
-```python
-!pip install -e ".[cuda]"
-```
-
-Navigate to the `Tutorials` folder
-```python
-%cd Tutorials/
-```
-
-**Cell 3: Run training scripts**
-The `Tutorials` folder contains scripts for a quick setup to train ScRRAMBLe and ScRRAMBLe-ResNet architectures on MNIST, CIFAR-10 and CIFAR-100 datasets.
-```python
-# For MNIST
-!python3 scrramble_mnist_training.py --connection_density 0.2 --slot_size 64 --resample 1 --seed 101 --train_steps 30000
-
-# For CIFAR-10
-!python3 scrramblexresnet_cifar10_training.py --connection_density 0.2 --slot_size 16
-
-# For CIFAR-100
-!python3 scrramblexresnet_cifar100_training.py --connection_density 0.75 --slot_size 16 --capsule_sizes 20 10 --train_steps 50000
-```
-
-Note: Colab provides GPU/TPU acceleration by default, so no additional setup is needed. For best results, ensure GPU is enabled in Colab runtime settings (Runtime → Change runtime type → GPU).
 
 ### Testing the model on datasets:
 The `Tutorials/` folder contains reference scripts to train the ScRRAMBLe and ScRRAMBLe-ResNet Models. The general structure of these scripts can be used to reproduce figures in the manuscript.
